@@ -1,15 +1,13 @@
 import React from 'react';
-import AppRouter from './router/AppRouter';
-// import { AuthProvider } from './context/AuthContext'; // Bunu oluþturduktan sonra bu satýrý açacaðýz
-
-// './App.css' importunu silebilirsin, global stilleri main.jsx'ten yöneteceðiz.
+import AppRouter from './router/AppRouter.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 function App() {
-    return (
-        // <AuthProvider> {/* AuthContext'i oluþturunca bu sarmalamayý yapacaðýz */}
-        <AppRouter />
-        // </AuthProvider>
-    );
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
 }
 
 export default App;

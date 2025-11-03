@@ -2,9 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\assets\\styles",
-    "\\src\\router"
+    "\\src\\pages",
+    "\\src\\pages\\public"
   ],
-  "SelectedNode": "\\src\\router\\AppRouter.jsx",
+  "SelectedNode": "\\src\\pages\\public",
   "PreviewInSolutionExplorer": false
 }

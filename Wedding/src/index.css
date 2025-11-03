@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: theme('colors.light');
+  color: theme('colors.dark');
+  min-height: 100%;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  @apply bg-light text-dark;
+}
+
+a {
+  @apply text-primary no-underline transition-colors duration-200;
+}
+
+a:hover {
+  @apply text-secondary;
+}
+
+.container-narrow {
+  @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn-gradient {
+  background-image: theme('backgroundImage.hero-overlay');
+  @apply text-white font-semibold rounded-full px-6 py-3 shadow-soft transition-transform duration-200;
+}
+
+.btn-gradient:hover {
+  @apply scale-105;
+}
+
+.glass-panel {
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.85);
+  @apply shadow-soft rounded-3xl border border-white/50;
+}
+
+.badge-soft {
+  @apply inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium uppercase tracking-wide;
+}
+
+.section-heading {
+  @apply font-display text-3xl md:text-4xl font-semibold text-dark mb-6;
+}
+
+.section-subheading {
+  @apply text-muted max-w-3xl;
+}
+
+.bg-gradient {
+  background: radial-gradient(circle at top left, rgba(143, 62, 151, 0.15), transparent 55%),
+    linear-gradient(135deg, rgba(143, 62, 151, 0.85), rgba(242, 166, 90, 0.75));
+}
+

@@ -1,94 +1,91 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// --- Layout'larý (Sayfa Düzenlerini) Import Et ---
-// Henüz bu dosyalarý oluþturmadýk ama importlarý hazýr olsun.
-// import MainLayout from '../components/layout/MainLayout';
-// import AdminLayout from '../components/layout/AdminLayout';
-// import AuthLayout from '../components/layout/AuthLayout';
+import MainLayout from '../layout/MainLayout.jsx';
+import AuthLayout from '../layout/AuthLayout.jsx';
+import AdminLayout from '../layout/AdminLayout.jsx';
+import OwnerLayout from '../layout/OwnerLayout.jsx';
+import CustomerLayout from '../layout/CustomerLayout.jsx';
 
-// --- Genel (Public) Sayfalarý Import Et ---
-// Henüz bu dosyalarý da oluþturmadýk.
-// import HomePage from '../pages/public/HomePage';
-// import AboutPage from '../pages/public/AboutPage';
-// import ContactPage from '../pages/public/ContactPage';
-// import VenueSearchPage from '../pages/public/VenueSearchPage';
-// import VenueDetailsPage from '../pages/public/VenueDetailsPage';
+import HomePage from '../pages/public/HomePage.jsx';
+import AboutPage from '../pages/public/AboutPage.jsx';
+import ContactPage from '../pages/public/ContactPage.jsx';
+import VenueSearchPage from '../pages/public/VenueSearchPage.jsx';
+import VenueDetailsPage from '../pages/public/VenueDetailsPage.jsx';
+import PricingPage from '../pages/public/PricingPage.jsx';
+import PrivacyPage from '../pages/public/PrivacyPage.jsx';
+import TermsPage from '../pages/public/TermsPage.jsx';
+import CookiesPage from '../pages/public/CookiesPage.jsx';
 
-// --- Giriþ (Auth) Sayfalarýný Import Et ---
-// import LoginPage from '../pages/auth/LoginPage';
-// import RegisterPage from '../pages/auth/RegisterPage';
+import LoginPage from '../pages/auth/LoginPage.jsx';
+import RegisterPage from '../pages/auth/RegisterPage.jsx';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage.jsx';
 
-// --- Admin Sayfalarýný Import Et ---
-// import AdminDashboard from '../pages/admin/AdminDashboard';
-// import VenueApprovalPage from '../pages/admin/VenueApprovalPage';
+import AdminDashboard from '../pages/admin/AdminDashboard.jsx';
+import VenueApprovalPage from '../pages/admin/VenueApprovalPage.jsx';
+import UserManagementPage from '../pages/admin/UserManagementPage.jsx';
 
-// --- Salon Sahibi (Owner) Sayfalarýný Import Et ---
-// import OwnerDashboard from '../pages/owner/OwnerDashboard';
-// import MyVenuesPage from '../pages/owner/MyVenuesPage';
+import OwnerDashboard from '../pages/owner/OwnerDashboard.jsx';
+import MyVenuesPage from '../pages/owner/MyVenuesPage.jsx';
+import AddVenuePage from '../pages/owner/AddVenuePage.jsx';
+import OwnerReservationsPage from '../pages/owner/OwnerReservationsPage.jsx';
 
-// --- Müþteri (Customer) Sayfalarýný Import Et ---
-// import CustomerDashboard from '../pages/customer/CustomerDashboard';
-// import MyReservationsPage from '../pages/customer/MyReservationsPage';
+import CustomerDashboard from '../pages/customer/CustomerDashboard.jsx';
+import MyReservationsPage from '../pages/customer/MyReservationsPage.jsx';
+import ProfilePage from '../pages/customer/ProfilePage.jsx';
 
-// --- Diðer Sayfalar ---
-import NotFoundPage from '../pages/NotFoundPage'; // Bu dosya zaten var görünüyor
+import NotFoundPage from '../pages/NotFoundPage.jsx';
+import PrivateRoute from './PrivateRoute.jsx';
 
 const AppRouter = () => {
-    return (
-        <Routes>
-            {/* Þimdilik projenin hata vermemesi için
-        sadece basit bir anasayfa rotasý ekleyelim.
-        Bunu "HomePage" dosyasýný oluþturunca güncelleyeceðiz.
-      */}
-            <Route path="/" element={<div>Ana Sayfa</div>} />
-
-            {/* --- GELECEKTEKÝ YAPI ---
-          Aþaðýdaki kodlarý, ilgili sayfalarý oluþturdukça
-          yukarýdaki importlarý açarak aktif edeceksin.
-      */}
-
-            {/* // 1. Genel (Public) Sayfalar (Navbar ve Footer içeren)
+  return (
+    <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/hakkimizda" element={<AboutPage />} />
-        <Route path="/iletisim" element={<ContactPage />} />
-        <Route path="/salon-ara" element={<VenueSearchPage />} />
-        <Route path="/salon/:id" element={<VenueDetailsPage />} />
+        <Route path="/venues" element={<VenueSearchPage />} />
+        <Route path="/venues/:id" element={<VenueDetailsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
       </Route>
 
-      // 2. Giriþ/Kayýt Sayfalarý (Sade bir layout ile)
       <Route element={<AuthLayout />}>
-        <Route path="/giris" element={<LoginPage />} />
-        <Route path="/kayit-ol" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Route>
 
-      // 3. Admin Paneli (Admin'e özel layout ile)
-      // Bu rotalarý "PrivateRoute" ile korumak gerekecek
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} /> 
-        <Route path="onay-bekleyenler" element={<VenueApprovalPage />} />
+      <Route element={<PrivateRoute roles={['admin']} />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="venues" element={<VenueApprovalPage />} />
+          <Route path="users" element={<UserManagementPage />} />
+        </Route>
       </Route>
 
-      // 4. Salon Sahibi Paneli
-      // Bu rotalarý "PrivateRoute" ile korumak gerekecek
-      <Route path="/panel" element={<OwnerLayout />}> // Örn: /panel
-        <Route index element={<OwnerDashboard />} />
-        <Route path="salonlarim" element={<MyVenuesPage />} />
+      <Route element={<PrivateRoute roles={['owner']} />}>
+        <Route path="/owner" element={<OwnerLayout />}>
+          <Route index element={<OwnerDashboard />} />
+          <Route path="venues" element={<MyVenuesPage />} />
+          <Route path="reservations" element={<OwnerReservationsPage />} />
+          <Route path="add" element={<AddVenuePage />} />
+        </Route>
       </Route>
 
-      // 5. Müþteri Paneli
-      // Bu rotalarý "PrivateRoute" ile korumak gerekecek
-      <Route path="/hesabim" element={<CustomerLayout />}> // Örn: /hesabim
-        <Route index element={<CustomerDashboard />} />
-        <Route path="rezervasyonlarim" element={<MyReservationsPage />} />
+      <Route element={<PrivateRoute roles={['customer']} />}>
+        <Route path="/account" element={<CustomerLayout />}>
+          <Route index element={<CustomerDashboard />} />
+          <Route path="reservations" element={<MyReservationsPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
       </Route>
-      */}
 
-            {/* 6. Bulunamayan Sayfalar (404) */}
-            <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-    );
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
 };
 
 export default AppRouter;
