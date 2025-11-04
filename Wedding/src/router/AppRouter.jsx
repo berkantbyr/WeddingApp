@@ -16,6 +16,8 @@ import PricingPage from '../pages/public/PricingPage.jsx';
 import PrivacyPage from '../pages/public/PrivacyPage.jsx';
 import TermsPage from '../pages/public/TermsPage.jsx';
 import CookiesPage from '../pages/public/CookiesPage.jsx';
+import BlogPage from '../pages/public/BlogPage.jsx';
+import FAQPage from '../pages/public/FAQPage.jsx';
 
 import LoginPage from '../pages/auth/LoginPage.jsx';
 import RegisterPage from '../pages/auth/RegisterPage.jsx';
@@ -50,6 +52,8 @@ const AppRouter = () => {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/faq" element={<FAQPage />} />
       </Route>
 
       <Route element={<AuthLayout />}>
