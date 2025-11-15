@@ -19,7 +19,10 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    identifier: '', // Şirket adı veya müşteri adı soyadı
+    password: '' 
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +36,7 @@ const LoginForm = () => {
     setError(null);
     setLoading(true);
     try {
-      const user = await login(formData);
+      const user = await login({ identifier: formData.identifier, password: formData.password });
       const redirectTo = location.state?.redirectTo || getRoleRedirect(user.role);
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -48,12 +51,12 @@ const LoginForm = () => {
       {error ? <div className="alert alert-danger mb-0">{error}</div> : null}
 
       <Input
-        id="email"
-        name="email"
-        type="email"
-        label="E-posta adresi"
-        placeholder="kullanici@ornek.com"
-        value={formData.email}
+        id="identifier"
+        name="identifier"
+        type="text"
+        label="Şirket adı veya Ad Soyad"
+        placeholder="Şirket adınızı veya adınızı soyadınızı girin"
+        value={formData.identifier}
         onChange={handleChange}
         required
       />

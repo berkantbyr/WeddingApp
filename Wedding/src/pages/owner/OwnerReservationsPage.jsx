@@ -54,12 +54,35 @@ const OwnerReservationsPage = () => {
         <div key={reservation.id} className="card border-0 shadow-sm">
           <div className="card-body d-flex flex-column flex-lg-row gap-4">
             <div className="flex-grow-1">
-              <h5 className="fw-semibold mb-1">{reservation.venue?.name}</h5>
-              <p className="text-muted small mb-1">Etkinlik tarihi: {reservation.eventDate}</p>
-              <p className="text-muted small mb-2">Misafir sayısı: {reservation.guestCount}</p>
-              <p className="text-muted small mb-0">
-                Paket: {reservation.package?.name}
+              <h5 className="fw-semibold mb-1">{reservation.venue?.name || 'Salon bilgisi yok'}</h5>
+              <p className="text-muted small mb-1">
+                <i className="bi bi-calendar3 me-1"></i>
+                Etkinlik tarihi: {new Date(reservation.eventDate).toLocaleDateString('tr-TR')}
               </p>
+              {reservation.customer && (
+                <p className="text-muted small mb-1">
+                  <i className="bi bi-person me-1"></i>
+                  Müşteri: {reservation.customer.name}
+                </p>
+              )}
+              {reservation.customer?.phone && (
+                <p className="text-muted small mb-1">
+                  <i className="bi bi-telephone me-1"></i>
+                  Telefon: {reservation.customer.phone}
+                </p>
+              )}
+              {reservation.package && (
+                <p className="text-muted small mb-0">
+                  <i className="bi bi-box me-1"></i>
+                  Paket: {reservation.package.name}
+                </p>
+              )}
+              {reservation.notes && (
+                <p className="text-muted small mt-2 mb-0">
+                  <i className="bi bi-chat-left-text me-1"></i>
+                  Notlar: {reservation.notes}
+                </p>
+              )}
             </div>
             <div className="d-flex flex-column gap-2 align-items-lg-end">
               <span className={`badge bg-${reservation.status === 'pending' ? 'warning' : reservation.status === 'confirmed' ? 'success' : 'secondary'} text-uppercase fw-semibold`}>

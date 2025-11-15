@@ -27,10 +27,23 @@ const sanitizeUser = (user) => {
 const getUsers = () => readCollection(storageKeys.users);
 const persistUsers = (users) => writeCollection(storageKeys.users, users);
 
-export const login = async ({ email, password }) => {
+export const login = async ({ identifier, password }) => {
   if (apiClient) {
-    const { data } = await apiClient.post('/auth/login', { email, password });
-    return data;
+    // Backend API'ye uygun format - identifier: şirket adı veya ad soyad
+    const { data } = await apiClient.post('/api/giris', { 
+      identifier: identifier, 
+      sifre: password 
+    });
+    // Backend'den gelen veriyi frontend formatına çevir
+    return {
+      token: data.token,
+      user: {
+        id: data.kullanici.id,
+        fullName: data.kullanici.ad_soyad,
+        email: data.kullanici.eposta,
+        role: data.kullanici.rol === 'MUSTERI' ? 'customer' : data.kullanici.rol === 'SALON_SAHIBI' ? 'owner' : data.kullanici.rol
+      }
+    };
   }
 
   await delay();
@@ -49,9 +62,24 @@ export const login = async ({ email, password }) => {
   };
 };
 
-export const register = async ({ fullName, email, password, role = ROLES.CUSTOMER, company }) => {
+export const register = async ({ fullName, email, password, role = ROLES.CUSTOMER, company, phone }) => {
   if (apiClient) {
-    const { data } = await apiClient.post('/auth/register', { fullName, email, password, role, company });
+    // Backend API'ye uygun format
+    const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
+    const { data } = await apiClient.post('/api/kayit', { 
+      ad_soyad: fullName,
+      eposta: email,
+      sifre: password,
+      rol: backendRole,
+      telefon: phone || null,
+      sirket_adi: company || null
+    });
+    
+    // Kayıt sonrası otomatik giriş yap
+    if (data.mesaj === 'Kayıt başarılı') {
+      return await login({ email, password });
+    }
+    
     return data;
   }
 

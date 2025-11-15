@@ -10,7 +10,7 @@ const AddVenuePage = () => {
   const handleSubmit = async (payload) => {
     try {
       await createVenue(user.id, payload);
-      setNotification({ type: 'success', message: 'Salon kaydınız onaya gönderildi. 48 saat içinde inceleyeceğiz.' });
+      setNotification({ type: 'success', message: 'Salon ilanınız başarıyla oluşturuldu!' });
     } catch (error) {
       setNotification({ type: 'error', message: error?.message || 'Salon kaydı gönderilemedi.' });
     }

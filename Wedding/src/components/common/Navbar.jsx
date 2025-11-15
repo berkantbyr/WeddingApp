@@ -87,33 +87,18 @@ const Navbar = () => {
             e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          {/* Süslü Logo */}
+          {/* Logo */}
           <div className="position-relative">
-            <span 
-              className="rounded-circle text-white d-inline-flex align-items-center justify-content-center fw-bold position-relative" 
-              style={{ 
-                width: 48, 
-                height: 48, 
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
-                fontSize: '16px',
-                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3), 0 0 0 3px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-                letterSpacing: '0.5px',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              SB
-            </span>
-            {/* Dekoratif nokta */}
-            <span
-              className="position-absolute top-0 end-0 rounded-circle"
+            <img
+              src="/images/eros.jpg"
+              alt="SalonBulucu Logo"
               style={{
-                width: '10px',
-                height: '10px',
-                background: 'linear-gradient(135deg, #f97316 0%, #fb923c 100%)',
-                border: '2px solid white',
-                boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)'
+                width: '48px',
+                height: '48px',
+                objectFit: 'contain',
+                borderRadius: '8px'
               }}
-            ></span>
+            />
           </div>
           
           {/* Marka Metni */}
@@ -240,16 +225,35 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+        </div>
 
-          <div className="d-flex align-items-center gap-3">
-            {!isAuthenticated ? (
-              <>
-                <Button variant="link" onClick={() => navigate('/login')}>
-                  Giriş Yap
-                </Button>
-                <Button onClick={() => navigate('/register')}>Kayıt Ol</Button>
-              </>
-            ) : (
+        {/* Giriş/Kayıt butonları - her zaman görünür */}
+        <div className="d-flex align-items-center gap-3 ms-auto">
+          {!isAuthenticated ? (
+            <>
+              <button
+                type="button"
+                className="btn btn-link text-decoration-none fw-semibold"
+                onClick={() => navigate('/login')}
+                style={{ color: '#6366f1', whiteSpace: 'nowrap' }}
+              >
+                Giriş Yap
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary fw-semibold px-4"
+                onClick={() => navigate('/register')}
+                style={{
+                  backgroundColor: '#6366f1',
+                  border: 'none',
+                  borderRadius: '8px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Kayıt Ol
+              </button>
+            </>
+          ) : (
               <div className="dropdown">
                 <button
                   className="btn btn-light dropdown-toggle d-flex align-items-center gap-2"
@@ -284,7 +288,6 @@ const Navbar = () => {
                 </ul>
               </div>
             )}
-          </div>
         </div>
       </div>
     </nav>

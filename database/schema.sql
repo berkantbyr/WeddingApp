@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS kullanicilar (
   sifre_ozeti VARCHAR(255) NOT NULL,
   rol ENUM('MUSTERI','SALON_SAHIBI') NOT NULL,
   telefon VARCHAR(30),
+  sirket_adi VARCHAR(160),
   olusturulma_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -24,6 +25,9 @@ CREATE TABLE IF NOT EXISTS salonlar (
   sehir VARCHAR(100),
   kapasite INT UNSIGNED,
   aciklama TEXT,
+  dugun_turu ENUM('EN_LUX','ORTA','NORMAL') NOT NULL DEFAULT 'NORMAL',
+  fiyat DECIMAL(10,2) NOT NULL,
+  ana_foto_url VARCHAR(500),
   olusturulma_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_salon_sahip
     FOREIGN KEY (sahip_id) REFERENCES kullanicilar(id)
@@ -33,6 +37,7 @@ CREATE TABLE IF NOT EXISTS salonlar (
 -- Indeksler (salonlar)
 CREATE INDEX idx_salon_sehir ON salonlar(sehir);
 CREATE INDEX idx_salon_kapasite ON salonlar(kapasite);
+CREATE INDEX idx_salon_dugun_turu ON salonlar(dugun_turu);
 
 -- Salon fotoğrafları
 CREATE TABLE IF NOT EXISTS salon_fotograflari (
@@ -61,6 +66,19 @@ CREATE TABLE IF NOT EXISTS paketler (
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Opsiyonel Paketler (After Party, DJ vb.)
+CREATE TABLE IF NOT EXISTS opsiyonel_paketler (
+  id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  salon_id BIGINT UNSIGNED NOT NULL,
+  ad VARCHAR(160) NOT NULL,
+  fiyat DECIMAL(10,2) NOT NULL,
+  aciklama TEXT,
+  olusturulma_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_opsiyonel_salon
+    FOREIGN KEY (salon_id) REFERENCES salonlar(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- Rezervasyonlar
 CREATE TABLE IF NOT EXISTS rezervasyonlar (
   id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -70,6 +88,7 @@ CREATE TABLE IF NOT EXISTS rezervasyonlar (
   etkinlik_tarihi DATE NOT NULL,
   durum ENUM('BEKLEMEDE','ONAYLANDI','REDDEDILDI','IPTAL') NOT NULL DEFAULT 'BEKLEMEDE',
   notlar TEXT,
+  toplam_fiyat DECIMAL(10,2),
   olusturulma_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   guncellenme_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_rez_musteri
@@ -80,6 +99,20 @@ CREATE TABLE IF NOT EXISTS rezervasyonlar (
     ON DELETE CASCADE,
   CONSTRAINT fk_rez_paket
     FOREIGN KEY (paket_id) REFERENCES paketler(id)
+    ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- Rezervasyon Opsiyonel Paketleri
+CREATE TABLE IF NOT EXISTS rezervasyon_opsiyonel_paketler (
+  id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  rezervasyon_id BIGINT UNSIGNED NOT NULL,
+  opsiyonel_paket_id BIGINT UNSIGNED NOT NULL,
+  olusturulma_zamani TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_rez_opsiyonel_rez
+    FOREIGN KEY (rezervasyon_id) REFERENCES rezervasyonlar(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_rez_opsiyonel_paket
+    FOREIGN KEY (opsiyonel_paket_id) REFERENCES opsiyonel_paketler(id)
     ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 

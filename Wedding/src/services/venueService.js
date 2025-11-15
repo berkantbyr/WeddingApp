@@ -26,8 +26,31 @@ const persistReservations = (reservations) => writeCollection(storageKeys.reserv
 
 export const fetchVenues = async () => {
   if (apiClient) {
-    const { data } = await apiClient.get('/venues');
-    return data;
+    try {
+      const { data } = await apiClient.get('/api/salonlar');
+      // Backend'den gelen veriyi frontend formatına çevir
+      return data.map(salon => ({
+        id: salon.id,
+        name: salon.ad,
+        city: salon.sehir,
+        address: salon.adres,
+        capacity: salon.kapasite,
+        description: salon.aciklama,
+        dugun_turu: salon.dugun_turu,
+        fiyat: salon.fiyat,
+        ana_foto: salon.ana_foto,
+        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
+        coverImage: salon.ana_foto || salon.ana_foto_url,
+        ownerId: salon.sahip_id,
+        ownerName: salon.sahip_adi,
+        sirket_adi: salon.sirket_adi,
+        sirketAdi: salon.sirket_adi,
+        createdAt: salon.olusturulma_zamani
+      }));
+    } catch (error) {
+      console.error('API hatası:', error);
+      return [];
+    }
   }
   await delay(200);
   return getVenues();
@@ -43,8 +66,31 @@ export const fetchFeaturedVenues = async (limit = 3) => {
 
 export const fetchVenueById = async (venueId) => {
   if (apiClient) {
-    const { data } = await apiClient.get(`/venues/${venueId}`);
-    return data;
+    try {
+      const { data } = await apiClient.get(`/api/salonlar/${venueId}`);
+      // Backend formatını frontend formatına çevir
+      return {
+        id: data.id,
+        name: data.ad,
+        city: data.sehir,
+        address: data.adres,
+        capacity: data.kapasite,
+        description: data.aciklama,
+        dugun_turu: data.dugun_turu,
+        fiyat: data.fiyat,
+        ana_foto_url: data.ana_foto_url,
+        coverImage: data.ana_foto_url,
+        ownerId: data.sahip_id,
+        ownerName: data.sahip_adi,
+        packages: data.paketler || [],
+        opsiyonelPaketler: data.opsiyonelPaketler || [],
+        fotograflar: data.fotograflar || [],
+        createdAt: data.olusturulma_zamani
+      };
+    } catch (error) {
+      console.error('Salon detay hatası:', error);
+      return null;
+    }
   }
   await delay(200);
   return getVenues().find((venue) => venue.id === venueId) ?? null;
@@ -66,13 +112,78 @@ export const searchVenues = async ({ city, capacity, eventDate, packageTier }) =
 
 export const fetchOwnerVenues = async (ownerId) => {
   if (!ownerId) return [];
+  if (apiClient) {
+    try {
+      const { data } = await apiClient.get('/api/salonlar/sahip', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      // Backend formatını frontend formatına çevir
+      return data.map(salon => ({
+        id: salon.id,
+        name: salon.ad,
+        city: salon.sehir,
+        address: salon.adres,
+        capacity: salon.kapasite,
+        description: salon.aciklama,
+        dugun_turu: salon.dugun_turu,
+        fiyat: salon.fiyat,
+        ana_foto_url: salon.ana_foto_url || salon.ana_foto,
+        coverImage: salon.ana_foto_url || salon.ana_foto || '/images/99d6f7a3526a21f42765c9fab7782396.jpg',
+        ownerId: salon.sahip_id,
+        createdAt: salon.olusturulma_zamani,
+        status: 'approved' // Onay beklememeli
+      }));
+    } catch (error) {
+      console.error('API hatası:', error);
+      return [];
+    }
+  }
   const venues = await fetchVenues();
   return venues.filter((venue) => venue.ownerId === ownerId);
 };
 
 export const createVenue = async (ownerId, payload) => {
   if (apiClient) {
-    const { data } = await apiClient.post('/venues', { ...payload, ownerId });
+    // FormData kullanarak dosya yükleme
+    const formData = new FormData();
+    
+    // Metin alanları
+    formData.append('ad', payload.name);
+    formData.append('adres', payload.address);
+    formData.append('sehir', payload.city);
+    formData.append('kapasite', payload.capacity || '');
+    formData.append('aciklama', payload.description || '');
+    formData.append('dugun_turu', payload.dugun_turu || 'NORMAL');
+    formData.append('fiyat', payload.fiyat || 0);
+    
+    // Dosya varsa ekle
+    if (payload.ana_foto_file) {
+      formData.append('ana_foto', payload.ana_foto_file);
+    } else if (payload.ana_foto_url) {
+      formData.append('ana_foto_url', payload.ana_foto_url);
+    }
+    
+    // Galeri dosyaları
+    if (payload.gallery_files && payload.gallery_files.length > 0) {
+      payload.gallery_files.forEach((file, index) => {
+        formData.append(`gallery_${index}`, file);
+      });
+      formData.append('gallery_count', payload.gallery_files.length);
+    }
+    
+    // Opsiyonel paketler
+    if (payload.opsiyonelPaketler && payload.opsiyonelPaketler.length > 0) {
+      formData.append('opsiyonelPaketler', JSON.stringify(payload.opsiyonelPaketler));
+    }
+    
+    const { data } = await apiClient.post('/api/salonlar', formData, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return data;
   }
 
@@ -92,6 +203,28 @@ export const createVenue = async (ownerId, payload) => {
 
   persistVenues([...venues, newVenue]);
   return newVenue;
+};
+
+export const deleteVenue = async (venueId) => {
+  if (apiClient) {
+    try {
+      const { data } = await apiClient.delete(`/api/salonlar/${venueId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error('Salon silme hatası:', error);
+      throw new Error(error.response?.data?.hata || 'Salon silinemedi');
+    }
+  }
+  // Mock backend için
+  await delay();
+  const venues = getVenues();
+  const filtered = venues.filter((v) => v.id !== venueId);
+  persistVenues(filtered);
+  return { mesaj: 'Salon silindi' };
 };
 
 export const updateVenue = async (venueId, updates) => {
@@ -137,7 +270,20 @@ const eventDateTaken = (reservations, venueId, eventDate, excludeReservationId) 
 
 export const createReservation = async (customerId, payload) => {
   if (apiClient) {
-    const { data } = await apiClient.post('/reservations', { ...payload, customerId });
+    // Backend API'ye uygun format
+    const backendPayload = {
+      salon_id: payload.venueId,
+      paket_id: payload.packageId || 1, // Geçici olarak 1, paket sistemi daha sonra eklenebilir
+      etkinlik_tarihi: payload.eventDate,
+      notlar: payload.notes || '',
+      opsiyonelPaketler: payload.opsiyonelPaketler || [] // Seçilen opsiyonel paket ID'leri
+    };
+    
+    const { data } = await apiClient.post('/api/rezervasyonlar', backendPayload, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
     return data;
   }
 
@@ -184,8 +330,39 @@ export const fetchOwnerReservations = async (ownerId) => {
   if (!ownerId) return [];
 
   if (apiClient) {
-    const { data } = await apiClient.get(`/owners/${ownerId}/reservations`);
-    return data;
+    try {
+      const { data } = await apiClient.get('/api/rezervasyonlar/salon-sahibi', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      // Backend'den gelen veriyi frontend formatına çevir
+      return data.map(res => ({
+        id: res.id,
+        venueId: res.salon_id,
+        venue: {
+          id: res.salon_id,
+          name: res.salon_adi,
+          city: res.salon_sehir
+        },
+        eventDate: res.etkinlik_tarihi,
+        status: res.durum === 'BEKLEMEDE' ? 'pending' : res.durum === 'ONAYLANDI' ? 'confirmed' : 'declined',
+        package: {
+          name: res.paket_turu,
+          price: res.fiyat_hafta_ici || res.fiyat_hafta_sonu
+        },
+        customer: {
+          name: res.musteri_adi,
+          phone: res.musteri_telefon,
+          email: res.musteri_eposta
+        },
+        notes: res.notlar,
+        createdAt: res.olusturulma_zamani
+      }));
+    } catch (error) {
+      console.error('Rezervasyonlar yüklenemedi:', error);
+      return [];
+    }
   }
 
   await delay(200);
@@ -206,7 +383,17 @@ export const fetchOwnerReservations = async (ownerId) => {
 
 export const updateReservationStatus = async (reservationId, status) => {
   if (apiClient) {
-    const { data } = await apiClient.patch(`/reservations/${reservationId}`, { status });
+    // Backend API'ye uygun format
+    const karar = status === 'confirmed' ? 'ONAYLANDI' : 'REDDEDILDI';
+    const { data } = await apiClient.post(
+      `/api/rezervasyonlar/${reservationId}/karar`,
+      { karar },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
     return data;
   }
 

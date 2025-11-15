@@ -48,86 +48,8 @@ const seededUsers = [
   }
 ];
 
-const seededVenues = [
-  {
-    id: 'venue-1',
-    ownerId: 'user-owner-1',
-    name: 'Luna Garden Wedding Hall',
-    city: 'Istanbul',
-    district: 'Besiktas',
-    address: 'Cihannuma Mah. 20. Sokak No:12',
-    capacity: 350,
-    coverImage: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1100&q=80',
-    gallery: [
-      'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1100&q=80',
-      'https://images.unsplash.com/photo-1520854221050-0f4caff449fb?auto=format&fit=crop&w=1100&q=80'
-    ],
-    description:
-      'Panoramic Bosphorus view, glass ceiling, customizable lighting and premium catering partners for unforgettable celebrations.',
-    packages: [
-      {
-        id: 'pkg-1',
-        name: 'Economic',
-        price: 55000,
-        features: ['Classic menu', 'Standard decor', 'DJ performance', 'Photo corner']
-      },
-      {
-        id: 'pkg-2',
-        name: 'Standard',
-        price: 78000,
-        features: ['Signature menu', 'Premium decor', 'Live music trio', 'Welcome cocktail']
-      },
-      {
-        id: 'pkg-3',
-        name: 'Premium',
-        price: 112000,
-        features: ['Fine dining menu', 'Luxury decor', 'Fireworks show', 'After party setup']
-      }
-    ],
-    availableDates: ['2025-11-15', '2025-11-22', '2025-12-05', '2025-12-13'],
-    status: VENUE_STATUS.APPROVED,
-    createdAt: '2025-10-05T10:00:00.000Z'
-  },
-  {
-    id: 'venue-2',
-    ownerId: 'user-owner-1',
-    name: 'Velvet Royal Ballroom',
-    city: 'Ankara',
-    district: 'Cankaya',
-    address: 'Ataturk Bulvari No:221 Kat:4',
-    capacity: 500,
-    coverImage: 'https://images.unsplash.com/photo-1520854221050-0f4caff449fb?auto=format&fit=crop&w=1100&q=80',
-    gallery: [
-      'https://images.unsplash.com/photo-1530023367847-a683933f4177?auto=format&fit=crop&w=1100&q=80',
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=80'
-    ],
-    description:
-      'Ballroom elegance with crystal chandeliers, LED wall projections, valet service and in-house floral design team.',
-    packages: [
-      {
-        id: 'pkg-4',
-        name: 'Economic',
-        price: 62000,
-        features: ['Buffet menu', 'Classic decor', 'DJ performance', 'Lighting setup']
-      },
-      {
-        id: 'pkg-5',
-        name: 'Standard',
-        price: 88000,
-        features: ['Seated menu', 'Premium decor', 'Live band', 'Cake service']
-      },
-      {
-        id: 'pkg-6',
-        name: 'Premium',
-        price: 128000,
-        features: ['Gourmet menu', 'Designer decor', 'String quartet', 'Private lounge']
-      }
-    ],
-    availableDates: ['2025-11-29', '2025-12-06', '2025-12-20'],
-    status: VENUE_STATUS.PENDING,
-    createdAt: '2025-10-12T14:30:00.000Z'
-  }
-];
+// Seed data kaldırıldı - artık sadece gerçek veritabanından veri çekilecek
+const seededVenues = [];
 
 const seededReservations = [
   {

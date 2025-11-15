@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Button from '../../components/common/Button.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import Input from '../../components/common/Input.jsx';
-import { searchVenues } from '../../services/venueService.js';
+import { fetchVenues } from '../../services/venueService.js';
 
 const VenueSearchPage = () => {
   const [filters, setFilters] = useState({ city: '', capacity: '', eventDate: '', packageTier: '' });
@@ -16,7 +16,14 @@ const VenueSearchPage = () => {
     const initialLoad = async () => {
       setLoading(true);
       try {
-        const venues = await searchVenues({ city: '', capacity: '', eventDate: '', packageTier: '' });
+        // URL parametrelerinden filtreleri al
+        const params = new URLSearchParams(window.location.search);
+        const sehirParam = params.get('sehir');
+        if (sehirParam) {
+          setFilters(prev => ({ ...prev, city: sehirParam }));
+        }
+        
+        const venues = await fetchVenues();
         setResults(venues);
       } catch (err) {
         setError(err?.message || 'Salonlar yüklenemedi');
@@ -37,7 +44,33 @@ const VenueSearchPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const venues = await searchVenues(filters);
+      // Backend API'ye filtreli istek gönder
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const params = new URLSearchParams();
+      if (filters.city) params.append('sehir', filters.city);
+      if (filters.capacity) params.append('minKapasite', filters.capacity);
+      
+      const url = `${API_URL}/api/salonlar?${params.toString()}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Arama başarısız');
+      
+      const data = await response.json();
+      // Backend formatını frontend formatına çevir
+      const venues = data.map(salon => ({
+        id: salon.id,
+        name: salon.ad,
+        city: salon.sehir,
+        address: salon.adres,
+        capacity: salon.kapasite,
+        description: salon.aciklama,
+        dugun_turu: salon.dugun_turu,
+        fiyat: salon.fiyat,
+        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
+        coverImage: salon.ana_foto || salon.ana_foto_url,
+        ownerId: salon.sahip_id,
+        ownerName: salon.sahip_adi
+      }));
+      
       setResults(venues);
       setSearched(true);
     } catch (err) {

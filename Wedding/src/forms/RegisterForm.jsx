@@ -86,30 +86,52 @@ const RegisterForm = () => {
 
       <div className="mb-3">
         <label className="form-label fw-semibold text-muted" htmlFor="role">
-          Hesap türü
+          Hesap Türü *
         </label>
-        <select
-          id="role"
-          name="role"
-          className="form-select"
-          value={formData.role}
-          onChange={handleChange}
-          required
-        >
-          {roleOptions.map((role) => (
-            <option key={role} value={role}>
-              {role === 'owner' ? 'Salon sahibi' : 'Müşteri'}
-            </option>
-          ))}
-        </select>
+        <div className="d-flex gap-3">
+          <div className="form-check flex-fill">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="role"
+              id="role-customer"
+              value="customer"
+              checked={formData.role === 'customer'}
+              onChange={handleChange}
+              required
+            />
+            <label className="form-check-label w-100" htmlFor="role-customer">
+              <strong>Müşteri</strong>
+              <br />
+              <small className="text-muted">Düğün salonu rezervasyonu yapmak için</small>
+            </label>
+          </div>
+          <div className="form-check flex-fill">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="role"
+              id="role-owner"
+              value="owner"
+              checked={formData.role === 'owner'}
+              onChange={handleChange}
+              required
+            />
+            <label className="form-check-label w-100" htmlFor="role-owner">
+              <strong>Salon Sahibi</strong>
+              <br />
+              <small className="text-muted">Salon ilanı oluşturmak için</small>
+            </label>
+          </div>
+        </div>
       </div>
 
       {formData.role === 'owner' ? (
         <Input
           id="company"
           name="company"
-          label="İşletme adı"
-          placeholder="Salon veya şirket adını yazın"
+          label="Şirket adı"
+          placeholder="Şirket adınızı yazın"
           value={formData.company}
           onChange={handleChange}
           required

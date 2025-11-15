@@ -7,6 +7,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+// Statik dosyaları servis et (yüklenen resimler için)
+app.use('/uploads', express.static('uploads'));
 
 app.use('/api', require('./routes/auth'));
 app.use('/api', require('./routes/salonlar'));
