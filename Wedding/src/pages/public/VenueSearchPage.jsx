@@ -55,21 +55,36 @@ const VenueSearchPage = () => {
       if (!response.ok) throw new Error('Arama başarısız');
       
       const data = await response.json();
+      // Resim URL'lerini tam path'e çevir
+      const getImageUrl = (url) => {
+        if (!url) return '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
+        if (url.startsWith('http')) return url; // Zaten tam URL ise
+        if (url.startsWith('/uploads/')) {
+          // API URL ile birleştir
+          return `${API_URL}${url}`;
+        }
+        return url;
+      };
+      
       // Backend formatını frontend formatına çevir
-      const venues = data.map(salon => ({
-        id: salon.id,
-        name: salon.ad,
-        city: salon.sehir,
-        address: salon.adres,
-        capacity: salon.kapasite,
-        description: salon.aciklama,
-        dugun_turu: salon.dugun_turu,
-        fiyat: salon.fiyat,
-        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
-        coverImage: salon.ana_foto || salon.ana_foto_url,
-        ownerId: salon.sahip_id,
-        ownerName: salon.sahip_adi
-      }));
+      const venues = (Array.isArray(data) ? data : []).map(salon => {
+        const imageUrl = salon.ana_foto || salon.ana_foto_url;
+        const finalImageUrl = getImageUrl(imageUrl);
+        return {
+          id: salon.id,
+          name: salon.ad,
+          city: salon.sehir,
+          address: salon.adres,
+          capacity: salon.kapasite,
+          description: salon.aciklama,
+          dugun_turu: salon.dugun_turu,
+          fiyat: salon.fiyat,
+          ana_foto_url: finalImageUrl,
+          coverImage: finalImageUrl,
+          ownerId: salon.sahip_id,
+          ownerName: salon.sahip_adi
+        };
+      });
       
       setResults(venues);
       setSearched(true);
@@ -284,12 +299,27 @@ const VenueSearchPage = () => {
                           e.currentTarget.style.borderColor = `${cardColor}15`;
                         }}
                       >
-                        <div className="ratio ratio-4x3 position-relative">
+                        <div className="ratio ratio-4x3 position-relative" style={{ backgroundColor: '#e5e7eb' }}>
                           <img 
                             src={venue.coverImage} 
                             alt={venue.name} 
                             className="object-fit-cover"
                             style={{ borderRadius: '18px 18px 0 0' }}
+                            onError={(e) => {
+                              console.error('Resim yüklenemedi:', venue.coverImage);
+                              // Fallback resim göster
+                              e.target.src = '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
+                              // Eğer fallback de yüklenemezse, placeholder göster
+                              e.target.onerror = () => {
+                                e.target.style.display = 'none';
+                                const placeholder = document.createElement('div');
+                                placeholder.className = 'position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+                                placeholder.style.background = cardColor;
+                                placeholder.style.borderRadius = '18px 18px 0 0';
+                                placeholder.innerHTML = '<i class="bi bi-image" style="font-size: 48px; color: white; opacity: 0.5;"></i>';
+                                e.target.parentElement.appendChild(placeholder);
+                              };
+                            }}
                           />
                           <div
                             className="position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill fw-semibold"

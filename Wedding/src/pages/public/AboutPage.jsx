@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Profesyonel renk paleti
 const primaryColor = '#6366f1';
@@ -6,20 +7,22 @@ const secondaryColor = '#f97316';
 const accentColor = '#14b8a6';
 const darkColor = '#1e293b';
 
-// Galeri resimleri
+// Galeri resimleri - mevcut resimlerle güncellendi
 const galleryImages = [
-  '/images/086deedb2098d5b0e6f4520efc38988a.jpg',
-  '/images/bacec54e0ee487c42cd3e4a00e9d9d79.jpg',
-  '/images/d73a53155ab8944f6c3029b699ff4df7.jpg',
-  '/images/67c88fe439b8a069a6bd2726ea491d1d.jpg',
-  '/images/d0a22ef9af08404f2293374470dc683d.jpg',
-  '/images/99d6f7a3526a21f42765c9fab7782396.jpg',
-  '/images/6a8ab7bbe080425b4c4524a836281097.jpg',
-  '/images/977280d984c431accc7db65e8b9f1315.jpg'
+  '/images/ankara-salon.jpg',
+  '/images/antalya-salon.jpg',
+  '/images/rize-salon.jpg',
+  '/images/1406fe80cc1ca7c7fe7602d7d0dd7ef9.jpg',
+  '/images/19572e3fe6b6a653db640affe74bd4b7.jpg',
+  '/images/665002685e8c6f536a4378b229a271aa.jpg',
+  '/images/eros.jpg',
+  '/images/istanbul.webp'
 ];
 
 const AboutPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const navigate = useNavigate();
 
   // Otomatik geçiş
   useEffect(() => {
@@ -89,6 +92,15 @@ const AboutPage = () => {
                         transition: 'opacity 0.5s ease-in-out',
                         width: '100%',
                         height: '100%'
+                      }}
+                      onError={(e) => {
+                        console.error('Resim yüklenemedi:', image);
+                        // Fallback resim göster
+                        e.target.src = '/images/ankara-salon.jpg';
+                        // Eğer fallback de yüklenemezse, placeholder göster
+                        e.target.onerror = () => {
+                          e.target.style.display = 'none';
+                        };
                       }}
                     />
                   ))}
@@ -240,6 +252,47 @@ const AboutPage = () => {
                       transition: 'all 0.3s ease',
                       cursor: 'pointer'
                     }}
+                    onClick={() => setSelectedCard({
+                      type: 'couples',
+                      title: 'Çiftler İçin',
+                      icon: 'bi-heart-fill',
+                      color: primaryColor,
+                      bgColor: 'rgba(99, 102, 241, 0.1)',
+                      content: `
+                        <h3>Çiftler İçin SalonBulucu</h3>
+                        <p>SalonBulucu platformu, düğün planlamanızı kolaylaştırmak için tasarlandı. İşte size sunduğumuz özellikler:</p>
+                        
+                        <h4>🔍 Salon Keşfetme</h4>
+                        <ul>
+                          <li>Şehir, kapasite ve bütçe filtreleri ile size uygun salonları bulun</li>
+                          <li>Detaylı salon bilgileri, fotoğraflar ve paket seçeneklerini inceleyin</li>
+                          <li>Salon sahiplerinin iletişim bilgilerine kolayca ulaşın</li>
+                        </ul>
+                        
+                        <h4>📦 Paket Karşılaştırma</h4>
+                        <ul>
+                          <li>Farklı salonların paketlerini yan yana karşılaştırın</li>
+                          <li>Fiyat, içerik ve hizmetleri detaylıca inceleyin</li>
+                          <li>Bütçenize en uygun paketi seçin</li>
+                        </ul>
+                        
+                        <h4>💬 İletişim ve Rezervasyon</h4>
+                        <ul>
+                          <li>Salon sahipleriyle doğrudan iletişime geçin</li>
+                          <li>Dakikalar içinde rezervasyon talebi oluşturun</li>
+                          <li>Rezervasyon durumunuzu takip edin</li>
+                        </ul>
+                        
+                        <h4>📱 Kolay Yönetim</h4>
+                        <ul>
+                          <li>Tüm rezervasyonlarınızı tek bir yerden yönetin</li>
+                          <li>Favori salonlarınızı kaydedin</li>
+                          <li>Rezervasyon geçmişinize kolayca erişin</li>
+                        </ul>
+                        
+                        <p style="margin-top: 20px;"><strong>Hemen başlamak için:</strong> <a href="/venues" style="color: ${primaryColor}; text-decoration: underline;">Salonları keşfedin</a> veya <a href="/register" style="color: ${primaryColor}; text-decoration: underline;">hesap oluşturun</a>.</p>
+                      `
+                    })}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-5px)';
                       e.currentTarget.style.boxShadow = '0 8px 24px rgba(99, 102, 241, 0.2)';
@@ -281,6 +334,54 @@ const AboutPage = () => {
                       transition: 'all 0.3s ease',
                       cursor: 'pointer'
                     }}
+                    onClick={() => setSelectedCard({
+                      type: 'owners',
+                      title: 'Salon Sahipleri İçin',
+                      icon: 'bi-building',
+                      color: secondaryColor,
+                      bgColor: 'rgba(249, 115, 22, 0.1)',
+                      content: `
+                        <h3>Salon Sahipleri İçin SalonBulucu</h3>
+                        <p>SalonBulucu platformu, salonunuzu daha fazla çifte ulaştırmanızı ve işinizi büyütmenizi sağlar. İşte size sunduğumuz özellikler:</p>
+                        
+                        <h4>🏢 Salon Profili Oluşturma</h4>
+                        <ul>
+                          <li>Salonunuzun detaylı bilgilerini, fotoğraflarını ve özelliklerini ekleyin</li>
+                          <li>Kapasite, konum ve atmosfer bilgilerinizi paylaşın</li>
+                          <li>Profesyonel bir salon profili oluşturun</li>
+                        </ul>
+                        
+                        <h4>📋 Paket Yönetimi</h4>
+                        <ul>
+                          <li>Farklı paket seçeneklerinizi oluşturun ve yönetin</li>
+                          <li>Fiyatlandırmanızı şeffaf bir şekilde sunun</li>
+                          <li>Opsiyonel hizmetlerinizi ekleyin</li>
+                        </ul>
+                        
+                        <h4>📥 Rezervasyon Yönetimi</h4>
+                        <ul>
+                          <li>Gelen rezervasyon taleplerini görüntüleyin</li>
+                          <li>Talepleri onaylayın veya reddedin</li>
+                          <li>Rezervasyon takviminizi düzenli tutun</li>
+                        </ul>
+                        
+                        <h4>📊 İstatistikler ve Analiz</h4>
+                        <ul>
+                          <li>Salonunuzun görüntülenme sayılarını takip edin</li>
+                          <li>Rezervasyon istatistiklerinizi inceleyin</li>
+                          <li>Performansınızı değerlendirin</li>
+                        </ul>
+                        
+                        <h4>💼 İş Geliştirme</h4>
+                        <ul>
+                          <li>Daha fazla çifte ulaşın ve rezervasyonlarınızı artırın</li>
+                          <li>Profesyonel bir online varlık oluşturun</li>
+                          <li>Müşteri portföyünüzü genişletin</li>
+                        </ul>
+                        
+                        <p style="margin-top: 20px;"><strong>Hemen başlamak için:</strong> <a href="/register" style="color: ${secondaryColor}; text-decoration: underline;">Salon sahibi olarak kayıt olun</a> ve salonunuzu ekleyin.</p>
+                      `
+                    })}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-5px)';
                       e.currentTarget.style.boxShadow = '0 8px 24px rgba(249, 115, 22, 0.2)';
@@ -506,10 +607,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/bacec54e0ee487c42cd3e4a00e9d9d79.jpg"
+                src="/images/ankara-salon.jpg"
                 alt="Salon görünümü 1"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/antalya-salon.jpg';
+                }}
               />
             </div>
           </div>
@@ -532,10 +636,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/086deedb2098d5b0e6f4520efc38988a.jpg"
+                src="/images/antalya-salon.jpg"
                 alt="Salon görünümü 2"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/rize-salon.jpg';
+                }}
               />
             </div>
           </div>
@@ -558,10 +665,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/d73a53155ab8944f6c3029b699ff4df7.jpg"
+                src="/images/rize-salon.jpg"
                 alt="Salon görünümü 3"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/1406fe80cc1ca7c7fe7602d7d0dd7ef9.jpg';
+                }}
               />
             </div>
           </div>
@@ -586,10 +696,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/67c88fe439b8a069a6bd2726ea491d1d.jpg"
+                src="/images/1406fe80cc1ca7c7fe7602d7d0dd7ef9.jpg"
                 alt="Salon görünümü 4"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/19572e3fe6b6a653db640affe74bd4b7.jpg';
+                }}
               />
             </div>
           </div>
@@ -612,10 +725,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/d0a22ef9af08404f2293374470dc683d.jpg"
+                src="/images/19572e3fe6b6a653db640affe74bd4b7.jpg"
                 alt="Salon görünümü 5"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/665002685e8c6f536a4378b229a271aa.jpg';
+                }}
               />
             </div>
           </div>
@@ -638,10 +754,13 @@ const AboutPage = () => {
               }}
             >
               <img
-                src="/images/99d6f7a3526a21f42765c9fab7782396.jpg"
+                src="/images/665002685e8c6f536a4378b229a271aa.jpg"
                 alt="Salon görünümü 6"
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.src = '/images/eros.jpg';
+                }}
               />
             </div>
           </div>
@@ -721,6 +840,191 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      {selectedCard && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1050,
+            padding: '20px'
+          }}
+          onClick={() => setSelectedCard(null)}
+        >
+          <div
+            className="rounded-4 p-5 position-relative"
+            style={{
+              background: 'white',
+              maxWidth: '700px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+              border: `3px solid ${selectedCard.color}`
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <style>{`
+              .modal-content h3 {
+                background: linear-gradient(135deg, ${selectedCard.color} 0%, ${selectedCard.color}dd 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-size: 26px;
+                font-weight: bold;
+                margin-bottom: 20px;
+              }
+              .modal-content h4 {
+                color: ${selectedCard.color};
+                font-size: 20px;
+                font-weight: bold;
+                margin-top: 25px;
+                margin-bottom: 15px;
+              }
+              .modal-content ul {
+                list-style: none;
+                padding-left: 0;
+                margin: 15px 0;
+              }
+              .modal-content ul li {
+                color: #475569;
+                line-height: 1.8;
+                font-size: 16px;
+                margin-bottom: 10px;
+                padding: 10px 15px 10px 40px;
+                background: ${selectedCard.bgColor};
+                border-radius: 8px;
+                border-left: 4px solid ${selectedCard.color};
+                position: relative;
+              }
+              .modal-content ul li:before {
+                content: "✓";
+                position: absolute;
+                left: 15px;
+                color: ${selectedCard.color};
+                font-weight: bold;
+                font-size: 16px;
+              }
+              .modal-content p {
+                color: #475569;
+                line-height: '1.8';
+                font-size: 16px;
+                margin-bottom: 15px;
+              }
+              .modal-content a {
+                color: ${selectedCard.color};
+                text-decoration: underline;
+                font-weight: 600;
+              }
+            `}</style>
+
+            {/* Kapat Butonu */}
+            <button
+              onClick={() => setSelectedCard(null)}
+              className="position-absolute top-0 end-0 m-3 border-0 rounded-circle d-flex align-items-center justify-content-center"
+              style={{
+                width: '40px',
+                height: '40px',
+                background: selectedCard.bgColor,
+                color: selectedCard.color,
+                fontSize: '20px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'rotate(90deg) scale(1.1)';
+                e.target.style.background = selectedCard.color;
+                e.target.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'rotate(0deg) scale(1)';
+                e.target.style.background = selectedCard.bgColor;
+                e.target.style.color = selectedCard.color;
+              }}
+            >
+              <i className="bi bi-x-lg"></i>
+            </button>
+
+            {/* İkon */}
+            <div
+              className="rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
+              style={{
+                width: '70px',
+                height: '70px',
+                background: selectedCard.bgColor,
+                color: selectedCard.color,
+                fontSize: '32px',
+                boxShadow: `0 4px 16px ${selectedCard.color}30`
+              }}
+            >
+              <i className={`bi ${selectedCard.icon}`}></i>
+            </div>
+
+            {/* İçerik */}
+            <div
+              className="modal-content"
+              dangerouslySetInnerHTML={{ __html: selectedCard.content }}
+            />
+
+            {/* Butonlar */}
+            <div className="mt-4 d-flex gap-2 justify-content-end flex-wrap">
+              <button
+                onClick={() => setSelectedCard(null)}
+                className="btn fw-semibold"
+                style={{
+                  background: `linear-gradient(135deg, ${selectedCard.color} 0%, ${selectedCard.color}dd 100%)`,
+                  color: 'white',
+                  borderRadius: '8px',
+                  padding: '10px 30px',
+                  fontSize: '16px',
+                  border: 'none'
+                }}
+              >
+                Kapat
+              </button>
+              {selectedCard.type === 'couples' && (
+                <button
+                  onClick={() => {
+                    setSelectedCard(null);
+                    navigate('/venues');
+                  }}
+                  className="btn fw-semibold"
+                  style={{
+                    background: 'white',
+                    color: selectedCard.color,
+                    borderRadius: '8px',
+                    padding: '10px 30px',
+                    fontSize: '16px',
+                    border: `2px solid ${selectedCard.color}`
+                  }}
+                >
+                  Salonları Keşfet
+                </button>
+              )}
+              {selectedCard.type === 'owners' && (
+                <button
+                  onClick={() => {
+                    setSelectedCard(null);
+                    navigate('/register');
+                  }}
+                  className="btn fw-semibold"
+                  style={{
+                    background: 'white',
+                    color: selectedCard.color,
+                    borderRadius: '8px',
+                    padding: '10px 30px',
+                    fontSize: '16px',
+                    border: `2px solid ${selectedCard.color}`
+                  }}
+                >
+                  Kayıt Ol
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

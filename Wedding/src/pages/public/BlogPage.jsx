@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Profesyonel renk paleti
 const primaryColor = '#6366f1';
@@ -8,6 +8,8 @@ const accentColor = '#14b8a6';
 const darkColor = '#1e293b';
 
 const BlogPage = () => {
+  const navigate = useNavigate();
+  
   const blogPosts = [
     {
       id: 1,
@@ -161,6 +163,7 @@ const BlogPage = () => {
                   transition: 'all 0.3s ease',
                   cursor: 'pointer'
                 }}
+                onClick={() => navigate(`/blog/${post.id}`)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-8px)';
                   e.currentTarget.style.boxShadow = `0 12px 32px ${post.color}25`;
@@ -241,6 +244,10 @@ const BlogPage = () => {
                       fontSize: '14px',
                       transition: 'all 0.3s ease',
                       boxShadow: `0 2px 8px ${post.color}30`
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/blog/${post.id}`);
                     }}
                     onMouseEnter={(e) => {
                       e.target.style.transform = 'translateY(-2px)';

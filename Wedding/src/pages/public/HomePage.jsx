@@ -10,14 +10,12 @@ const fetchSalonlar = async (sehir = '') => {
       ? `${API_URL}/api/salonlar?sehir=${encodeURIComponent(sehir)}`
       : `${API_URL}/api/salonlar`;
     
-    console.log('API URL:', url); // Debug için
     const response = await fetch(url);
     if (!response.ok) {
       console.error('API yanıt hatası:', response.status, response.statusText);
       throw new Error('Salonlar yüklenemedi');
     }
     const data = await response.json();
-    console.log('API\'den gelen veri:', data); // Debug için
     return data;
   } catch (error) {
     console.error('API hatası:', error);
@@ -98,18 +96,36 @@ const HomePage = () => {
       setLoading(true);
       try {
         const salonlar = await fetchSalonlar();
-        console.log('Gelen salonlar:', salonlar); // Debug için
         // Backend'den gelen veriyi formatla
-        const formatlanmisSalonlar = salonlar.map(salon => ({
-          id: salon.id,
-          ad: salon.ad || salon.name,
-          sehir: salon.sehir || salon.city,
-          dugun_turu: salon.dugun_turu || salon.dugun_turu || 'NORMAL',
-          fiyat: salon.fiyat || salon.fiyat || 0,
-          ana_foto: salon.ana_foto || salon.ana_foto_url || salon.coverImage,
-          ana_foto_url: salon.ana_foto_url || salon.ana_foto || salon.coverImage,
-          kapasite: salon.kapasite || salon.capacity
-        }));
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const getImageUrl = (url) => {
+          if (!url) return null;
+          if (url.startsWith('http')) return url; // Zaten tam URL ise
+          if (url.startsWith('/uploads/')) {
+            // API URL ile birleştir
+            return `${API_URL}${url}`;
+          }
+          return url;
+        };
+        
+        const formatlanmisSalonlar = (Array.isArray(salonlar) ? salonlar : []).map(salon => {
+          // Önce ana_foto_url'i kontrol et, sonra ana_foto'yu
+          const imageUrl = salon.ana_foto_url || salon.ana_foto;
+          const finalImageUrl = getImageUrl(imageUrl);
+          
+          return {
+            id: salon.id,
+            ad: salon.ad || salon.name,
+            sehir: salon.sehir || salon.city,
+            dugun_turu: salon.dugun_turu || salon.dugun_turu || 'NORMAL',
+            fiyat: salon.fiyat || salon.fiyat || 0,
+            ana_foto: finalImageUrl,
+            ana_foto_url: finalImageUrl,
+            coverImage: finalImageUrl,
+            kapasite: salon.kapasite || salon.capacity,
+            sirket_adi: salon.sirket_adi
+          };
+        });
         // En yeni 4 salonu al
         setYaklasanFirsatlar(formatlanmisSalonlar.slice(0, 4));
       } catch (error) {
@@ -161,26 +177,176 @@ const HomePage = () => {
 
   return (
     <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      {/* Üst Banner - Trivago benzeri */}
+      {/* Hero Banner */}
       <div 
+        className="position-relative"
         style={{
-          backgroundColor: '#1e40af',
-          padding: '40px 0',
+          background: 'linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%)',
+          padding: '90px 0 110px',
           marginTop: '-20px',
-          marginBottom: '30px'
+          marginBottom: '50px',
+          overflow: 'hidden'
         }}
       >
-        <div className="container">
-          <div className="text-center text-white">
-            <h1 
-              className="fw-bold mb-3"
-              style={{ fontSize: 'clamp(24px, 5vw, 36px)' }}
-            >
-              Bir sonraki düğününüzde %50'ye kadar kazanın
-            </h1>
-            <p className="lead mb-0" style={{ fontSize: '18px' }}>
-              100'den fazla düğün salonundan en iyi fiyatları karşılaştırıyoruz
-            </p>
+        {/* Dekoratif arka plan elemanları - daha sade */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: '20%',
+            right: '-10%',
+            width: '300px',
+            height: '300px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '50%',
+            filter: 'blur(50px)'
+          }}
+        ></div>
+        <div 
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '-5%',
+            width: '250px',
+            height: '250px',
+            background: 'rgba(255, 255, 255, 0.06)',
+            borderRadius: '50%',
+            filter: 'blur(40px)'
+          }}
+        ></div>
+        
+        <div className="container position-relative" style={{ zIndex: 1 }}>
+          <div className="row align-items-center g-5">
+            <div className="col-lg-6">
+              <div className="mb-4">
+                <span 
+                  className="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.15)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: 'white',
+                    letterSpacing: '0.3px'
+                  }}
+                >
+                  <i className="bi bi-heart-fill" style={{ fontSize: '11px' }}></i>
+                  Türkiye'nin En Güvenilir Düğün Salonu Platformu
+                </span>
+              </div>
+              
+              <h1 
+                className="text-white fw-bold mb-4"
+                style={{ 
+                  fontSize: 'clamp(36px, 6vw, 58px)',
+                  lineHeight: '1.15',
+                  textShadow: '0 2px 15px rgba(0, 0, 0, 0.15)',
+                  fontWeight: '800'
+                }}
+              >
+                Hayalinizdeki Düğün<br />
+                Salonunu Bulun
+              </h1>
+              
+              <p 
+                className="text-white mb-5"
+                style={{ 
+                  fontSize: 'clamp(17px, 2vw, 21px)',
+                  lineHeight: '1.7',
+                  opacity: 0.95,
+                  maxWidth: '520px',
+                  fontWeight: '400'
+                }}
+              >
+                Zarif ve lüks salonlar, çiçeklerle süslenmiş mekanlar ve unutulmaz anılar için mükemmel yerler. Binlerce mutlu çiftin tercihi.
+              </p>
+              
+              <div className="d-flex flex-wrap gap-4">
+                <div className="d-flex align-items-center gap-3">
+                  <div 
+                    className="d-flex align-items-center justify-content-center rounded-3"
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      background: 'rgba(255, 255, 255, 0.18)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <i className="bi bi-building text-white" style={{ fontSize: '22px' }}></i>
+                  </div>
+                  <div>
+                    <div className="fw-bold text-white" style={{ fontSize: '22px', lineHeight: '1.2' }}>100+</div>
+                    <div className="text-white" style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Düğün Salonu</div>
+                  </div>
+                </div>
+                
+                <div className="d-flex align-items-center gap-3">
+                  <div 
+                    className="d-flex align-items-center justify-content-center rounded-3"
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      background: 'rgba(255, 255, 255, 0.18)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <i className="bi bi-star-fill text-white" style={{ fontSize: '22px' }}></i>
+                  </div>
+                  <div>
+                    <div className="fw-bold text-white" style={{ fontSize: '22px', lineHeight: '1.2' }}>4.8/5</div>
+                    <div className="text-white" style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Müşteri Memnuniyeti</div>
+                  </div>
+                </div>
+                
+                <div className="d-flex align-items-center gap-3">
+                  <div 
+                    className="d-flex align-items-center justify-content-center rounded-3"
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      background: 'rgba(255, 255, 255, 0.18)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <i className="bi bi-heart-fill text-white" style={{ fontSize: '22px' }}></i>
+                  </div>
+                  <div>
+                    <div className="fw-bold text-white" style={{ fontSize: '22px', lineHeight: '1.2' }}>5000+</div>
+                    <div className="text-white" style={{ fontSize: '14px', opacity: 0.9, fontWeight: '500' }}>Mutlu Çift</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="col-lg-6 mt-5 mt-lg-0">
+              <div 
+                className="position-relative rounded-4 overflow-hidden"
+                style={{
+                  boxShadow: '0 25px 70px rgba(0, 0, 0, 0.25)',
+                  border: 'none'
+                }}
+              >
+                <img
+                  src="/images/99d6f7a3526a21f42765c9fab7782396.jpg"
+                  alt="Düğün Salonu"
+                  className="w-100"
+                  style={{ 
+                    height: '400px',
+                    objectFit: 'cover',
+                    display: 'block'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -369,14 +535,9 @@ const HomePage = () => {
           >
             {yaklasanFirsatlar.map((salon, index) => {
               const dugunTuru = dugunTuruAciklamalari[salon.dugun_turu] || dugunTuruAciklamalari['NORMAL'];
-              // Önce salonun kendi fotoğrafını kullan, yoksa sırayla düğün salonu görsellerini kullan
-              // Fotoğraf URL'ini düzelt - eğer /uploads/ ile başlıyorsa backend URL'ini ekle
-              let anaFoto = salon.ana_foto || salon.ana_foto_url;
-              if (anaFoto && anaFoto.startsWith('/uploads/')) {
-                // Backend URL'ini ekle
-                const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                anaFoto = backendUrl + anaFoto;
-              } else if (!anaFoto) {
+              // Önce salonun kendi fotoğrafını kullan, yoksa fallback resimler
+              let anaFoto = salon.coverImage || salon.ana_foto_url || salon.ana_foto;
+              if (!anaFoto) {
                 // Fallback resimler
                 anaFoto = dugunSalonuGorselleri[index % dugunSalonuGorselleri.length] || '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
               }
@@ -423,6 +584,15 @@ const HomePage = () => {
                         } else {
                           e.target.src = fallbackImages[fallbackImages.length - 1];
                         }
+                        // Eğer fallback de yüklenemezse, placeholder göster
+                        e.target.onerror = () => {
+                          e.target.style.display = 'none';
+                          const placeholder = document.createElement('div');
+                          placeholder.className = 'position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center';
+                          placeholder.style.background = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)';
+                          placeholder.innerHTML = '<i class="bi bi-image" style="font-size: 48px; color: white; opacity: 0.5;"></i>';
+                          e.target.parentElement.appendChild(placeholder);
+                        };
                       }}
                     />
                     {/* İndirim Badge */}

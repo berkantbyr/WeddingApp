@@ -17,6 +17,7 @@ import PrivacyPage from '../pages/public/PrivacyPage.jsx';
 import TermsPage from '../pages/public/TermsPage.jsx';
 import CookiesPage from '../pages/public/CookiesPage.jsx';
 import BlogPage from '../pages/public/BlogPage.jsx';
+import BlogDetailPage from '../pages/public/BlogDetailPage.jsx';
 import FAQPage from '../pages/public/FAQPage.jsx';
 
 import LoginPage from '../pages/auth/LoginPage.jsx';
@@ -53,6 +54,7 @@ const AppRouter = () => {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiesPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:id" element={<BlogDetailPage />} />
         <Route path="/faq" element={<FAQPage />} />
       </Route>
 
