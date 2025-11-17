@@ -25,6 +25,51 @@ const buildAssetUrl = (path) => {
 };
 
 const fallbackCoverImage = '/images/ankara-salon.jpg';
+const formatNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+const normalizePackages = (packages = [], fallbackPrice, fallbackDesc) => {
+  if (!Array.isArray(packages)) return [];
+  return packages.map((pkg, index) => {
+    const weekdayPrice =
+      formatNumber(pkg?.fiyat_hafta_ici) ||
+      formatNumber(pkg?.price) ||
+      formatNumber(pkg?.fiyat) ||
+      0;
+    const weekendPrice =
+      formatNumber(pkg?.fiyat_hafta_sonu) ||
+      formatNumber(pkg?.weekendPrice) ||
+      weekdayPrice;
+    const basePrice = weekdayPrice || weekendPrice || fallbackPrice || 0;
+    const name =
+      pkg?.paket_turu ||
+      pkg?.name ||
+      pkg?.paketAdi ||
+      pkg?.title ||
+      `Paket ${index + 1}`;
+    return {
+      ...pkg,
+      id: pkg?.id || pkg?.paket_id || `pkg-${index}`,
+      paket_turu: pkg?.paket_turu || name,
+      name,
+      aciklama: pkg?.aciklama || pkg?.description || fallbackDesc || '',
+      fiyat_hafta_ici: weekdayPrice || basePrice,
+      fiyat_hafta_sonu: weekendPrice || basePrice,
+      price: basePrice
+    };
+  });
+};
+const normalizeOptionalPackages = (options = []) => {
+  if (!Array.isArray(options)) return [];
+  return options.map((op, index) => ({
+    ...op,
+    id: op?.id || op?.opsiyonel_id || `opt-${index}`,
+    ad: op?.ad || op?.name || `Opsiyonel ${index + 1}`,
+    aciklama: op?.aciklama || op?.description || '',
+    fiyat: formatNumber(op?.fiyat || op?.price)
+  }));
+};
 
 const apiClient = API_URL
   ? axios.create({
@@ -86,6 +131,26 @@ export const fetchVenueById = async (venueId) => {
       // Backend formatını frontend formatına çevir
       const gallery = (data.fotograflar || []).map((foto) => buildAssetUrl(foto.foto_url)).filter(Boolean);
       const coverImage = buildAssetUrl(data.ana_foto_url) || gallery[0] || fallbackCoverImage;
+      const packages = normalizePackages(
+        data.paketler || data.packages,
+        formatNumber(data.fiyat),
+        data.dugun_turu ? `${data.dugun_turu} organizasyonu` : ''
+      );
+      const optionalPackages = normalizeOptionalPackages(data.opsiyonelPaketler || data.opsiyonel_paketler);
+      const finalPackages =
+        packages.length > 0
+          ? packages
+          : [
+              {
+                id: 'default-package',
+                paket_turu: 'Standart Paket',
+                name: 'Standart Paket',
+                aciklama: data.dugun_turu ? `${data.dugun_turu} organizasyonu` : 'Salon paket ücreti',
+                fiyat_hafta_ici: formatNumber(data.fiyat),
+                fiyat_hafta_sonu: formatNumber(data.fiyat),
+                price: formatNumber(data.fiyat)
+              }
+            ];
       return {
         id: data.id,
         name: data.ad,
@@ -98,8 +163,8 @@ export const fetchVenueById = async (venueId) => {
         coverImage,
         ownerId: data.sahip_id,
         ownerName: data.sahip_adi,
-        packages: data.paketler || [],
-        opsiyonelPaketler: data.opsiyonelPaketler || [],
+        packages: finalPackages,
+        opsiyonelPaketler: optionalPackages,
         gallery,
         rawPhotos: data.fotograflar || [],
         createdAt: data.olusturulma_zamani,

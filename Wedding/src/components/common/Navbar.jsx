@@ -276,11 +276,6 @@ const Navbar = () => {
                 <ul className="dropdown-menu dropdown-menu-end shadow">
                   {renderDashboardLink()}
                   <li>
-                    <NavLink to="/account/profile" className="dropdown-item">
-                      Profil Ayarları
-                    </NavLink>
-                  </li>
-                  <li>
                     <button type="button" className="dropdown-item text-danger" onClick={handleLogout}>
                       Çıkış Yap
                     </button>

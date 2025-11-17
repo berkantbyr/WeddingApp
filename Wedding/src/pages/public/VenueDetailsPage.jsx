@@ -21,6 +21,19 @@ const VenueDetailsPage = () => {
     guestCount: '',
     secilenOpsiyoneller: [] // Seçilen opsiyonel paketlerin ID'leri
   });
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(Number(value) || 0);
+  const getPackagePrice = (pkg) => Number(pkg?.fiyat_hafta_ici ?? pkg?.price ?? pkg?.fiyat ?? 0);
+  const selectedPackage = useMemo(
+    () => venue?.packages?.find((pkg) => pkg.id === reservationData.packageId) || null,
+    [venue?.packages, reservationData.packageId]
+  );
+  const selectedOptionalPackages = useMemo(() => {
+    if (!venue?.opsiyonelPaketler) return [];
+    return venue.opsiyonelPaketler.filter((op) => reservationData.secilenOpsiyoneller.includes(op.id));
+  }, [venue?.opsiyonelPaketler, reservationData.secilenOpsiyoneller]);
+  const optionalTotal = selectedOptionalPackages.reduce((sum, op) => sum + Number(op.fiyat || 0), 0);
+  const totalPrice = (selectedPackage ? getPackagePrice(selectedPackage) : 0) + optionalTotal;
   const minReservationDate = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   const statusLabels = useMemo(
@@ -188,24 +201,66 @@ const VenueDetailsPage = () => {
             </div>
           )}
 
-          <div className="card border-0 shadow-sm mb-4">
+              <div className="card border-0 shadow-sm mb-4">
             <div className="card-body p-4">
               <h3 className="h5 fw-semibold mb-3">Paketler</h3>
               <div className="d-flex flex-column gap-3">
-                {venue.packages?.map((pkg) => (
-                  <div key={pkg.id} className="border rounded-3 p-3">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h6 className="fw-semibold mb-0">{pkg.paket_turu || pkg.name}</h6>
-                      <span className="fw-bold text-primary">
-                        {new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(pkg.fiyat_hafta_ici || pkg.price || 0)}
-                      </span>
-                    </div>
-                    {pkg.aciklama && (
-                      <p className="text-muted small mb-0">{pkg.aciklama}</p>
-                    )}
-                  </div>
-                ))}
+                    {venue.packages?.map((pkg) => {
+                      const active = reservationData.packageId === pkg.id;
+                      return (
+                        <button
+                          type="button"
+                          key={pkg.id}
+                          className={`border rounded-3 p-3 text-start w-100 bg-white ${
+                            active ? 'border-primary shadow-sm' : ''
+                          }`}
+                          onClick={() =>
+                            setReservationData((prev) => ({
+                              ...prev,
+                              packageId: pkg.id
+                            }))
+                          }
+                        >
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <div className="d-flex align-items-center gap-2">
+                              <h6 className="fw-semibold mb-0">{pkg.paket_turu || pkg.name}</h6>
+                              {active && <span className="badge bg-primary-subtle text-primary">Seçildi</span>}
+                            </div>
+                            <span className="fw-bold text-primary">{formatCurrency(getPackagePrice(pkg))}</span>
+                          </div>
+                          {pkg.aciklama && <p className="text-muted small mb-0">{pkg.aciklama}</p>}
+                        </button>
+                      );
+                    })}
               </div>
+                  {selectedPackage && (
+                    <div className="mt-3 p-3 bg-light rounded-3">
+                      <div className="d-flex justify-content-between mb-1">
+                        <span className="text-muted">Seçilen paket</span>
+                        <strong>{selectedPackage.paket_turu || selectedPackage.name}</strong>
+                      </div>
+                      <div className="d-flex justify-content-between small mb-1">
+                        <span>Paket ücreti</span>
+                        <strong>{formatCurrency(getPackagePrice(selectedPackage))}</strong>
+                      </div>
+                      {selectedOptionalPackages.length > 0 && (
+                        <>
+                          <div className="d-flex justify-content-between small">
+                            <span>Opsiyoneller</span>
+                            <strong>{formatCurrency(optionalTotal)}</strong>
+                          </div>
+                          <small className="text-muted d-block">
+                            {selectedOptionalPackages.map((op) => op.ad).join(', ')}
+                          </small>
+                        </>
+                      )}
+                      <hr />
+                      <div className="d-flex justify-content-between">
+                        <strong>Toplam</strong>
+                        <strong className="text-primary">{formatCurrency(totalPrice)}</strong>
+                      </div>
+                    </div>
+                  )}
             </div>
           </div>
 
@@ -317,8 +372,11 @@ const VenueDetailsPage = () => {
                     </div>
                     {reservationData.secilenOpsiyoneller.length > 0 && (
                       <div className="mt-2 p-2 bg-light rounded">
-                        <small className="text-muted">
+                        <small className="text-muted d-block">
                           Seçilen opsiyoneller: {reservationData.secilenOpsiyoneller.length} adet
+                        </small>
+                        <small className="text-muted d-block">
+                          Opsiyonel toplamı: <strong>{formatCurrency(optionalTotal)}</strong>
                         </small>
                       </div>
                     )}
