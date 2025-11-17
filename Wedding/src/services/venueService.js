@@ -11,6 +11,20 @@ import {
 } from './mockBackend';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
+const API_HOST = (() => {
+  if (!API_URL) return '';
+  const trimmed = API_URL.replace(/\/$/, '');
+  return trimmed.endsWith('/api') ? trimmed.slice(0, -4) : trimmed;
+})();
+
+const buildAssetUrl = (path) => {
+  if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path;
+  if (!API_HOST) return path;
+  return path.startsWith('/') ? `${API_HOST}${path}` : `${API_HOST}/${path}`;
+};
+
+const fallbackCoverImage = '/images/ankara-salon.jpg';
 
 const apiClient = API_URL
   ? axios.create({
@@ -29,24 +43,25 @@ export const fetchVenues = async () => {
     try {
       const { data } = await apiClient.get('/api/salonlar');
       // Backend'den gelen veriyi frontend formatına çevir
-      return data.map(salon => ({
-        id: salon.id,
-        name: salon.ad,
-        city: salon.sehir,
-        address: salon.adres,
-        capacity: salon.kapasite,
-        description: salon.aciklama,
-        dugun_turu: salon.dugun_turu,
-        fiyat: salon.fiyat,
-        ana_foto: salon.ana_foto,
-        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
-        coverImage: salon.ana_foto || salon.ana_foto_url,
-        ownerId: salon.sahip_id,
-        ownerName: salon.sahip_adi,
-        sirket_adi: salon.sirket_adi,
-        sirketAdi: salon.sirket_adi,
-        createdAt: salon.olusturulma_zamani
-      }));
+      return data.map((salon) => {
+        const cover = buildAssetUrl(salon.ana_foto || salon.ana_foto_url) || fallbackCoverImage;
+        return {
+          id: salon.id,
+          name: salon.ad,
+          city: salon.sehir,
+          address: salon.adres,
+          capacity: salon.kapasite,
+          description: salon.aciklama,
+          dugun_turu: salon.dugun_turu,
+          fiyat: salon.fiyat,
+          coverImage: cover,
+          ownerId: salon.sahip_id,
+          ownerName: salon.sahip_adi,
+          sirket_adi: salon.sirket_adi,
+          sirketAdi: salon.sirket_adi,
+          createdAt: salon.olusturulma_zamani
+        };
+      });
     } catch (error) {
       console.error('API hatası:', error);
       return [];
@@ -69,6 +84,8 @@ export const fetchVenueById = async (venueId) => {
     try {
       const { data } = await apiClient.get(`/api/salonlar/${venueId}`);
       // Backend formatını frontend formatına çevir
+      const gallery = (data.fotograflar || []).map((foto) => buildAssetUrl(foto.foto_url)).filter(Boolean);
+      const coverImage = buildAssetUrl(data.ana_foto_url) || gallery[0] || fallbackCoverImage;
       return {
         id: data.id,
         name: data.ad,
@@ -78,14 +95,15 @@ export const fetchVenueById = async (venueId) => {
         description: data.aciklama,
         dugun_turu: data.dugun_turu,
         fiyat: data.fiyat,
-        ana_foto_url: data.ana_foto_url,
-        coverImage: data.ana_foto_url,
+        coverImage,
         ownerId: data.sahip_id,
         ownerName: data.sahip_adi,
         packages: data.paketler || [],
         opsiyonelPaketler: data.opsiyonelPaketler || [],
-        fotograflar: data.fotograflar || [],
-        createdAt: data.olusturulma_zamani
+        gallery,
+        rawPhotos: data.fotograflar || [],
+        createdAt: data.olusturulma_zamani,
+        availableDates: data.musait_tarihler || []
       };
     } catch (error) {
       console.error('Salon detay hatası:', error);
@@ -120,21 +138,23 @@ export const fetchOwnerVenues = async (ownerId) => {
         }
       });
       // Backend formatını frontend formatına çevir
-      return data.map(salon => ({
-        id: salon.id,
-        name: salon.ad,
-        city: salon.sehir,
-        address: salon.adres,
-        capacity: salon.kapasite,
-        description: salon.aciklama,
-        dugun_turu: salon.dugun_turu,
-        fiyat: salon.fiyat,
-        ana_foto_url: salon.ana_foto_url || salon.ana_foto,
-        coverImage: salon.ana_foto_url || salon.ana_foto || '/images/99d6f7a3526a21f42765c9fab7782396.jpg',
-        ownerId: salon.sahip_id,
-        createdAt: salon.olusturulma_zamani,
-        status: 'approved' // Onay beklememeli
-      }));
+      return data.map((salon) => {
+        const cover = buildAssetUrl(salon.ana_foto_url || salon.ana_foto) || fallbackCoverImage;
+        return {
+          id: salon.id,
+          name: salon.ad,
+          city: salon.sehir,
+          address: salon.adres,
+          capacity: salon.kapasite,
+          description: salon.aciklama,
+          dugun_turu: salon.dugun_turu,
+          fiyat: salon.fiyat,
+          coverImage: cover,
+          ownerId: salon.sahip_id,
+          createdAt: salon.olusturulma_zamani,
+          status: 'approved'
+        };
+      });
     } catch (error) {
       console.error('API hatası:', error);
       return [];
@@ -354,7 +374,7 @@ export const fetchOwnerReservations = async (ownerId) => {
         customer: {
           name: res.musteri_adi,
           phone: res.musteri_telefon,
-          email: res.musteri_eposta
+          username: res.musteri_kullanici_adi
         },
         notes: res.notlar,
         createdAt: res.olusturulma_zamani
@@ -413,6 +433,6 @@ export const updateReservationStatus = async (reservationId, status) => {
 
 export const fetchSuggestedDates = async (venueId) => {
   const venue = await fetchVenueById(venueId);
-  return venue?.availableDates ?? [];
+  return Array.isArray(venue?.availableDates) ? venue.availableDates : [];
 };
 

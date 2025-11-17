@@ -24,7 +24,7 @@ const seededUsers = [
   {
     id: 'user-admin',
     fullName: 'Berkant Onat Bayar',
-    email: 'admin@salonbulucu.com',
+    username: 'admin',
     password: 'Admin123',
     role: ROLES.ADMIN,
     avatar: 'https://i.pravatar.cc/150?img=12'
@@ -32,7 +32,7 @@ const seededUsers = [
   {
     id: 'user-owner-1',
     fullName: 'Miray Tiryaki',
-    email: 'owner@salonbulucu.com',
+    username: 'miray',
     password: 'Owner123',
     role: ROLES.OWNER,
     avatar: 'https://i.pravatar.cc/150?img=32',
@@ -41,7 +41,7 @@ const seededUsers = [
   {
     id: 'user-customer-1',
     fullName: 'Hamza Baran',
-    email: 'hamza@salonbulucu.com',
+    username: 'hamza',
     password: 'Customer123',
     role: ROLES.CUSTOMER,
     avatar: 'https://i.pravatar.cc/150?img=48'

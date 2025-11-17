@@ -6,7 +6,7 @@ import { updateProfile } from '../../services/authService.js';
 
 const ProfilePage = () => {
   const { user, refreshProfile } = useAuth();
-  const [formData, setFormData] = useState({ fullName: user.fullName, email: user.email });
+  const [formData, setFormData] = useState({ fullName: user.fullName, username: user.username });
   const [status, setStatus] = useState({ type: null, message: '' });
   const [loading, setLoading] = useState(false);
 
@@ -51,11 +51,10 @@ const ProfilePage = () => {
           />
 
           <Input
-            id="email"
-            name="email"
-            type="email"
-            label="E-posta"
-            value={formData.email}
+            id="username"
+            name="username"
+            label="Kullanıcı adı"
+            value={formData.username}
             onChange={handleChange}
             required
           />

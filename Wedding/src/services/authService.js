@@ -27,20 +27,18 @@ const sanitizeUser = (user) => {
 const getUsers = () => readCollection(storageKeys.users);
 const persistUsers = (users) => writeCollection(storageKeys.users, users);
 
-export const login = async ({ identifier, password }) => {
+export const login = async ({ username, password }) => {
   if (apiClient) {
-    // Backend API'ye uygun format - identifier: şirket adı veya ad soyad
     const { data } = await apiClient.post('/api/giris', { 
-      identifier: identifier, 
+      kullanici_adi: username, 
       sifre: password 
     });
-    // Backend'den gelen veriyi frontend formatına çevir
     return {
       token: data.token,
       user: {
         id: data.kullanici.id,
         fullName: data.kullanici.ad_soyad,
-        email: data.kullanici.eposta,
+        username: data.kullanici.kullanici_adi,
         role: data.kullanici.rol === 'MUSTERI' ? 'customer' : data.kullanici.rol === 'SALON_SAHIBI' ? 'owner' : data.kullanici.rol
       }
     };
@@ -50,10 +48,10 @@ export const login = async ({ identifier, password }) => {
   ensureSeedData();
 
   const users = getUsers();
-  const user = users.find((candidate) => candidate.email === email && candidate.password === password);
+  const user = users.find((candidate) => candidate.username === username && candidate.password === password);
 
   if (!user) {
-    throw new Error('E-posta veya şifre hatalı');
+    throw new Error('Kullanıcı adı veya şifre hatalı');
   }
 
   return {
@@ -62,22 +60,20 @@ export const login = async ({ identifier, password }) => {
   };
 };
 
-export const register = async ({ fullName, email, password, role = ROLES.CUSTOMER, company, phone }) => {
+export const register = async ({ fullName, username, password, role = ROLES.CUSTOMER, company, phone }) => {
   if (apiClient) {
-    // Backend API'ye uygun format
     const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
     const { data } = await apiClient.post('/api/kayit', { 
       ad_soyad: fullName,
-      eposta: email,
+      kullanici_adi: username,
       sifre: password,
       rol: backendRole,
       telefon: phone || null,
       sirket_adi: company || null
     });
     
-    // Kayıt sonrası otomatik giriş yap
     if (data.mesaj === 'Kayıt başarılı') {
-      return await login({ email, password });
+      return await login({ username, password });
     }
     
     return data;
@@ -87,16 +83,16 @@ export const register = async ({ fullName, email, password, role = ROLES.CUSTOME
   ensureSeedData();
 
   const users = getUsers();
-  const exists = users.some((candidate) => candidate.email.toLowerCase() === email.toLowerCase());
+  const exists = users.some((candidate) => candidate.username.toLowerCase() === username.toLowerCase());
 
   if (exists) {
-    throw new Error('Bu e-posta adresi zaten kayıtlı');
+    throw new Error('Bu kullanıcı adı zaten kayıtlı');
   }
 
   const newUser = {
     id: createId('user'),
     fullName,
-    email,
+    username,
     password,
     role,
     company: role === ROLES.OWNER ? company : undefined,

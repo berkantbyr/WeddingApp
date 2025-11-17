@@ -46,7 +46,7 @@ const UserManagementPage = () => {
           <thead className="table-light">
             <tr>
               <th scope="col">Ad Soyad</th>
-              <th scope="col">E-posta</th>
+              <th scope="col">Kullanıcı adı</th>
               <th scope="col">Rol</th>
             </tr>
           </thead>
@@ -68,7 +68,7 @@ const UserManagementPage = () => {
                     </div>
                   </div>
                 </td>
-                <td>{user.email}</td>
+                <td>{user.username}</td>
                 <td>
                   <span className="badge bg-primary-subtle text-primary fw-semibold">
                     {getUserFriendlyRole(user.role)}

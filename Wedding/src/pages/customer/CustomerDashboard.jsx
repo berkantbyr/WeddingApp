@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import { fetchCustomerReservations } from '../../services/venueService.js';
+import Button from '../../components/common/Button.jsx';
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,9 +48,14 @@ const CustomerDashboard = () => {
   return (
     <div className="d-flex flex-column gap-4">
       <div className="card border-0 shadow-sm">
-        <div className="card-body">
-          <h1 className="h4 fw-bold mb-1">Tekrar hoş geldin, {user.fullName.split(' ')[0]}</h1>
-          <p className="text-muted mb-0">Yaklaşan organizasyonlarını takip et ve rezervasyon detaylarını tek ekrandan yönet.</p>
+        <div className="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+          <div>
+            <h1 className="h4 fw-bold mb-1">Tekrar hoş geldin, {user.fullName.split(' ')[0]}</h1>
+            <p className="text-muted mb-0">Yaklaşan organizasyonlarını takip et ve rezervasyon detaylarını tek ekrandan yönet.</p>
+          </div>
+          <Button variant="outline" onClick={() => navigate('/')}>
+            Ana sayfaya dön
+          </Button>
         </div>
       </div>
 

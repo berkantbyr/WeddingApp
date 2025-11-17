@@ -159,7 +159,7 @@ router.get('/rezervasyonlar/salon-sahibi', kimlikDogrula('SALON_SAHIBI'), async 
                     s.sehir AS salon_sehir,
                     k.ad_soyad AS musteri_adi,
                     k.telefon AS musteri_telefon,
-                    k.eposta AS musteri_eposta,
+                    k.kullanici_adi AS musteri_kullanici_adi,
                     p.paket_turu,
                     p.fiyat_hafta_ici,
                     p.fiyat_hafta_sonu

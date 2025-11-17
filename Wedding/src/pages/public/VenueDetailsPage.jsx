@@ -21,6 +21,7 @@ const VenueDetailsPage = () => {
     guestCount: '',
     secilenOpsiyoneller: [] // Seçilen opsiyonel paketlerin ID'leri
   });
+  const minReservationDate = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   const statusLabels = useMemo(
     () => ({
@@ -46,7 +47,16 @@ const VenueDetailsPage = () => {
         }
         if (data?.id) {
           const dates = await fetchSuggestedDates(data.id);
-          if (mounted) setAvailableDates(dates);
+          if (mounted) {
+            const normalizedDates = Array.isArray(dates) ? dates : [];
+            setAvailableDates(normalizedDates);
+            if (normalizedDates.length > 0) {
+              setReservationData((prev) => ({
+                ...prev,
+                eventDate: prev.eventDate || normalizedDates[0]
+              }));
+            }
+          }
         }
       } catch (err) {
         if (mounted) setError(err?.message || 'Salon bilgileri yüklenemedi');
@@ -229,21 +239,38 @@ const VenueDetailsPage = () => {
                   <label className="form-label fw-semibold text-muted" htmlFor="eventDate">
                     Tercih edilen tarih
                   </label>
-                  <select
-                    id="eventDate"
-                    name="eventDate"
-                    className="form-select"
-                    value={reservationData.eventDate}
-                    onChange={handleReservationChange}
-                    required
-                  >
-                    <option value="">Tarih seçin</option>
-                    {availableDates.map((date) => (
-                      <option key={date} value={date}>
-                        {date}
-                      </option>
-                    ))}
-                  </select>
+                  {availableDates.length > 0 ? (
+                    <select
+                      id="eventDate"
+                      name="eventDate"
+                      className="form-select"
+                      value={reservationData.eventDate}
+                      onChange={handleReservationChange}
+                      required
+                    >
+                      <option value="">Tarih seçin</option>
+                      {availableDates.map((date) => (
+                        <option key={date} value={date}>
+                          {new Date(date).toLocaleDateString('tr-TR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <Input
+                      id="eventDate"
+                      name="eventDate"
+                      type="date"
+                      value={reservationData.eventDate}
+                      onChange={handleReservationChange}
+                      min={minReservationDate}
+                      required
+                      helperText="Müsait tarih listesi bulunamadı, lütfen tarihi manuel girin."
+                    />
+                  )}
                 </div>
 
                 {/* Opsiyonel Paketler */}

@@ -20,7 +20,7 @@ const LoginForm = () => {
   const location = useLocation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({ 
-    identifier: '', // Şirket adı veya müşteri adı soyadı
+    username: '',
     password: '' 
   });
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ const LoginForm = () => {
     setError(null);
     setLoading(true);
     try {
-      const user = await login({ identifier: formData.identifier, password: formData.password });
+      const user = await login({ username: formData.username, password: formData.password });
       const redirectTo = location.state?.redirectTo || getRoleRedirect(user.role);
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -51,12 +51,12 @@ const LoginForm = () => {
       {error ? <div className="alert alert-danger mb-0">{error}</div> : null}
 
       <Input
-        id="identifier"
-        name="identifier"
+        id="username"
+        name="username"
         type="text"
-        label="Şirket adı veya Ad Soyad"
-        placeholder="Şirket adınızı veya adınızı soyadınızı girin"
-        value={formData.identifier}
+        label="Kullanıcı adı"
+        placeholder="Kullanıcı adınızı girin"
+        value={formData.username}
         onChange={handleChange}
         required
       />
@@ -86,6 +86,15 @@ const LoginForm = () => {
 
       <Button type="submit" fullWidth isLoading={loading}>
         Giriş Yap
+      </Button>
+
+      <Button
+        type="button"
+        variant="outline"
+        fullWidth
+        onClick={() => navigate('/')}
+      >
+        Ana sayfaya dön
       </Button>
 
       <p className="text-center text-muted small mb-0">
