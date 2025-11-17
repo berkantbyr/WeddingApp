@@ -5,8 +5,6 @@ const mysql = require('mysql2/promise');
 async function kurulum() {
     const dosyaYolu = path.join(__dirname, '..', 'database', 'schema.sql');
     const sql = fs.readFileSync(dosyaYolu, 'utf8');
-    const guncellemeDosyasi = path.join(__dirname, '..', 'database', 'UPDATE.sql');
-    const guncellemeSql = fs.existsSync(guncellemeDosyasi) ? fs.readFileSync(guncellemeDosyasi, 'utf8') : '';
 
     const host = process.env.DB_HOST || 'localhost';
     const port = Number(process.env.DB_PORT || 3306);
@@ -22,9 +20,6 @@ async function kurulum() {
     // 2) Şemayı uygula
     const baglanti = await mysql.createConnection({ host, port, user, password, database: dbName, multipleStatements: true });
     await baglanti.query(sql);
-    if (guncellemeSql) {
-        await baglanti.query(guncellemeSql);
-    }
     await baglanti.end();
 
     console.log('Veritabanı kuruldu / güncellendi.');

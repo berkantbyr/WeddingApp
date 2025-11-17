@@ -1,23 +1,14 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const { temizleGereksizKullanicilar } = require('./utils/userMaintenance');
 
 dotenv.config();
 const app = express();
 
-const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
-app.use(cors({
-  origin: allowedOrigin,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors());
 app.use(express.json());
+// Statik dosyaları servis et (yüklenen resimler için)
 app.use('/uploads', express.static('uploads'));
-
-temizleGereksizKullanicilar();
 
 app.use('/api', require('./routes/auth'));
 app.use('/api', require('./routes/salonlar'));

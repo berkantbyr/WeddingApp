@@ -25,7 +25,7 @@ const CustomerLayout = () => {
                 height="88"
               />
               <h6 className="fw-bold mb-1">{user?.fullName}</h6>
-              <p className="text-muted small mb-0">@{user?.username}</p>
+              <p className="text-muted small mb-0">{user?.email}</p>
             </div>
             <div className="list-group list-group-flush">
               {customerLinks.map((item) => (

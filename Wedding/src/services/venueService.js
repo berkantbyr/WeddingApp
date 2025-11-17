@@ -357,42 +357,11 @@ export const createReservation = async (customerId, payload) => {
   return reservation;
 };
 
-const withAuthHeaders = () => ({
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`
-  }
-});
-
 export const fetchCustomerReservations = async (customerId) => {
   if (!customerId) return [];
   if (apiClient) {
-    const { data } = await apiClient.get('/api/rezervasyonlar/benim', withAuthHeaders());
-    return data.map((res) => ({
-      id: res.id,
-      venueId: res.salon_id,
-      venue: {
-        id: res.salon_id,
-        name: res.salon_adi,
-        city: res.salon_sehir
-      },
-      eventDate: res.etkinlik_tarihi,
-      status:
-        res.durum === 'BEKLEMEDE'
-          ? 'pending'
-          : res.durum === 'ONAYLANDI'
-            ? 'confirmed'
-            : res.durum === 'REDDEDILDI'
-              ? 'declined'
-              : 'pending',
-      package: res.paket_turu
-        ? {
-            name: res.paket_turu,
-            price: res.fiyat_hafta_ici || res.fiyat_hafta_sonu
-          }
-        : null,
-      notes: res.notlar,
-      createdAt: res.olusturulma_zamani
-    }));
+    const { data } = await apiClient.get(`/customers/${customerId}/reservations`);
+    return data;
   }
 
   await delay(200);
@@ -436,7 +405,6 @@ export const fetchOwnerReservations = async (ownerId) => {
         customer: {
           name: res.musteri_adi,
           phone: res.musteri_telefon,
-          username: res.musteri_kullanici_adi,
           email: res.musteri_eposta
         },
         notes: res.notlar,

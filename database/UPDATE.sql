@@ -4,13 +4,6 @@
 -- Bu dosyayı MySQL'de çalıştırarak yeni tabloları ekleyin
 -- ============================================
 
--- 0. Kullanıcı adı kolonunu ekle ve eski kayıtları uyumlu yap
-ALTER TABLE kullanicilar 
-ADD COLUMN IF NOT EXISTS kullanici_adi VARCHAR(80) NOT NULL UNIQUE AFTER ad_soyad;
-
-ALTER TABLE kullanicilar 
-MODIFY COLUMN eposta VARCHAR(160) NULL;
-
 -- 1. Opsiyonel Paketler tablosunu oluştur
 CREATE TABLE IF NOT EXISTS opsiyonel_paketler (
   id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
