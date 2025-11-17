@@ -117,31 +117,13 @@ const VenueDetailsPage = () => {
           <div className="row g-3 mb-4">
             <div className="col-12">
               <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
-                <img 
-                  src={venue.coverImage || venue.ana_foto_url} 
-                  alt={venue.name} 
-                  className="object-fit-cover"
-                  onError={(e) => {
-                    console.error('Salon resmi yüklenemedi:', venue.coverImage || venue.ana_foto_url);
-                    e.target.src = '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
-                    e.target.onerror = () => {
-                      e.target.style.display = 'none';
-                    };
-                  }}
-                />
+                <img src={venue.coverImage} alt={venue.name} className="object-fit-cover" />
               </div>
             </div>
-            {venue.gallery?.map((image, idx) => (
-              <div className="col-md-4" key={`gallery-${idx}-${image}`}>
+            {venue.gallery?.map((image) => (
+              <div className="col-md-4" key={image}>
                 <div className="ratio ratio-4x3 rounded-4 overflow-hidden">
-                  <img 
-                    src={image} 
-                    alt={`Gallery ${idx + 1}`} 
-                    className="object-fit-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
+                  <img src={image} alt="Gallery" className="object-fit-cover" />
                 </div>
               </div>
             ))}
@@ -160,7 +142,7 @@ const VenueDetailsPage = () => {
             <div className="col-md-4">
               <div className="p-3 bg-white border rounded-3 shadow-sm h-100">
                 <span className="text-muted small">Lokasyon</span>
-                <h5 className="fw-semibold">{venue.city}</h5>
+                <h5 className="fw-semibold">{venue.district}</h5>
               </div>
             </div>
             <div className="col-md-4">

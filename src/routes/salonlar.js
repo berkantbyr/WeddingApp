@@ -32,18 +32,14 @@ router.get('/salonlar', async (req, res) => {
         }
 
         // Ana fotoğrafı ve şirket adını da çek
-        // Önce ana_foto_url'i kullan, yoksa salon_fotograflari tablosundan ilk fotoğrafı al
         const sql = `
             SELECT s.*, 
                    k.ad_soyad AS sahip_adi,
                    k.sirket_adi,
-                   COALESCE(
-                       s.ana_foto_url,
-                       (SELECT foto_url FROM salon_fotograflari 
-                        WHERE salon_id = s.id 
-                        ORDER BY sira ASC, id ASC 
-                        LIMIT 1)
-                   ) AS ana_foto
+                   (SELECT foto_url FROM salon_fotograflari 
+                    WHERE salon_id = s.id 
+                    ORDER BY sira ASC, id ASC 
+                    LIMIT 1) AS ana_foto
             FROM salonlar s
             JOIN kullanicilar k ON k.id = s.sahip_id
             ${kosullar.length ? 'WHERE ' + kosullar.join(' AND ') : ''}

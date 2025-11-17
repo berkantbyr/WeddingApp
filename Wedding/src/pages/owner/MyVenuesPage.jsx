@@ -75,7 +75,7 @@ const MyVenuesPage = () => {
                 <div>
                   <h5 className="fw-semibold mb-1">{venue.name}</h5>
                   <p className="text-muted small mb-2">
-                    {venue.city} • Kapasite {venue.capacity}
+                    {venue.city}, {venue.district} • Kapasite {venue.capacity}
                   </p>
                   <p className="text-muted small mb-0">{venue.description}</p>
                 </div>

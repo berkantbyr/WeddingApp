@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 // Profesyonel renk paleti
 const primaryColor = '#6366f1';
@@ -7,126 +7,48 @@ const accentColor = '#14b8a6';
 const darkColor = '#1e293b';
 
 const PrivacyPage = () => {
-  const [selectedSection, setSelectedSection] = useState(null);
-
   const privacySections = [
     {
       title: 'Topladığımız Veriler',
       description: 'Hesap bilgileri, rezervasyon geçmişi ve iletişim tercihleri. Platform kullanımınızla ilgili teknik bilgiler ve çerezler.',
       icon: 'bi-database',
       color: primaryColor,
-      bgColor: 'rgba(99, 102, 241, 0.1)',
-      details: `
-        <h3>Topladığımız Veri Türleri</h3>
-        <ul>
-          <li><strong>Hesap Bilgileri:</strong> Ad, soyad, e-posta adresi, telefon numarası, şirket adı (salon sahipleri için)</li>
-          <li><strong>Rezervasyon Bilgileri:</strong> Rezervasyon geçmişi, tercih edilen tarihler, misafir sayıları, paket seçimleri</li>
-          <li><strong>İletişim Tercihleri:</strong> Bildirim tercihleri, e-posta abonelik durumu</li>
-          <li><strong>Teknik Veriler:</strong> IP adresi, tarayıcı türü, cihaz bilgileri, kullanım istatistikleri</li>
-          <li><strong>Çerezler:</strong> Oturum çerezleri, tercih çerezleri, analitik çerezler</li>
-        </ul>
-        <p>Bu veriler, hizmetlerimizi sunmak ve platform deneyiminizi iyileştirmek için toplanmaktadır.</p>
-      `
+      bgColor: 'rgba(99, 102, 241, 0.1)'
     },
     {
       title: 'Verileri Nasıl Kullanıyoruz',
       description: 'Rezervasyonları kolaylaştırmak, kişiselleştirilmiş öneriler sunmak ve güvenli erişim sağlamak için. Ayrıca platform geliştirme ve hizmet kalitesini artırmak için.',
       icon: 'bi-shield-check',
       color: secondaryColor,
-      bgColor: 'rgba(249, 115, 22, 0.1)',
-      details: `
-        <h3>Veri Kullanım Amaçları</h3>
-        <ul>
-          <li><strong>Hizmet Sunumu:</strong> Rezervasyon işlemlerini gerçekleştirmek, salon sahipleri ve çiftleri eşleştirmek</li>
-          <li><strong>Kişiselleştirme:</strong> Size özel salon önerileri sunmak, tercihlerinize göre içerik göstermek</li>
-          <li><strong>Güvenlik:</strong> Hesap güvenliğinizi sağlamak, dolandırıcılık ve kötüye kullanımı önlemek</li>
-          <li><strong>İletişim:</strong> Rezervasyon durumları, önemli bildirimler ve hizmet güncellemeleri hakkında bilgilendirmek</li>
-          <li><strong>Geliştirme:</strong> Platform performansını analiz etmek, yeni özellikler geliştirmek</li>
-          <li><strong>Yasal Yükümlülükler:</strong> Yasal gereklilikleri yerine getirmek, hukuki taleplere yanıt vermek</li>
-        </ul>
-      `
+      bgColor: 'rgba(249, 115, 22, 0.1)'
     },
     {
       title: 'Veri Güvenliği',
       description: 'Verilerinizi korumak için endüstri standardı şifreleme ve güvenlik önlemleri kullanıyoruz. Düzenli güvenlik denetimleri yapıyoruz.',
       icon: 'bi-lock',
       color: accentColor,
-      bgColor: 'rgba(20, 184, 166, 0.1)',
-      details: `
-        <h3>Güvenlik Önlemlerimiz</h3>
-        <ul>
-          <li><strong>Şifreleme:</strong> Tüm veriler SSL/TLS şifreleme ile korunmaktadır</li>
-          <li><strong>Güvenli Sunucular:</strong> Verileriniz güvenli ve yedekli sunucularda saklanmaktadır</li>
-          <li><strong>Erişim Kontrolü:</strong> Verilere sadece yetkili personel erişebilir ve tüm erişimler kayıt altına alınır</li>
-          <li><strong>Düzenli Denetimler:</strong> Güvenlik açıklarını tespit etmek için düzenli güvenlik denetimleri yapılmaktadır</li>
-          <li><strong>Güncellemeler:</strong> Sistemlerimiz düzenli olarak güncellenir ve güvenlik yamaları uygulanır</li>
-          <li><strong>Eğitim:</strong> Personelimiz veri güvenliği konusunda düzenli eğitimler almaktadır</li>
-        </ul>
-        <p>Verilerinizin güvenliği bizim için en önemli önceliktir.</p>
-      `
+      bgColor: 'rgba(20, 184, 166, 0.1)'
     },
     {
       title: 'Haklarınız',
       description: 'Destek ekibimizle iletişime geçerek verilerinize erişebilir, güncelleyebilir veya silinmesini talep edebilirsiniz. KVKK kapsamındaki tüm haklarınız korunmaktadır.',
       icon: 'bi-person-check',
       color: '#8b5cf6',
-      bgColor: 'rgba(139, 92, 246, 0.1)',
-      details: `
-        <h3>KVKK Kapsamındaki Haklarınız</h3>
-        <ul>
-          <li><strong>Bilgi Alma Hakkı:</strong> Hangi kişisel verilerinizin işlendiğini öğrenme</li>
-          <li><strong>Erişim Hakkı:</strong> İşlenen kişisel verilerinize erişme</li>
-          <li><strong>Düzeltme Hakkı:</strong> Yanlış veya eksik verilerinizin düzeltilmesini isteme</li>
-          <li><strong>Silme Hakkı:</strong> Verilerinizin silinmesini talep etme</li>
-          <li><strong>İtiraz Hakkı:</strong> Verilerinizin işlenmesine itiraz etme</li>
-          <li><strong>Veri Taşınabilirliği:</strong> Verilerinizin başka bir hizmete aktarılmasını isteme</li>
-        </ul>
-        <p>Haklarınızı kullanmak için <a href="/contact" style="color: #8b5cf6; text-decoration: underline;">iletişim</a> sayfamızdan bizimle iletişime geçebilirsiniz.</p>
-      `
+      bgColor: 'rgba(139, 92, 246, 0.1)'
     },
     {
       title: 'Çerezler',
       description: 'Platform deneyiminizi iyileştirmek için çerezler kullanıyoruz. Çerez ayarlarınızı tarayıcı ayarlarınızdan yönetebilirsiniz.',
       icon: 'bi-cookie',
       color: '#f59e0b',
-      bgColor: 'rgba(245, 158, 11, 0.1)',
-      details: `
-        <h3>Çerez Türleri ve Kullanım Amaçları</h3>
-        <ul>
-          <li><strong>Zorunlu Çerezler:</strong> Platformun temel işlevlerini sağlamak için gerekli çerezler</li>
-          <li><strong>Oturum Çerezleri:</strong> Giriş yaptığınızda oturumunuzu korumak için kullanılır</li>
-          <li><strong>Tercih Çerezleri:</strong> Dil, tema gibi tercihlerinizi hatırlamak için</li>
-          <li><strong>Analitik Çerezler:</strong> Platform kullanımını analiz etmek ve iyileştirmeler yapmak için</li>
-          <li><strong>Pazarlama Çerezleri:</strong> Size özel içerik ve reklamlar göstermek için (izin verirseniz)</li>
-        </ul>
-        <h3>Çerez Yönetimi</h3>
-        <p>Çerez ayarlarınızı tarayıcınızın ayarlar bölümünden yönetebilirsiniz. Ancak bazı çerezleri devre dışı bırakmanız platformun bazı özelliklerinin çalışmamasına neden olabilir.</p>
-        <p>Daha fazla bilgi için <a href="/cookies" style="color: #f59e0b; text-decoration: underline;">Çerez Politikası</a> sayfamızı ziyaret edebilirsiniz.</p>
-      `
+      bgColor: 'rgba(245, 158, 11, 0.1)'
     },
     {
       title: 'Üçüncü Taraf Hizmetler',
       description: 'Bazı hizmetler için güvenilir üçüncü taraf sağlayıcılarla çalışıyoruz. Bu sağlayıcılar verilerinizi korumakla yükümlüdür.',
       icon: 'bi-share',
       color: '#ec4899',
-      bgColor: 'rgba(236, 72, 153, 0.1)',
-      details: `
-        <h3>Kullandığımız Üçüncü Taraf Hizmetler</h3>
-        <ul>
-          <li><strong>Hosting Hizmetleri:</strong> Verilerinizi güvenli sunucularda barındırmak için</li>
-          <li><strong>Ödeme İşlemcileri:</strong> Güvenli ödeme işlemleri için (gelecekte eklenecek)</li>
-          <li><strong>Analitik Araçları:</strong> Platform kullanımını analiz etmek için</li>
-          <li><strong>E-posta Hizmetleri:</strong> Bildirimler ve iletişim için</li>
-        </ul>
-        <h3>Veri Koruma</h3>
-        <p>Tüm üçüncü taraf hizmet sağlayıcılarımız, verilerinizi korumak için gerekli güvenlik önlemlerini almıştır. Bu sağlayıcılar:</p>
-        <ul>
-          <li>Endüstri standardı güvenlik protokollerini kullanır</li>
-          <li>KVKK ve GDPR gibi veri koruma yasalarına uyumludur</li>
-          <li>Verilerinizi sadece belirtilen amaçlar için kullanır</li>
-          <li>Verilerinizi üçüncü taraflarla paylaşmaz</li>
-        </ul>
-      `
+      bgColor: 'rgba(236, 72, 153, 0.1)'
     }
   ];
 
@@ -200,7 +122,6 @@ const PrivacyPage = () => {
                   transition: 'all 0.3s ease',
                   cursor: 'pointer'
                 }}
-                onClick={() => setSelectedSection(section)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-8px)';
                   e.currentTarget.style.boxShadow = `0 12px 32px ${section.color}25`;
@@ -299,114 +220,6 @@ const PrivacyPage = () => {
           </p>
         </div>
       </div>
-
-      {/* Modal */}
-      {selectedSection && (
-        <div
-          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1050,
-            padding: '20px'
-          }}
-          onClick={() => setSelectedSection(null)}
-        >
-          <div
-            className="rounded-4 p-5 position-relative"
-            style={{
-              background: 'white',
-              maxWidth: '700px',
-              width: '100%',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-              border: `3px solid ${selectedSection.color}`
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Kapat Butonu */}
-            <button
-              onClick={() => setSelectedSection(null)}
-              className="position-absolute top-0 end-0 m-3 border-0 rounded-circle d-flex align-items-center justify-content-center"
-              style={{
-                width: '40px',
-                height: '40px',
-                background: selectedSection.bgColor,
-                color: selectedSection.color,
-                fontSize: '20px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'rotate(90deg) scale(1.1)';
-                e.target.style.background = selectedSection.color;
-                e.target.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'rotate(0deg) scale(1)';
-                e.target.style.background = selectedSection.bgColor;
-                e.target.style.color = selectedSection.color;
-              }}
-            >
-              <i className="bi bi-x-lg"></i>
-            </button>
-
-            {/* İkon */}
-            <div
-              className="rounded-circle d-inline-flex align-items-center justify-content-center mb-4"
-              style={{
-                width: '70px',
-                height: '70px',
-                background: selectedSection.bgColor,
-                color: selectedSection.color,
-                fontSize: '32px',
-                boxShadow: `0 4px 16px ${selectedSection.color}30`
-              }}
-            >
-              <i className={`bi ${selectedSection.icon}`}></i>
-            </div>
-
-            {/* Başlık */}
-            <h2
-              className="fw-bold mb-4"
-              style={{
-                color: darkColor,
-                fontSize: '28px'
-              }}
-            >
-              {selectedSection.title}
-            </h2>
-
-            {/* İçerik */}
-            <div
-              dangerouslySetInnerHTML={{ __html: selectedSection.details }}
-              style={{
-                color: '#475569',
-                lineHeight: '1.8',
-                fontSize: '16px'
-              }}
-            />
-
-            {/* Kapat Butonu (Alt) */}
-            <div className="mt-4 text-end">
-              <button
-                onClick={() => setSelectedSection(null)}
-                className="btn fw-semibold"
-                style={{
-                  background: `linear-gradient(135deg, ${selectedSection.color} 0%, ${selectedSection.color}dd 100%)`,
-                  color: 'white',
-                  borderRadius: '8px',
-                  padding: '10px 30px',
-                  fontSize: '16px',
-                  border: 'none'
-                }}
-              >
-                Kapat
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

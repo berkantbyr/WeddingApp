@@ -10,7 +10,7 @@ import {
   getPackagesForVenue
 } from './mockBackend';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const apiClient = API_URL
   ? axios.create({
@@ -29,39 +29,24 @@ export const fetchVenues = async () => {
     try {
       const { data } = await apiClient.get('/api/salonlar');
       // Backend'den gelen veriyi frontend formatına çevir
-      return data.map(salon => {
-        // Resim URL'lerini tam path'e çevir
-        const getImageUrl = (url) => {
-          if (!url) return '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
-          if (url.startsWith('http')) return url; // Zaten tam URL ise
-          if (url.startsWith('/uploads/')) {
-            // API URL ile birleştir
-            return API_URL ? `${API_URL}${url}` : url;
-          }
-          return url;
-        };
-        
-        const imageUrl = salon.ana_foto || salon.ana_foto_url;
-        
-        return {
-          id: salon.id,
-          name: salon.ad,
-          city: salon.sehir,
-          address: salon.adres,
-          capacity: salon.kapasite,
-          description: salon.aciklama,
-          dugun_turu: salon.dugun_turu,
-          fiyat: salon.fiyat,
-          ana_foto: getImageUrl(imageUrl),
-          ana_foto_url: getImageUrl(imageUrl),
-          coverImage: getImageUrl(imageUrl),
-          ownerId: salon.sahip_id,
-          ownerName: salon.sahip_adi,
-          sirket_adi: salon.sirket_adi,
-          sirketAdi: salon.sirket_adi,
-          createdAt: salon.olusturulma_zamani
-        };
-      });
+      return data.map(salon => ({
+        id: salon.id,
+        name: salon.ad,
+        city: salon.sehir,
+        address: salon.adres,
+        capacity: salon.kapasite,
+        description: salon.aciklama,
+        dugun_turu: salon.dugun_turu,
+        fiyat: salon.fiyat,
+        ana_foto: salon.ana_foto,
+        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
+        coverImage: salon.ana_foto || salon.ana_foto_url,
+        ownerId: salon.sahip_id,
+        ownerName: salon.sahip_adi,
+        sirket_adi: salon.sirket_adi,
+        sirketAdi: salon.sirket_adi,
+        createdAt: salon.olusturulma_zamani
+      }));
     } catch (error) {
       console.error('API hatası:', error);
       return [];
@@ -83,26 +68,6 @@ export const fetchVenueById = async (venueId) => {
   if (apiClient) {
     try {
       const { data } = await apiClient.get(`/api/salonlar/${venueId}`);
-      // Resim URL'lerini tam path'e çevir
-      const getImageUrl = (url) => {
-        if (!url) return null;
-        if (url.startsWith('http')) return url; // Zaten tam URL ise
-        if (url.startsWith('/uploads/')) {
-          // API URL ile birleştir
-          return API_URL ? `${API_URL}${url}` : url;
-        }
-        return url;
-      };
-      
-      // Fotoğrafları da dönüştür
-      const fotograflar = (data.fotograflar || []).map(foto => ({
-        ...foto,
-        foto_url: getImageUrl(foto.foto_url)
-      }));
-      
-      // Gallery için URL array'i oluştur
-      const gallery = fotograflar.map(foto => foto.foto_url).filter(Boolean);
-      
       // Backend formatını frontend formatına çevir
       return {
         id: data.id,
@@ -113,14 +78,13 @@ export const fetchVenueById = async (venueId) => {
         description: data.aciklama,
         dugun_turu: data.dugun_turu,
         fiyat: data.fiyat,
-        ana_foto_url: getImageUrl(data.ana_foto_url),
-        coverImage: getImageUrl(data.ana_foto_url),
+        ana_foto_url: data.ana_foto_url,
+        coverImage: data.ana_foto_url,
         ownerId: data.sahip_id,
         ownerName: data.sahip_adi,
         packages: data.paketler || [],
         opsiyonelPaketler: data.opsiyonelPaketler || [],
-        fotograflar: fotograflar,
-        gallery: gallery,
+        fotograflar: data.fotograflar || [],
         createdAt: data.olusturulma_zamani
       };
     } catch (error) {
@@ -156,36 +120,21 @@ export const fetchOwnerVenues = async (ownerId) => {
         }
       });
       // Backend formatını frontend formatına çevir
-      return data.map(salon => {
-        // Resim URL'lerini tam path'e çevir
-        const getImageUrl = (url) => {
-          if (!url) return '/images/99d6f7a3526a21f42765c9fab7782396.jpg';
-          if (url.startsWith('http')) return url; // Zaten tam URL ise
-          if (url.startsWith('/uploads/')) {
-            // API URL ile birleştir
-            return API_URL ? `${API_URL}${url}` : url;
-          }
-          return url;
-        };
-        
-        const imageUrl = salon.ana_foto_url || salon.ana_foto;
-        
-        return {
-          id: salon.id,
-          name: salon.ad,
-          city: salon.sehir,
-          address: salon.adres,
-          capacity: salon.kapasite,
-          description: salon.aciklama,
-          dugun_turu: salon.dugun_turu,
-          fiyat: salon.fiyat,
-          ana_foto_url: getImageUrl(imageUrl),
-          coverImage: getImageUrl(imageUrl),
-          ownerId: salon.sahip_id,
-          createdAt: salon.olusturulma_zamani,
-          status: 'approved' // Onay beklememeli
-        };
-      });
+      return data.map(salon => ({
+        id: salon.id,
+        name: salon.ad,
+        city: salon.sehir,
+        address: salon.adres,
+        capacity: salon.kapasite,
+        description: salon.aciklama,
+        dugun_turu: salon.dugun_turu,
+        fiyat: salon.fiyat,
+        ana_foto_url: salon.ana_foto_url || salon.ana_foto,
+        coverImage: salon.ana_foto_url || salon.ana_foto || '/images/99d6f7a3526a21f42765c9fab7782396.jpg',
+        ownerId: salon.sahip_id,
+        createdAt: salon.olusturulma_zamani,
+        status: 'approved' // Onay beklememeli
+      }));
     } catch (error) {
       console.error('API hatası:', error);
       return [];
