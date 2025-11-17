@@ -43,8 +43,24 @@ const persistSession = (session) => {
   }
 };
 
+const normalizeUser = (user) => {
+  if (!user) return null;
+  return {
+    ...user,
+    username: user.username ?? user.email?.split('@')[0] ?? ''
+  };
+};
+
+const normalizeSession = (session) => {
+  if (!session?.user) return session;
+  return {
+    ...session,
+    user: normalizeUser(session.user)
+  };
+};
+
 export const AuthProvider = ({ children }) => {
-  const [session, setSession] = useState(() => getStoredSession());
+  const [session, setSession] = useState(() => normalizeSession(getStoredSession()));
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
 
@@ -61,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await loginRequest(credentials);
-      setSession(response);
+      setSession(normalizeSession(response));
       return response.user;
     } finally {
       setLoading(false);
@@ -72,7 +88,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await registerRequest(payload);
-      setSession(response);
+      setSession(normalizeSession(response));
       return response.user;
     } finally {
       setLoading(false);
@@ -94,7 +110,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const updatedUser = await getProfile(session.user.id);
-      const nextSession = { ...session, user: updatedUser };
+      const nextSession = normalizeSession({ ...session, user: updatedUser });
       setSession(nextSession);
       return updatedUser;
     } finally {

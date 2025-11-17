@@ -1,10 +1,13 @@
 const STORAGE_KEYS = {
   seeded: 'sb_seeded',
+  seedVersion: 'sb_seed_version',
   users: 'sb_users',
   venues: 'sb_venues',
   reservations: 'sb_reservations',
   notifications: 'sb_notifications'
 };
+
+const CURRENT_SEED_VERSION = '2025-11-username-flip';
 
 export const ROLES = {
   ADMIN: 'admin',
@@ -24,6 +27,7 @@ const seededUsers = [
   {
     id: 'user-admin',
     fullName: 'Berkant Onat Bayar',
+    username: 'admin',
     email: 'admin@salonbulucu.com',
     password: 'Admin123',
     role: ROLES.ADMIN,
@@ -32,6 +36,7 @@ const seededUsers = [
   {
     id: 'user-owner-1',
     fullName: 'Miray Tiryaki',
+    username: 'owner1',
     email: 'owner@salonbulucu.com',
     password: 'Owner123',
     role: ROLES.OWNER,
@@ -41,6 +46,7 @@ const seededUsers = [
   {
     id: 'user-customer-1',
     fullName: 'Hamza Baran',
+    username: 'hamza',
     email: 'hamza@salonbulucu.com',
     password: 'Customer123',
     role: ROLES.CUSTOMER,
@@ -48,7 +54,6 @@ const seededUsers = [
   }
 ];
 
-// Seed data kaldırıldı - artık sadece gerçek veritabanından veri çekilecek
 const seededVenues = [];
 
 const seededReservations = [
@@ -86,10 +91,7 @@ const writeStorage = (key, value) => {
   window.localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const ensureSeedData = () => {
-  if (!isBrowser) return;
-  if (window.localStorage.getItem(STORAGE_KEYS.seeded)) return;
-
+const resetSeedData = () => {
   writeStorage(STORAGE_KEYS.users, seededUsers);
   writeStorage(STORAGE_KEYS.venues, seededVenues);
   writeStorage(STORAGE_KEYS.reservations, seededReservations);
@@ -103,8 +105,28 @@ export const ensureSeedData = () => {
       })
     ]
   );
-
   window.localStorage.setItem(STORAGE_KEYS.seeded, 'true');
+  window.localStorage.setItem(STORAGE_KEYS.seedVersion, CURRENT_SEED_VERSION);
+};
+
+export const ensureSeedData = () => {
+  if (!isBrowser) return;
+  const storedVersion = window.localStorage.getItem(STORAGE_KEYS.seedVersion);
+
+  if (storedVersion !== CURRENT_SEED_VERSION) {
+    Object.values(STORAGE_KEYS).forEach((key) => {
+      if (key !== STORAGE_KEYS.seedVersion) {
+        window.localStorage.removeItem(key);
+      }
+    });
+  }
+
+  if (window.localStorage.getItem(STORAGE_KEYS.seeded)) {
+    window.localStorage.setItem(STORAGE_KEYS.seedVersion, CURRENT_SEED_VERSION);
+    return;
+  }
+
+  resetSeedData();
 };
 
 export const readCollection = (key) => {

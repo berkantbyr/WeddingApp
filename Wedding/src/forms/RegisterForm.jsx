@@ -16,7 +16,7 @@ const RegisterForm = () => {
   const initialRole = searchParams.get('role') ?? 'customer';
   const [formData, setFormData] = useState({
     fullName: '',
-    email: '',
+    username: '',
     password: '',
     role: initialRole,
     company: ''
@@ -74,14 +74,15 @@ const RegisterForm = () => {
       />
 
       <Input
-        id="email"
-        name="email"
-        type="email"
-        label="E-posta adresi"
-        placeholder="kullanici@ornek.com"
-        value={formData.email}
+        id="username"
+        name="username"
+        label="Kullanıcı adı"
+        placeholder="Örn: salonbulucu42"
+        value={formData.username}
         onChange={handleChange}
         required
+        helperText="4-30 karakter, harf/rakam ve . _ - kullanılabilir."
+        minLength={4}
       />
 
       <Input

@@ -18,31 +18,53 @@ const apiClient = API_URL
     })
   : null;
 
+const persistToken = (token) => {
+  if (typeof window === 'undefined') return;
+  if (!token) {
+    window.localStorage.removeItem('token');
+  } else {
+    window.localStorage.setItem('token', token);
+  }
+};
+
+const backendRoleToFrontend = (backendRole) => {
+  if (backendRole === 'MUSTERI') return 'customer';
+  if (backendRole === 'SALON_SAHIBI') return 'owner';
+  return backendRole?.toLowerCase?.() ?? ROLES.CUSTOMER;
+};
+
 const sanitizeUser = (user) => {
   if (!user) return null;
   const { password: _PASSWORD, ...safeUser } = user;
   return safeUser;
 };
 
+const mapBackendUser = (payload) => ({
+  id: payload.id,
+  fullName: payload.ad_soyad,
+  username: payload.kullanici_adi,
+  role: backendRoleToFrontend(payload.rol),
+  email: payload.eposta ?? null
+});
+
 const getUsers = () => readCollection(storageKeys.users);
 const persistUsers = (users) => writeCollection(storageKeys.users, users);
 
-export const login = async ({ identifier, password }) => {
+export const login = async ({ username, password }) => {
+  const trimmedUsername = username?.trim();
+  if (!trimmedUsername || !password) {
+    throw new Error('Kullanıcı adı ve şifre zorunludur');
+  }
+
   if (apiClient) {
-    // Backend API'ye uygun format - identifier: şirket adı veya ad soyad
     const { data } = await apiClient.post('/api/giris', { 
-      identifier: identifier, 
+      kullanici_adi: trimmedUsername, 
       sifre: password 
     });
-    // Backend'den gelen veriyi frontend formatına çevir
+    persistToken(data.token);
     return {
       token: data.token,
-      user: {
-        id: data.kullanici.id,
-        fullName: data.kullanici.ad_soyad,
-        email: data.kullanici.eposta,
-        role: data.kullanici.rol === 'MUSTERI' ? 'customer' : data.kullanici.rol === 'SALON_SAHIBI' ? 'owner' : data.kullanici.rol
-      }
+      user: mapBackendUser(data.kullanici)
     };
   }
 
@@ -50,25 +72,33 @@ export const login = async ({ identifier, password }) => {
   ensureSeedData();
 
   const users = getUsers();
-  const user = users.find((candidate) => candidate.email === email && candidate.password === password);
+  const user = users.find(
+    (candidate) => candidate.username?.toLowerCase() === trimmedUsername?.toLowerCase() && candidate.password === password
+  );
 
   if (!user) {
-    throw new Error('E-posta veya şifre hatalı');
+    throw new Error('Kullanıcı adı veya şifre hatalı');
   }
 
+  persistToken(`mock-${user.id}`);
   return {
     token: `mock-${user.id}`,
     user: sanitizeUser(user)
   };
 };
 
-export const register = async ({ fullName, email, password, role = ROLES.CUSTOMER, company, phone }) => {
+export const register = async ({ fullName, username, password, role = ROLES.CUSTOMER, company, phone }) => {
+  const trimmedUsername = username?.trim();
+  if (!fullName || !trimmedUsername || !password) {
+    throw new Error('Ad soyad, kullanıcı adı ve şifre zorunludur');
+  }
+
   if (apiClient) {
     // Backend API'ye uygun format
     const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
     const { data } = await apiClient.post('/api/kayit', { 
       ad_soyad: fullName,
-      eposta: email,
+      kullanici_adi: trimmedUsername,
       sifre: password,
       rol: backendRole,
       telefon: phone || null,
@@ -77,7 +107,7 @@ export const register = async ({ fullName, email, password, role = ROLES.CUSTOME
     
     // Kayıt sonrası otomatik giriş yap
     if (data.mesaj === 'Kayıt başarılı') {
-      return await login({ email, password });
+      return await login({ username: trimmedUsername, password });
     }
     
     return data;
@@ -87,16 +117,16 @@ export const register = async ({ fullName, email, password, role = ROLES.CUSTOME
   ensureSeedData();
 
   const users = getUsers();
-  const exists = users.some((candidate) => candidate.email.toLowerCase() === email.toLowerCase());
+  const exists = users.some((candidate) => candidate.username?.toLowerCase() === trimmedUsername?.toLowerCase());
 
   if (exists) {
-    throw new Error('Bu e-posta adresi zaten kayıtlı');
+    throw new Error('Bu kullanıcı adı zaten kayıtlı');
   }
 
   const newUser = {
     id: createId('user'),
     fullName,
-    email,
+    username: trimmedUsername,
     password,
     role,
     company: role === ROLES.OWNER ? company : undefined,
@@ -105,6 +135,7 @@ export const register = async ({ fullName, email, password, role = ROLES.CUSTOME
 
   persistUsers([...users, newUser]);
 
+  persistToken(`mock-${newUser.id}`);
   return {
     token: `mock-${newUser.id}`,
     user: sanitizeUser(newUser)
@@ -143,6 +174,17 @@ export const updateProfile = async (userId, updates) => {
     throw new Error('Kullanıcı bulunamadı');
   }
 
+  if (updates.username) {
+    const hedef = updates.username.trim().toLowerCase();
+    const cakisan = users.some(
+      (candidate, candidateIndex) =>
+        candidateIndex !== index && candidate.username?.toLowerCase() === hedef
+    );
+    if (cakisan) {
+      throw new Error('Bu kullanıcı adı zaten kullanılıyor');
+    }
+  }
+
   const updatedUser = { ...users[index], ...updates };
   users[index] = updatedUser;
   persistUsers(users);
@@ -155,13 +197,14 @@ export const logout = async () => {
     await apiClient.post('/auth/logout');
   }
   await delay(150);
+  persistToken(null);
   return true;
 };
 
 export const listUsers = async () => {
   if (apiClient) {
     const { data } = await apiClient.get('/users');
-    return data;
+    return Array.isArray(data) ? data.map(mapBackendUser) : data;
   }
 
   await delay(200);
