@@ -8,9 +8,17 @@ const inferApiUrl = () => {
   if (import.meta.env?.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
+
   if (typeof window !== 'undefined' && window.location?.origin) {
+    const url = new URL(window.location.origin);
+
+    if (url.port === '5173' || url.hostname === 'localhost') {
+      return 'http://localhost:3000/api';
+    }
+
     return `${window.location.origin.replace(/\/$/, '')}/api`;
   }
+
   return 'http://localhost:3000/api';
 };
 
@@ -37,7 +45,7 @@ export const getAuthHeaders = () => {
 
 export const apiClient = axios.create({
   baseURL: API_URL,
-  withCredentials: true
+  withCredentials: false
 });
 
 apiClient.interceptors.request.use(

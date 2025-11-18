@@ -345,11 +345,17 @@ export const createReservation = async (customerId, payload) => {
 };
 
 export const fetchCustomerReservations = async (customerId) => {
-  if (!customerId) return [];
   if (!shouldUseMock) {
-    const { data } = await apiClient.get(`/customers/${customerId}/reservations`);
-    return data;
+    try {
+      const { data } = await apiClient.get('/rezervasyonlar/benim');
+      return data;
+    } catch (error) {
+      console.error('Rezervasyonlar yüklenemedi:', error);
+      return [];
+    }
   }
+
+  if (!customerId) return [];
 
   await delay(200);
   const reservations = getReservations().filter((res) => res.customerId === customerId);
