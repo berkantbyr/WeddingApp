@@ -3,7 +3,7 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 async function kurulum() {
-    const dosyaYolu = path.join(__dirname, '..', 'database', 'schema.sql');
+    const dosyaYolu = path.join(__dirname, 'sql', 'schema.sql');
     const sql = fs.readFileSync(dosyaYolu, 'utf8');
 
     const host = process.env.DB_HOST || 'localhost';

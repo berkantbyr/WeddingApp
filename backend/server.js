@@ -10,10 +10,10 @@ app.use(express.json());
 // Statik dosyaları servis et (yüklenen resimler için)
 app.use('/uploads', express.static('uploads'));
 
-app.use('/api', require('./routes/auth'));
-app.use('/api', require('./routes/salonlar'));
-app.use('/api', require('./routes/paketler'));
-app.use('/api', require('./routes/rezervasyonlar'));
+app.use('/api', require('./api/auth'));
+app.use('/api', require('./api/salonlar'));
+app.use('/api', require('./api/paketler'));
+app.use('/api', require('./api/rezervasyonlar'));
 
 app.get('/api/saglik', (req, res) => res.json({ ok: true }));
 
