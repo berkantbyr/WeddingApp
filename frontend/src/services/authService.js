@@ -55,28 +55,53 @@ export const login = async ({ username, password }) => {
 
 export const register = async ({ fullName, username, password, role = ROLES.CUSTOMER, company, phone }) => {
   if (!shouldUseMock) {
-    const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
-    const { data } = await apiClient.post('/kayit', { 
-      ad_soyad: fullName,
-      kullanici_adi: username,
-      sifre: password,
-      rol: backendRole,
-      telefon: phone || null,
-      sirket_adi: company || null
-    });
-    
-    if (data.mesaj === 'Kayıt başarılı') {
-      return await login({ username, password });
+    try {
+      const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
+      const { data } = await apiClient.post('/kayit', { 
+        ad_soyad: fullName,
+        kullanici_adi: username,
+        sifre: password,
+        rol: backendRole,
+        telefon: phone || null,
+        sirket_adi: company || null
+      });
+      
+      if (data.mesaj === 'Kayıt başarılı') {
+        return await login({ username, password });
+      }
+      
+      return data;
+    } catch (error) {
+      // Axios hatalarını yakala ve kullanıcı dostu mesajlara çevir
+      const errorMessage = error.response?.data?.hata || error.response?.data?.detay || error.message || 'Kayıt işlemi başarısız oldu';
+      throw new Error(errorMessage);
     }
-    
-    return data;
   }
 
   await delay();
   ensureSeedData();
 
+  // Güvenli kontrol: gerekli alanları kontrol et
+  if (!username || typeof username !== 'string' || username.trim() === '') {
+    throw new Error('Kullanıcı adı geçerli değil');
+  }
+  if (!fullName || typeof fullName !== 'string' || fullName.trim() === '') {
+    throw new Error('Ad soyad geçerli değil');
+  }
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    throw new Error('Şifre en az 6 karakter olmalıdır');
+  }
+  
+  // Salon sahibi için şirket adı kontrolü
+  if (role === ROLES.OWNER && (!company || typeof company !== 'string' || company.trim() === '')) {
+    throw new Error('Salon sahibi için şirket adı zorunludur');
+  }
+
   const users = getUsers();
-  const exists = users.some((candidate) => candidate.username.toLowerCase() === username.toLowerCase());
+  const exists = users.some((candidate) => {
+    if (!candidate || !candidate.username) return false;
+    return candidate.username.toLowerCase() === username.toLowerCase();
+  });
 
   if (exists) {
     throw new Error('Bu kullanıcı adı zaten kayıtlı');

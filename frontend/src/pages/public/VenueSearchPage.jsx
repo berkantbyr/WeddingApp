@@ -4,7 +4,38 @@ import Button from '../../components/common/Button.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import Input from '../../components/common/Input.jsx';
 import { fetchVenues } from '../../services/venueService.js';
-import { apiClient } from '../../services/apiClient.js';
+import { apiClient, API_HOST } from '../../services/apiClient.js';
+
+const API_BASE_URL = API_HOST || (typeof window !== 'undefined' ? window.location.origin.replace(/\/$/, '') : 'http://localhost:3000');
+
+// Düğün türü açıklamaları
+const dugunTuruAciklamalari = {
+  'EN_LUX': {
+    ad: 'En Lüks',
+    aciklama: 'Yemekli, kuruyemiş, içecekli',
+    renk: '#dc2626'
+  },
+  'ORTA': {
+    ad: 'Orta',
+    aciklama: 'Kuruyemiş ve içecek',
+    renk: '#f97316'
+  },
+  'NORMAL': {
+    ad: 'Normal',
+    aciklama: 'Sadece kuruyemiş',
+    renk: '#14b8a6'
+  }
+};
+
+// Fiyatı formatla
+const formatFiyat = (fiyat) => {
+  if (!fiyat) return 'Fiyat bilgisi yok';
+  return new Intl.NumberFormat('tr-TR', {
+    style: 'currency',
+    currency: 'TRY',
+    minimumFractionDigits: 0
+  }).format(fiyat);
+};
 
 const VenueSearchPage = () => {
   const [filters, setFilters] = useState({ city: '', capacity: '', eventDate: '', packageTier: '' });
@@ -20,12 +51,24 @@ const VenueSearchPage = () => {
         // URL parametrelerinden filtreleri al
         const params = new URLSearchParams(window.location.search);
         const sehirParam = params.get('sehir');
+        const kapasiteParam = params.get('kapasite');
+        
+        const currentFilters = {};
         if (sehirParam) {
+          currentFilters.city = sehirParam;
           setFilters(prev => ({ ...prev, city: sehirParam }));
         }
+        if (kapasiteParam) {
+          currentFilters.capacity = kapasiteParam;
+          setFilters(prev => ({ ...prev, capacity: kapasiteParam }));
+        }
         
-        const venues = await fetchVenues();
+        // Filtreli salonları getir
+        const venues = await fetchVenues(currentFilters);
         setResults(venues);
+        if (sehirParam || kapasiteParam) {
+          setSearched(true);
+        }
       } catch (err) {
         setError(err?.message || 'Salonlar yüklenemedi');
       } finally {
@@ -45,30 +88,26 @@ const VenueSearchPage = () => {
     setLoading(true);
     setError(null);
     try {
-      // Backend API'ye filtreli istek gönder
-      const params = {};
-      if (filters.city) params.sehir = filters.city;
-      if (filters.capacity) params.minKapasite = filters.capacity;
-      if (filters.packageTier) params.dugun_turu = filters.packageTier;
+      // Filtreleri hazırla
+      const searchFilters = {};
+      if (filters.city) searchFilters.city = filters.city;
+      if (filters.capacity) searchFilters.minKapasite = filters.capacity;
+      if (filters.packageTier) searchFilters.dugun_turu = filters.packageTier;
 
-      const { data } = await apiClient.get('/salonlar', { params });
-      // Backend formatını frontend formatına çevir
-      const venues = data.map(salon => ({
-        id: salon.id,
-        name: salon.ad,
-        city: salon.sehir,
-        address: salon.adres,
-        capacity: salon.kapasite,
-        description: salon.aciklama,
-        dugun_turu: salon.dugun_turu,
-        fiyat: salon.fiyat,
-        ana_foto_url: salon.ana_foto || salon.ana_foto_url,
-        coverImage: salon.ana_foto || salon.ana_foto_url,
-        ownerId: salon.sahip_id,
-        ownerName: salon.sahip_adi
-      }));
+      // Filtreli salonları getir
+      const venues = await fetchVenues(searchFilters);
       
-      setResults(venues);
+      // Şehir filtresi varsa ek filtreleme yap (mock modu için)
+      let filteredVenues = venues;
+      if (filters.city) {
+        filteredVenues = venues.filter(venue => {
+          const venueCity = (venue.city || '').toLowerCase().trim();
+          const filterCity = filters.city.toLowerCase().trim();
+          return venueCity === filterCity;
+        });
+      }
+      
+      setResults(filteredVenues);
       setSearched(true);
     } catch (err) {
       setError(err?.message || 'Arama işlemi tamamlanamadı');
@@ -234,111 +273,170 @@ const VenueSearchPage = () => {
                 </h3>
               </div>
             )}
-            <div className="row g-4">
+            <div>
               {results.length === 0 ? (
-                <div className="col-12">
-                  <div 
-                    className="alert alert-info d-flex align-items-center gap-3"
-                    style={{ 
-                      borderRadius: '16px',
-                      border: 'none',
-                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)'
-                    }}
-                  >
-                    <i className="bi bi-info-circle" style={{ fontSize: '24px', color: '#6366f1' }}></i>
-                    <div>
-                      <strong>{searched ? 'Filtrelerinize uygun salon bulunamadı.' : 'Henüz gösterilecek salon yok.'}</strong>
-                      <p className="mb-0 mt-1">{searched ? 'Lütfen farklı kriterler deneyin.' : 'Lütfen filtreleri güncelleyin.'}</p>
-                    </div>
+                <div 
+                  className="alert alert-info d-flex align-items-center gap-3"
+                  style={{ 
+                    borderRadius: '16px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)'
+                  }}
+                >
+                  <i className="bi bi-info-circle" style={{ fontSize: '24px', color: '#6366f1' }}></i>
+                  <div>
+                    <strong>{searched ? 'Filtrelerinize uygun salon bulunamadı.' : 'Henüz gösterilecek salon yok.'}</strong>
+                    <p className="mb-0 mt-1">{searched ? 'Lütfen farklı kriterler deneyin.' : 'Lütfen filtreleri güncelleyin.'}</p>
                   </div>
                 </div>
               ) : (
-                results.map((venue, index) => {
-                  // Her karta farklı renk
-                  const colors = ['#6366f1', '#f97316', '#14b8a6'];
-                  const cardColor = colors[index % colors.length];
-                  
-                  return (
-                    <div className="col-md-4" key={venue.id}>
+                <div 
+                  className="d-flex gap-4"
+                  style={{
+                    overflowX: 'auto',
+                    paddingBottom: '10px',
+                    scrollbarWidth: 'thin',
+                    flexWrap: 'wrap'
+                  }}
+                >
+                  {results.map((venue, index) => {
+                    const dugunTuru = dugunTuruAciklamalari[venue.dugun_turu] || dugunTuruAciklamalari['NORMAL'];
+                    // Fotoğraf URL'ini düzelt
+                    let anaFoto = venue.coverImage || venue.ana_foto_url || venue.ana_foto;
+                    if (anaFoto && /^\/?uploads\//i.test(anaFoto)) {
+                      anaFoto = `${API_BASE_URL}/${anaFoto.replace(/^\/?/, '')}`;
+                    } else if (anaFoto && !/^https?:\/\//i.test(anaFoto) && !anaFoto.startsWith('/')) {
+                      anaFoto = `${API_BASE_URL}/${anaFoto}`;
+                    } else if (anaFoto && anaFoto.startsWith('/') && !anaFoto.startsWith('//')) {
+                      anaFoto = `${API_BASE_URL}${anaFoto}`;
+                    } else if (!anaFoto) {
+                      anaFoto = '/images/ankara-salon.jpg';
+                    }
+                    
+                    return (
                       <div
-                        className="card border-0 h-100"
+                        key={venue.id}
+                        className="card border-0 shadow-sm"
                         style={{
-                          borderRadius: '20px',
+                          minWidth: '320px',
+                          maxWidth: '320px',
+                          borderRadius: '12px',
                           overflow: 'hidden',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                          transition: 'all 0.3s ease',
-                          border: `1px solid ${cardColor}15`,
-                          background: 'white'
+                          transition: 'all 0.3s ease'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-8px)';
-                          e.currentTarget.style.boxShadow = `0 12px 32px ${cardColor}25`;
-                          e.currentTarget.style.borderColor = `${cardColor}40`;
+                          e.currentTarget.style.transform = 'translateY(-5px)';
+                          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
-                          e.currentTarget.style.borderColor = `${cardColor}15`;
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
                         }}
                       >
-                        <div className="ratio ratio-4x3 position-relative">
-                          <img 
-                            src={venue.coverImage} 
-                            alt={venue.name} 
-                            className="object-fit-cover"
-                            style={{ borderRadius: '18px 18px 0 0' }}
+                        {/* Salon Fotoğrafı */}
+                        <div className="position-relative" style={{ height: '200px', backgroundColor: '#e5e7eb' }}>
+                          <img
+                            src={anaFoto}
+                            alt={venue.name}
+                            className="w-100 h-100"
+                            style={{ objectFit: 'cover' }}
+                            onError={(e) => {
+                              console.error('Salon resmi yüklenemedi:', anaFoto);
+                              const fallbackImages = [
+                                '/images/ankara-salon.jpg',
+                                '/images/antalya-salon.jpg',
+                                '/images/rize-salon.jpg',
+                                '/images/99d6f7a3526a21f42765c9fab7782396.jpg'
+                              ];
+                              const currentIndex = fallbackImages.indexOf(anaFoto);
+                              if (currentIndex < fallbackImages.length - 1) {
+                                e.target.src = fallbackImages[currentIndex + 1];
+                              } else {
+                                e.target.src = fallbackImages[fallbackImages.length - 1];
+                              }
+                            }}
                           />
+                          {/* İndirim Badge */}
                           <div
-                            className="position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill fw-semibold"
+                            className="position-absolute top-0 start-0 m-2 px-2 py-1 rounded"
                             style={{
-                              background: cardColor,
+                              backgroundColor: '#dc2626',
                               color: 'white',
-                              fontSize: '12px'
+                              fontSize: '12px',
+                              fontWeight: 'bold'
                             }}
                           >
-                            {venue.city}
+                            Fırsat
                           </div>
                         </div>
-                        <div className="card-body d-flex flex-column gap-2 p-4">
-                          <h5 className="fw-bold mb-2" style={{ color: '#2d3436', fontSize: '18px' }}>
+                        
+                        {/* Salon Bilgileri */}
+                        <div className="card-body p-3">
+                          <h5 className="fw-bold mb-2" style={{ fontSize: '16px', color: '#1e293b' }}>
                             {venue.name}
                           </h5>
-                          <p className="text-muted small flex-grow-1" style={{ lineHeight: '1.6' }}>
-                            {venue.description?.slice(0, 110)}...
-                          </p>
-                          <div className="d-flex justify-content-between align-items-center mt-3">
-                            <span className="fw-semibold" style={{ color: cardColor, fontSize: '14px' }}>
-                              <i className="bi bi-people me-1"></i>Kapasite {venue.capacity}
+                          
+                          <div className="d-flex align-items-center gap-2 mb-2">
+                            <span 
+                              className="badge"
+                              style={{
+                                backgroundColor: dugunTuru.renk,
+                                color: 'white',
+                                fontSize: '11px'
+                              }}
+                            >
+                              {dugunTuru.ad}
                             </span>
+                            <small className="text-muted">
+                              <i className="bi bi-geo-alt me-1"></i>
+                              {venue.city || 'Şehir belirtilmemiş'}
+                            </small>
+                          </div>
+                          
+                          {/* Şirket Adı */}
+                          {(venue.sirket_adi || venue.sirketAdi || venue.ownerName) && (
+                            <div className="mb-2">
+                              <small className="text-muted d-block">
+                                <i className="bi bi-building me-1"></i>
+                                <strong>{venue.sirket_adi || venue.sirketAdi || venue.ownerName}</strong>
+                              </small>
+                            </div>
+                          )}
+                          
+                          <div className="mb-2">
+                            <small className="text-muted d-block">
+                              <i className="bi bi-check-circle-fill text-success me-1"></i>
+                              {dugunTuru.aciklama}
+                            </small>
+                          </div>
+                          
+                          <div className="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                              <div className="fw-bold" style={{ color: '#1e40af', fontSize: '18px' }}>
+                                {formatFiyat(venue.fiyat || venue.price)}
+                              </div>
+                              <small className="text-muted">/gece</small>
+                            </div>
+                            
                             <Link
                               to={`/venues/${venue.id}`}
                               className="btn btn-sm fw-semibold"
                               style={{
-                                background: cardColor,
+                                backgroundColor: '#1e40af',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '8px',
-                                padding: '6px 15px',
-                                textDecoration: 'none',
-                                transition: 'all 0.3s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.target.style.transform = 'scale(1.05)';
-                                e.target.style.boxShadow = `0 3px 10px ${cardColor}60`;
-                              }}
-                              onMouseLeave={(e) => {
-                                e.target.style.transform = 'scale(1)';
-                                e.target.style.boxShadow = 'none';
+                                borderRadius: '6px',
+                                padding: '6px 16px'
                               }}
                             >
-                              Detaylar
+                              Fırsatı görün <i className="bi bi-arrow-right ms-1"></i>
                             </Link>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </div>
           </>

@@ -21,9 +21,17 @@ const OwnerLayout = () => {
             <h4 className="mb-0 text-primary fw-bold">Salon Sahibi Portalı</h4>
             <small className="text-muted">Tekrar hoş geldiniz, {user?.fullName}</small>
           </div>
-          <Button variant="outline" onClick={logout}>
-            Çıkış Yap
-          </Button>
+          <div className="d-flex gap-2">
+            <NavLink to="/">
+              <Button variant="outline">
+                <i className="bi bi-house me-2"></i>
+                Ana Sayfa
+              </Button>
+            </NavLink>
+            <Button variant="outline" onClick={logout}>
+              Çıkış Yap
+            </Button>
+          </div>
         </div>
       </header>
 

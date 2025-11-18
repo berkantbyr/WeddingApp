@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 import { fetchVenues } from '../../services/venueService.js';
 import { API_HOST } from '../../services/apiClient';
@@ -65,6 +65,7 @@ const dugunTuruAciklamalari = {
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   
   // Arama formu state'leri
   const [sehir, setSehir] = useState('');
@@ -80,7 +81,11 @@ const HomePage = () => {
     const loadSalonlar = async () => {
       setLoading(true);
       try {
-        const salonlar = await fetchVenues();
+        // URL'den şehir filtresi varsa al
+        const sehirFiltresi = searchParams.get('sehir');
+        const filters = sehirFiltresi ? { city: sehirFiltresi } : {};
+        
+        const salonlar = await fetchVenues(filters);
         const formatlanmisSalonlar = salonlar.map((salon) => ({
           id: salon.id,
           ad: salon.ad || salon.name,
@@ -102,12 +107,15 @@ const HomePage = () => {
     };
 
     loadSalonlar();
-  }, []);
+  }, [searchParams]);
   
   // Şehir butonuna tıklandığında
   const handleSehirClick = (sehirAdi) => {
     navigate(`/venues?sehir=${encodeURIComponent(sehirAdi)}`);
   };
+  
+  // Ana sayfadaki salonları şehre göre filtrele (opsiyonel - tüm şehirlerden göster)
+  // Şehir filtresi yoksa tüm salonları göster
   
   // Arama formu gönderildiğinde
   const handleAra = (e) => {

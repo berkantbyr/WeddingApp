@@ -271,6 +271,117 @@ router.delete('/salonlar/:id', kimlikDogrula('SALON_SAHIBI'), async (req, res) =
     }
 });
 
+// Salon sahibi kendi salonunu güncelleyebilir
+router.patch('/salonlar/:id', kimlikDogrula('SALON_SAHIBI'), async (req, res) => {
+    const baglanti = await havuz.getConnection();
+    try {
+        const salonId = req.params.id;
+        const { ad, adres, sehir, kapasite, aciklama, dugun_turu, fiyat, ana_foto_url } = req.body;
+        const galleryUrls = parseUrlList(req.body.gallery_urls || req.body.galleryUrls || req.body.gallery);
+
+        // Salonun sahibi olduğunu kontrol et
+        const [salonlar] = await baglanti.query(
+            'SELECT sahip_id FROM salonlar WHERE id = ?',
+            [salonId]
+        );
+        
+        if (salonlar.length === 0) {
+            return res.status(404).json({ hata: 'Salon bulunamadı' });
+        }
+        
+        if (Number(salonlar[0].sahip_id) !== Number(req.kullanici.id)) {
+            return res.status(403).json({ hata: 'Bu salonu düzenleme yetkiniz yok' });
+        }
+
+        // Zorunlu alanları kontrol et
+        if (!ad || !adres) {
+            return res.status(400).json({ hata: 'Salon adı ve adres zorunludur' });
+        }
+        
+        if (!sehir) {
+            return res.status(400).json({ hata: 'Şehir seçimi zorunludur' });
+        }
+        
+        if (!fiyat || fiyat <= 0) {
+            return res.status(400).json({ hata: 'Geçerli bir fiyat girmelisiniz' });
+        }
+        
+        if (!dugun_turu || !['EN_LUX', 'ORTA', 'NORMAL'].includes(dugun_turu)) {
+            return res.status(400).json({ hata: 'Düğün türü seçimi zorunludur (EN_LUX, ORTA, NORMAL)' });
+        }
+
+        await baglanti.beginTransaction();
+
+        // Salonu güncelle
+        await baglanti.query(
+            `UPDATE salonlar 
+             SET ad = ?, adres = ?, sehir = ?, kapasite = ?, aciklama = ?, dugun_turu = ?, fiyat = ?, ana_foto_url = ?
+             WHERE id = ?`,
+            [
+                ad, 
+                adres, 
+                sehir, 
+                kapasite || null, 
+                aciklama || null,
+                dugun_turu,
+                fiyat,
+                ana_foto_url || null,
+                salonId
+            ]
+        );
+        
+        // Eski fotoğrafları sil
+        await baglanti.query('DELETE FROM salon_fotograflari WHERE salon_id = ?', [salonId]);
+        
+        // Yeni fotoğrafları ekle
+        if (ana_foto_url) {
+            await baglanti.query(
+                'INSERT INTO salon_fotograflari (salon_id, foto_url, sira) VALUES (?, ?, 0)',
+                [salonId, ana_foto_url]
+            );
+        }
+        
+        if (galleryUrls.length > 0) {
+            for (let i = 0; i < galleryUrls.length; i++) {
+                await baglanti.query(
+                    'INSERT INTO salon_fotograflari (salon_id, foto_url, sira) VALUES (?, ?, ?)',
+                    [salonId, galleryUrls[i], i + 1]
+                );
+            }
+        }
+
+        // Opsiyonel paketleri güncelle
+        await baglanti.query('DELETE FROM opsiyonel_paketler WHERE salon_id = ?', [salonId]);
+        let opsiyonelPaketler = req.body.opsiyonelPaketler;
+        if (typeof opsiyonelPaketler === 'string') {
+            try {
+                opsiyonelPaketler = JSON.parse(opsiyonelPaketler);
+            } catch (e) {
+                opsiyonelPaketler = [];
+            }
+        }
+        if (opsiyonelPaketler && Array.isArray(opsiyonelPaketler) && opsiyonelPaketler.length > 0) {
+            for (const op of opsiyonelPaketler) {
+                if (op.ad && op.fiyat) {
+                    await baglanti.query(
+                        'INSERT INTO opsiyonel_paketler (salon_id, ad, fiyat, aciklama) VALUES (?, ?, ?, ?)',
+                        [salonId, op.ad, op.fiyat, op.aciklama || null]
+                    );
+                }
+            }
+        }
+
+        await baglanti.commit();
+        res.json({ id: salonId, mesaj: 'Salon başarıyla güncellendi' });
+    } catch (err) {
+        await baglanti.rollback();
+        console.error('Salon güncelleme hatası:', err);
+        res.status(500).json({ hata: 'Sunucu hatası: ' + err.message });
+    } finally {
+        baglanti.release();
+    }
+});
+
 // Tek bir salonun detaylarını getir
 router.get('/salonlar/:id', async (req, res) => {
     try {

@@ -71,10 +71,16 @@ const persistVenues = (venues) => writeCollection(storageKeys.venues, venues);
 const getReservations = () => readCollection(storageKeys.reservations);
 const persistReservations = (reservations) => writeCollection(storageKeys.reservations, reservations);
 
-export const fetchVenues = async () => {
+export const fetchVenues = async (filters = {}) => {
   if (!shouldUseMock) {
     try {
-      const { data } = await apiClient.get('/salonlar');
+      // Filtreleri backend API'ye gönder
+      const params = {};
+      if (filters.city) params.sehir = filters.city;
+      if (filters.minKapasite) params.minKapasite = filters.minKapasite;
+      if (filters.dugun_turu) params.dugun_turu = filters.dugun_turu;
+      
+      const { data } = await apiClient.get('/salonlar', { params });
       // Backend'den gelen veriyi frontend formatına çevir
       return data.map((salon) => {
         const cover = buildAssetUrl(salon.ana_foto || salon.ana_foto_url) || fallbackCoverImage;
@@ -101,7 +107,18 @@ export const fetchVenues = async () => {
     }
   }
   await delay(200);
-  return getVenues();
+  const venues = getVenues();
+  
+  // Mock modunda filtreleme yap
+  if (filters.city) {
+    return venues.filter(venue => {
+      const venueCity = (venue.city || venue.sehir || '').toLowerCase().trim();
+      const filterCity = filters.city.toLowerCase().trim();
+      return venueCity === filterCity;
+    });
+  }
+  
+  return venues;
 };
 
 export const fetchFeaturedVenues = async (limit = 3) => {
@@ -168,14 +185,26 @@ export const fetchVenueById = async (venueId) => {
 };
 
 export const searchVenues = async ({ city, capacity, eventDate, packageTier }) => {
-  const venues = await fetchVenues();
+  // Önce şehir filtresiyle salonları getir
+  const filters = {};
+  if (city) filters.city = city;
+  if (capacity) filters.minKapasite = capacity;
+  
+  const venues = await fetchVenues(filters);
+  
+  // Diğer filtreleri uygula
   return venues.filter((venue) => {
     if (venue.status !== VENUE_STATUS.APPROVED) return false;
-    const matchesCity = city ? venue.city.toLowerCase() === city.toLowerCase() : true;
-    const matchesCapacity = capacity ? venue.capacity >= Number(capacity) : true;
+    
+    // Şehir filtresi zaten fetchVenues'da yapıldı, ama ek kontrol
+    const matchesCity = city 
+      ? (venue.city || venue.sehir || '').toLowerCase().trim() === city.toLowerCase().trim() 
+      : true;
+    
+    const matchesCapacity = capacity ? (venue.capacity || 0) >= Number(capacity) : true;
     const matchesDate = eventDate ? venue.availableDates?.includes(eventDate) : true;
     const matchesPackage = packageTier
-      ? venue.packages?.some((pkg) => pkg.name.toLowerCase() === packageTier.toLowerCase())
+      ? venue.packages?.some((pkg) => (pkg.name || pkg.paket_turu || '').toLowerCase() === packageTier.toLowerCase())
       : true;
     return matchesCity && matchesCapacity && matchesDate && matchesPackage;
   });
@@ -271,7 +300,21 @@ export const deleteVenue = async (venueId) => {
 
 export const updateVenue = async (venueId, updates) => {
   if (!shouldUseMock) {
-    const { data } = await apiClient.patch(`/venues/${venueId}`, updates);
+    // Backend API formatına çevir
+    const body = {
+      ad: updates.name,
+      adres: updates.address,
+      sehir: updates.city,
+      kapasite: updates.capacity || '',
+      aciklama: updates.description || '',
+      dugun_turu: updates.dugun_turu || 'NORMAL',
+      fiyat: updates.fiyat || 0,
+      ana_foto_url: updates.ana_foto_url || updates.coverImage || '',
+      gallery_urls: updates.gallery_urls || updates.gallery || [],
+      opsiyonelPaketler: updates.opsiyonelPaketler || []
+    };
+
+    const { data } = await apiClient.patch(`/salonlar/${venueId}`, body);
     return data;
   }
 

@@ -30,6 +30,7 @@ import UserManagementPage from '../pages/admin/UserManagementPage.jsx';
 import OwnerDashboard from '../pages/owner/OwnerDashboard.jsx';
 import MyVenuesPage from '../pages/owner/MyVenuesPage.jsx';
 import AddVenuePage from '../pages/owner/AddVenuePage.jsx';
+import EditVenuePage from '../pages/owner/EditVenuePage.jsx';
 import OwnerReservationsPage from '../pages/owner/OwnerReservationsPage.jsx';
 
 import CustomerDashboard from '../pages/customer/CustomerDashboard.jsx';
@@ -74,6 +75,7 @@ const AppRouter = () => {
         <Route path="/owner" element={<OwnerLayout />}>
           <Route index element={<OwnerDashboard />} />
           <Route path="venues" element={<MyVenuesPage />} />
+          <Route path="venues/:id/edit" element={<EditVenuePage />} />
           <Route path="reservations" element={<OwnerReservationsPage />} />
           <Route path="add" element={<AddVenuePage />} />
         </Route>

@@ -25,7 +25,10 @@ const RegisterForm = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const roleOptions = useMemo(() => roles.filter((role) => role !== 'admin'), [roles]);
+  const roleOptions = useMemo(() => {
+    if (!roles || !Array.isArray(roles)) return ['customer', 'owner'];
+    return roles.filter((role) => role !== 'admin');
+  }, [roles]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -38,7 +41,8 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       const user = await register(formData);
-      navigate(roleRedirect[user.role] ?? '/account', { replace: true });
+      const userRole = user?.role || formData.role || 'customer';
+      navigate(roleRedirect[userRole] ?? '/account', { replace: true });
     } catch (err) {
       setError(err?.message || 'Kayıt işlemi başarısız oldu. Lütfen tekrar deneyin.');
     } finally {

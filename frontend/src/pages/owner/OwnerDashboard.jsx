@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { fetchOwnerVenues, fetchOwnerReservations } from '../../services/venueService.js';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
+import Button from '../../components/common/Button.jsx';
 
 const OwnerDashboard = () => {
   const { user } = useAuth();
@@ -59,9 +61,17 @@ const OwnerDashboard = () => {
   return (
     <div className="d-flex flex-column gap-4">
       <div className="card border-0 shadow-sm">
-        <div className="card-body">
-          <h1 className="h4 fw-bold mb-1">Merhaba {user.fullName.split(' ')[0]}</h1>
-          <p className="text-muted mb-0">Salon performansını takip edin, rezervasyon taleplerini yönetin.</p>
+        <div className="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <h1 className="h4 fw-bold mb-1">Merhaba {user.fullName.split(' ')[0]}</h1>
+            <p className="text-muted mb-0">Salon performansını takip edin, rezervasyon taleplerini yönetin.</p>
+          </div>
+          <Link to="/owner/add">
+            <Button>
+              <i className="bi bi-plus-circle me-2"></i>
+              Yeni Salon Ekle
+            </Button>
+          </Link>
         </div>
       </div>
 

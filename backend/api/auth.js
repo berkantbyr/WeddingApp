@@ -24,10 +24,15 @@ router.post('/kayit', async (req, res) => {
         );
         res.status(201).json({ mesaj: 'Kayıt başarılı' });
     } catch (e) {
+        console.error('Kayıt hatası:', e);
         if (e && e.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ hata: 'Bu kullanıcı adı zaten kayıtlı' });
         }
-        res.status(500).json({ hata: 'Sunucu hatası' });
+        // Daha detaylı hata mesajı (geliştirme ortamında)
+        const hataMesaji = process.env.NODE_ENV === 'production' 
+            ? 'Sunucu hatası' 
+            : e.message || 'Sunucu hatası';
+        res.status(500).json({ hata: hataMesaji, detay: process.env.NODE_ENV !== 'production' ? e.message : undefined });
     }
 });
 

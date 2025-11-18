@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const SESSION_KEY = 'sb_active_session';
 
-export const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK === 'true';
+// Mock modu: Eğer .env dosyasında VITE_USE_MOCK tanımlı değilse, varsayılan olarak true yap
+// MySQL kurulumu yapıldıktan sonra bu satırı değiştirip false yapabilirsiniz
+export const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK !== 'false';
 
 const inferApiUrl = () => {
   if (import.meta.env?.VITE_API_URL) {
