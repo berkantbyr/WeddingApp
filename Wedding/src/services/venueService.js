@@ -231,42 +231,22 @@ export const fetchOwnerVenues = async (ownerId) => {
 
 export const createVenue = async (ownerId, payload) => {
   if (apiClient) {
-    // FormData kullanarak dosya yükleme
-    const formData = new FormData();
-    
-    // Metin alanları
-    formData.append('ad', payload.name);
-    formData.append('adres', payload.address);
-    formData.append('sehir', payload.city);
-    formData.append('kapasite', payload.capacity || '');
-    formData.append('aciklama', payload.description || '');
-    formData.append('dugun_turu', payload.dugun_turu || 'NORMAL');
-    formData.append('fiyat', payload.fiyat || 0);
-    
-    // Dosya varsa ekle
-    if (payload.ana_foto_file) {
-      formData.append('ana_foto', payload.ana_foto_file);
-    } else if (payload.ana_foto_url) {
-      formData.append('ana_foto_url', payload.ana_foto_url);
-    }
-    
-    // Galeri dosyaları
-    if (payload.gallery_files && payload.gallery_files.length > 0) {
-      payload.gallery_files.forEach((file, index) => {
-        formData.append(`gallery_${index}`, file);
-      });
-      formData.append('gallery_count', payload.gallery_files.length);
-    }
-    
-    // Opsiyonel paketler
-    if (payload.opsiyonelPaketler && payload.opsiyonelPaketler.length > 0) {
-      formData.append('opsiyonelPaketler', JSON.stringify(payload.opsiyonelPaketler));
-    }
-    
-    const { data } = await apiClient.post('/api/salonlar', formData, {
+    const body = {
+      ad: payload.name,
+      adres: payload.address,
+      sehir: payload.city,
+      kapasite: payload.capacity || '',
+      aciklama: payload.description || '',
+      dugun_turu: payload.dugun_turu || 'NORMAL',
+      fiyat: payload.fiyat || 0,
+      ana_foto_url: payload.ana_foto_url || payload.coverImage || '',
+      gallery_urls: payload.gallery_urls || payload.gallery || [],
+      opsiyonelPaketler: payload.opsiyonelPaketler || []
+    };
+
+    const { data } = await apiClient.post('/api/salonlar', body, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        'Content-Type': 'multipart/form-data'
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     });
     return data;
@@ -283,7 +263,8 @@ export const createVenue = async (ownerId, payload) => {
     createdAt: new Date().toISOString(),
     ...payload,
     packages: payload.packages?.length ? payload.packages : [],
-    availableDates: payload.availableDates?.length ? payload.availableDates : []
+    availableDates: payload.availableDates?.length ? payload.availableDates : [],
+    gallery: payload.gallery_urls?.length ? payload.gallery_urls : payload.gallery ?? []
   };
 
   persistVenues([...venues, newVenue]);

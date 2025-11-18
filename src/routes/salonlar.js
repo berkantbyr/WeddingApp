@@ -1,10 +1,43 @@
 const express = require('express');
 const havuz = require('../db');
 const { kimlikDogrula } = require('../middleware/auth');
-const upload = require('../middleware/upload');
 const path = require('path');
 
 const router = express.Router();
+
+const ensureAbsoluteUrl = (req, url) => {
+    if (!url) return null;
+    if (/^https?:\/\//i.test(url)) {
+        return url;
+    }
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const normalized = url.startsWith('/') ? url : `/${url}`;
+    return `${baseUrl}${normalized}`;
+};
+
+const normalizePhotoRecords = (req, photos = []) =>
+    photos.map((photo) => ({
+        ...photo,
+        foto_url: ensureAbsoluteUrl(req, photo.foto_url)
+    }));
+
+const parseUrlList = (value) => {
+    if (!value) {
+        return [];
+    }
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => String(item).trim())
+            .filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(/[\n,]/)
+            .map((item) => item.trim())
+            .filter(Boolean);
+    }
+    return [];
+};
 
 // Tüm salonları listele veya filtrele
 router.get('/salonlar', async (req, res) => {
@@ -47,7 +80,12 @@ router.get('/salonlar', async (req, res) => {
             LIMIT 100
         `;
         const [satirlar] = await havuz.query(sql, paramlar);
-        res.json(satirlar);
+        const duzeltilmisSalonlar = satirlar.map((salon) => ({
+            ...salon,
+            ana_foto: ensureAbsoluteUrl(req, salon.ana_foto || salon.ana_foto_url),
+            ana_foto_url: ensureAbsoluteUrl(req, salon.ana_foto_url || salon.ana_foto)
+        }));
+        res.json(duzeltilmisSalonlar);
     } catch (err) {
         console.error('Salon listesi hatası:', err);
         res.status(500).json({ hata: 'Sunucu hatası' });
@@ -55,28 +93,13 @@ router.get('/salonlar', async (req, res) => {
 });
 
 // Yeni salon ilanı oluştur (fotoğraf yükleme ile)
-router.post('/salonlar', kimlikDogrula('SALON_SAHIBI'), upload.fields([
-    { name: 'ana_foto', maxCount: 1 },
-    { name: 'gallery_0', maxCount: 1 },
-    { name: 'gallery_1', maxCount: 1 },
-    { name: 'gallery_2', maxCount: 1 },
-    { name: 'gallery_3', maxCount: 1 },
-    { name: 'gallery_4', maxCount: 1 }
-]), async (req, res) => {
+router.post('/salonlar', kimlikDogrula('SALON_SAHIBI'), async (req, res) => {
     const baglanti = await havuz.getConnection();
     try {
         const { ad, adres, sehir, kapasite, aciklama, dugun_turu, fiyat } = req.body;
-        
-        // Yüklenen dosya varsa URL'yi oluştur
-        let ana_foto_url = null;
-        if (req.files && req.files['ana_foto'] && req.files['ana_foto'][0]) {
-            // Dosya yüklendi, URL'yi oluştur
-            ana_foto_url = `/uploads/${req.files['ana_foto'][0].filename}`;
-        } else if (req.body.ana_foto_url) {
-            // URL ile gönderilmişse kullan
-            ana_foto_url = req.body.ana_foto_url;
-        }
-        
+        const ana_foto_url = req.body.ana_foto_url ? req.body.ana_foto_url.trim() : null;
+        const galleryUrls = parseUrlList(req.body.gallery_urls || req.body.galleryUrls || req.body.gallery);
+
         // Zorunlu alanları kontrol et
         if (!ad || !adres) {
             return res.status(400).json({ hata: 'Salon adı ve adres zorunludur' });
@@ -92,6 +115,10 @@ router.post('/salonlar', kimlikDogrula('SALON_SAHIBI'), upload.fields([
         
         if (!dugun_turu || !['EN_LUX', 'ORTA', 'NORMAL'].includes(dugun_turu)) {
             return res.status(400).json({ hata: 'Düğün türü seçimi zorunludur (EN_LUX, ORTA, NORMAL)' });
+        }
+
+        if (!ana_foto_url) {
+            return res.status(400).json({ hata: 'Ana fotoğraf URL\'i zorunludur' });
         }
 
         await baglanti.beginTransaction();
@@ -124,14 +151,11 @@ router.post('/salonlar', kimlikDogrula('SALON_SAHIBI'), upload.fields([
         }
         
         // Galeri fotoğraflarını ekle
-        const galleryCount = parseInt(req.body.gallery_count) || 0;
-        for (let i = 0; i < galleryCount; i++) {
-            const galleryKey = `gallery_${i}`;
-            if (req.files && req.files[galleryKey] && req.files[galleryKey][0]) {
-                const galleryUrl = `/uploads/${req.files[galleryKey][0].filename}`;
+        if (galleryUrls.length > 0) {
+            for (let i = 0; i < galleryUrls.length; i++) {
                 await baglanti.query(
                     'INSERT INTO salon_fotograflari (salon_id, foto_url, sira) VALUES (?, ?, ?)',
-                    [salonId, galleryUrl, i + 1]
+                    [salonId, galleryUrls[i], i + 1]
                 );
             }
         }
@@ -182,7 +206,12 @@ router.get('/salonlar/sahip', kimlikDogrula('SALON_SAHIBI'), async (req, res) =>
              ORDER BY s.olusturulma_zamani DESC`,
             [req.kullanici.id]
         );
-        res.json(salonlar);
+        const duzeltilmisSalonlar = salonlar.map((salon) => ({
+            ...salon,
+            ana_foto: ensureAbsoluteUrl(req, salon.ana_foto || salon.ana_foto_url),
+            ana_foto_url: ensureAbsoluteUrl(req, salon.ana_foto_url || salon.ana_foto)
+        }));
+        res.json(duzeltilmisSalonlar);
     } catch (err) {
         console.error('Salon sahibi salonları hatası:', err);
         res.status(500).json({ hata: 'Sunucu hatası' });
@@ -260,13 +289,17 @@ router.get('/salonlar/:id', async (req, res) => {
             return res.status(404).json({ hata: 'Salon bulunamadı' });
         }
         
-        const salon = salonlar[0];
+        const salon = {
+            ...salonlar[0],
+            ana_foto_url: ensureAbsoluteUrl(req, salonlar[0].ana_foto_url)
+        };
         
         // Salon fotoğraflarını getir
         const [fotograflar] = await havuz.query(
             'SELECT * FROM salon_fotograflari WHERE salon_id = ? ORDER BY sira ASC, id ASC',
             [salonId]
         );
+        const duzeltilmisFotograflar = normalizePhotoRecords(req, fotograflar);
         
         // Salon paketlerini getir
         const [paketler] = await havuz.query(
@@ -282,7 +315,7 @@ router.get('/salonlar/:id', async (req, res) => {
         
         res.json({
             ...salon,
-            fotograflar: fotograflar,
+            fotograflar: duzeltilmisFotograflar,
             paketler: paketler,
             opsiyonelPaketler: opsiyonelPaketler
         });

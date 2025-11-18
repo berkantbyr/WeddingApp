@@ -30,19 +30,24 @@ const VenueForm = ({ initialValues, onSubmit, isSubmitting = false }) => {
     capacity: initialValues?.capacity ?? '',
     description: initialValues?.description ?? '',
     coverImage: initialValues?.coverImage ?? '',
-    gallery: (initialValues?.gallery ?? []).join(', '),
+    galleryUrlsText: (initialValues?.gallery ?? []).join('\n'),
     availableDates: (initialValues?.availableDates ?? []).join(', '),
     dugun_turu: initialValues?.dugun_turu ?? 'NORMAL',
     fiyat: initialValues?.fiyat ?? '',
-    ana_foto_url: initialValues?.ana_foto_url ?? '',
-    ana_foto_file: null, // Yüklenen dosya
-    ana_foto_preview: null, // Önizleme URL'i
-    gallery_files: [], // Galeri dosyaları
-    gallery_previews: [] // Galeri önizlemeleri
+    ana_foto_url: initialValues?.ana_foto_url ?? initialValues?.coverImage ?? ''
   }));
   const [error, setError] = useState(null);
 
   const packageCount = useMemo(() => packages.length, [packages]);
+  const galleryPreviewUrls = useMemo(() => {
+    if (!formData.galleryUrlsText) {
+      return [];
+    }
+    return formData.galleryUrlsText
+      .split(/[\n,]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }, [formData.galleryUrlsText]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -100,25 +105,26 @@ const VenueForm = ({ initialValues, onSubmit, isSubmitting = false }) => {
         aciklama: op.aciklama || ''
       }));
 
+    const galleryUrls = formData.galleryUrlsText
+      .split(/[\n,]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
     const payload = {
       ...initialValues,
       ...formData,
       capacity: Number(formData.capacity) || 0,
       fiyat: Number(formData.fiyat) || 0,
       dugun_turu: formData.dugun_turu,
-      ana_foto_url: formData.ana_foto_url || formData.coverImage,
-      ana_foto_file: formData.ana_foto_file, // Dosya yükleme için
-      gallery_files: formData.gallery_files || [], // Galeri dosyaları
+      ana_foto_url: formData.ana_foto_url?.trim() || formData.coverImage,
       packages: preparedPackages,
       opsiyonelPaketler: preparedOpsiyonelPaketler,
       availableDates: formData.availableDates
         .split(',')
         .map((date) => date.trim())
         .filter(Boolean),
-      gallery: formData.gallery
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean)
+      gallery_urls: galleryUrls,
+      gallery: galleryUrls
     };
 
     onSubmit?.(payload);
@@ -242,79 +248,48 @@ const VenueForm = ({ initialValues, onSubmit, isSubmitting = false }) => {
           <h6 className="text-uppercase text-muted small mb-3">Görseller</h6>
           <div className="row g-3">
             <div className="col-md-6">
-              <label className="form-label fw-semibold text-muted">
-                Ana Salon Fotoğrafı *
-              </label>
-              <input
-                type="file"
-                id="ana_foto"
-                name="ana_foto"
-                className="form-control"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    // Dosya seçildi, formData'ya ekle
-                    setFormData(prev => ({ ...prev, ana_foto_file: file }));
-                    // Önizleme için URL oluştur
-                    const previewUrl = URL.createObjectURL(file);
-                    setFormData(prev => ({ ...prev, ana_foto_preview: previewUrl }));
-                  }
-                }}
-                required={!initialValues}
+              <Input
+                id="ana_foto_url"
+                name="ana_foto_url"
+                label="Ana Fotoğraf URL'i *"
+                type="url"
+                placeholder="https://cdn.ornek.com/salon.jpg"
+                value={formData.ana_foto_url}
+                onChange={handleChange}
+                required
               />
-              {formData.ana_foto_preview && (
+              {formData.ana_foto_url ? (
                 <div className="mt-2">
-                  <img 
-                    src={formData.ana_foto_preview} 
-                    alt="Önizleme" 
+                  <img
+                    src={formData.ana_foto_url}
+                    alt="Ana fotoğraf önizlemesi"
                     className="img-thumbnail"
-                    style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
+                    style={{ maxWidth: '220px', maxHeight: '220px', objectFit: 'cover' }}
                   />
                 </div>
-              )}
-              {formData.ana_foto_url && !formData.ana_foto_preview && (
-                <div className="mt-2">
-                  <img 
-                    src={formData.ana_foto_url} 
-                    alt="Mevcut fotoğraf" 
-                    className="img-thumbnail"
-                    style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
-                  />
-                </div>
-              )}
+              ) : null}
               <small className="text-muted d-block mt-1">
-                Bu fotoğraf ilan kartında gösterilecektir. Maksimum 5MB, desteklenen formatlar: JPEG, PNG, GIF, WEBP
+                Harici barındırma (CDN, Google Drive, s3 vb.) linkini girin. Ziyaretçilere kartta bu görsel gösterilir.
               </small>
             </div>
             <div className="col-md-6">
-              <label className="form-label fw-semibold text-muted">
-                Ek Görseller (İsteğe Bağlı)
-              </label>
-              <input
-                type="file"
-                id="gallery_files"
-                name="gallery_files"
-                className="form-control"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files);
-                  if (files.length > 0) {
-                    setFormData(prev => ({ ...prev, gallery_files: files }));
-                    // Önizleme için URL'ler oluştur
-                    const previewUrls = files.map(file => URL.createObjectURL(file));
-                    setFormData(prev => ({ ...prev, gallery_previews: previewUrls }));
-                  }
-                }}
+              <Input
+                id="galleryUrlsText"
+                name="galleryUrlsText"
+                label="Galeri Fotoğraf URL'leri"
+                as="textarea"
+                rows={5}
+                placeholder={'Her satıra veya virgül ile ayırarak bir URL yazın.\nhttps://ornek.com/foto1.jpg\nhttps://ornek.com/foto2.jpg'}
+                value={formData.galleryUrlsText}
+                onChange={handleChange}
               />
-              {formData.gallery_previews && formData.gallery_previews.length > 0 && (
+              {galleryPreviewUrls.length > 0 && (
                 <div className="mt-2 d-flex gap-2 flex-wrap">
-                  {formData.gallery_previews.map((preview, idx) => (
-                    <img 
+                  {galleryPreviewUrls.slice(0, 6).map((url, idx) => (
+                    <img
                       key={idx}
-                      src={preview} 
-                      alt={`Önizleme ${idx + 1}`} 
+                      src={url}
+                      alt={`Galeri önizleme ${idx + 1}`}
                       className="img-thumbnail"
                       style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }}
                     />
@@ -322,7 +297,7 @@ const VenueForm = ({ initialValues, onSubmit, isSubmitting = false }) => {
                 </div>
               )}
               <small className="text-muted d-block mt-1">
-                Birden fazla görsel seçebilirsiniz. Maksimum 5MB/dosya
+                Galeri isteğe bağlıdır. En fazla 6 URL girmeniz tavsiye edilir.
               </small>
             </div>
           </div>

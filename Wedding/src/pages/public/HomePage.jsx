@@ -1,29 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
+import { fetchVenues } from '../../services/venueService.js';
 
-// API servis fonksiyonu - salonları getir
-const fetchSalonlar = async (sehir = '') => {
-  try {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const url = sehir 
-      ? `${API_URL}/api/salonlar?sehir=${encodeURIComponent(sehir)}`
-      : `${API_URL}/api/salonlar`;
-    
-    console.log('API URL:', url); // Debug için
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.error('API yanıt hatası:', response.status, response.statusText);
-      throw new Error('Salonlar yüklenemedi');
-    }
-    const data = await response.json();
-    console.log('API\'den gelen veri:', data); // Debug için
-    return data;
-  } catch (error) {
-    console.error('API hatası:', error);
-    return [];
-  }
-};
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/api$/, '');
 
 // Popüler şehirler - buton olarak gösterilecek
 // Kullanıcının eklediği şehir resimleri: istanbul.webp, ankata.jpg, antalya.jpg, rize.jpg
@@ -97,20 +77,18 @@ const HomePage = () => {
     const loadSalonlar = async () => {
       setLoading(true);
       try {
-        const salonlar = await fetchSalonlar();
-        console.log('Gelen salonlar:', salonlar); // Debug için
-        // Backend'den gelen veriyi formatla
-        const formatlanmisSalonlar = salonlar.map(salon => ({
+        const salonlar = await fetchVenues();
+        const formatlanmisSalonlar = salonlar.map((salon) => ({
           id: salon.id,
           ad: salon.ad || salon.name,
           sehir: salon.sehir || salon.city,
-          dugun_turu: salon.dugun_turu || salon.dugun_turu || 'NORMAL',
-          fiyat: salon.fiyat || salon.fiyat || 0,
+          dugun_turu: salon.dugun_turu || salon.dugunTuru || 'NORMAL',
+          fiyat: Number(salon.fiyat ?? salon.price ?? 0),
           ana_foto: salon.ana_foto || salon.ana_foto_url || salon.coverImage,
           ana_foto_url: salon.ana_foto_url || salon.ana_foto || salon.coverImage,
-          kapasite: salon.kapasite || salon.capacity
+          kapasite: salon.kapasite || salon.capacity,
+          sirket_adi: salon.sirket_adi || salon.sirketAdi || salon.ownerName
         }));
-        // En yeni 4 salonu al
         setYaklasanFirsatlar(formatlanmisSalonlar.slice(0, 4));
       } catch (error) {
         console.error('Salonlar yüklenemedi:', error);
@@ -119,7 +97,7 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-    
+
     loadSalonlar();
   }, []);
   
@@ -370,12 +348,14 @@ const HomePage = () => {
             {yaklasanFirsatlar.map((salon, index) => {
               const dugunTuru = dugunTuruAciklamalari[salon.dugun_turu] || dugunTuruAciklamalari['NORMAL'];
               // Önce salonun kendi fotoğrafını kullan, yoksa sırayla düğün salonu görsellerini kullan
-              // Fotoğraf URL'ini düzelt - eğer /uploads/ ile başlıyorsa backend URL'ini ekle
-              let anaFoto = salon.ana_foto || salon.ana_foto_url;
-              if (anaFoto && anaFoto.startsWith('/uploads/')) {
-                // Backend URL'ini ekle
-                const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                anaFoto = backendUrl + anaFoto;
+              // Fotoğraf URL'ini düzelt - eğer relative path ise backend URL'ini ekle
+              let anaFoto = salon.ana_foto || salon.ana_foto_url || salon.coverImage;
+              if (anaFoto && /^\/?uploads\//i.test(anaFoto)) {
+                anaFoto = `${API_BASE_URL}/${anaFoto.replace(/^\/?/, '')}`;
+              } else if (anaFoto && !/^https?:\/\//i.test(anaFoto) && !anaFoto.startsWith('/')) {
+                anaFoto = `${API_BASE_URL}/${anaFoto}`;
+              } else if (anaFoto && anaFoto.startsWith('/') && !anaFoto.startsWith('//')) {
+                anaFoto = `${API_BASE_URL}${anaFoto}`;
               } else if (!anaFoto) {
                 // Fallback resimler
                 anaFoto = dugunSalonuGorselleri[index % dugunSalonuGorselleri.length] || '/images/99d6f7a3526a21f42765c9fab7782396.jpg';

@@ -6,6 +6,21 @@ import Input from '../../components/common/Input.jsx';
 import { fetchVenueById, createReservation, fetchSuggestedDates } from '../../services/venueService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/api$/, '');
+const fallbackImages = [
+  '/images/ankara-salon.jpg',
+  '/images/antalya-salon.jpg',
+  '/images/rize-salon.jpg',
+  '/images/99d6f7a3526a21f42765c9fab7782396.jpg'
+];
+const normalizeImageUrl = (url) => {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('//')) return `${window.location.protocol}${url}`;
+  const normalized = url.startsWith('/') ? url : `/${url}`;
+  return `${API_BASE_URL}${normalized}`.replace(/([^:]\/)\/+/g, '$1');
+};
+
 const VenueDetailsPage = () => {
   const { id } = useParams();
   const { isAuthenticated, user } = useAuth();
@@ -112,6 +127,17 @@ const VenueDetailsPage = () => {
     }
   };
 
+  const mainPhoto = useMemo(() => {
+    const candidate = venue?.coverImage || venue?.ana_foto_url || venue?.ana_foto || venue?.gallery?.[0];
+    return normalizeImageUrl(candidate) || fallbackImages[0];
+  }, [venue]);
+  const galleryImages = useMemo(() => {
+    if (!venue?.gallery?.length) return [];
+    return venue.gallery
+      .map((url) => normalizeImageUrl(url))
+      .filter(Boolean);
+  }, [venue?.gallery]);
+
   if (loading) {
     return (
       <div className="py-5 text-center">
@@ -140,13 +166,33 @@ const VenueDetailsPage = () => {
           <div className="row g-3 mb-4">
             <div className="col-12">
               <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
-                <img src={venue.coverImage} alt={venue.name} className="object-fit-cover" />
+                <img
+                  src={mainPhoto}
+                  alt={venue.name}
+                  className="object-fit-cover w-100 h-100"
+                  onError={(e) => {
+                    const index = Number(e.target.dataset.fallbackIndex || 0);
+                    if (index >= fallbackImages.length) return;
+                    e.target.dataset.fallbackIndex = index + 1;
+                    e.target.src = fallbackImages[index];
+                  }}
+                />
               </div>
             </div>
-            {venue.gallery?.map((image) => (
+            {galleryImages.map((image) => (
               <div className="col-md-4" key={image}>
                 <div className="ratio ratio-4x3 rounded-4 overflow-hidden">
-                  <img src={image} alt="Gallery" className="object-fit-cover" />
+                  <img
+                    src={image}
+                    alt="Gallery"
+                    className="object-fit-cover w-100 h-100"
+                    onError={(e) => {
+                      const index = Number(e.target.dataset.fallbackIndex || 0);
+                      if (index >= fallbackImages.length) return;
+                      e.target.dataset.fallbackIndex = index + 1;
+                      e.target.src = fallbackImages[index];
+                    }}
+                  />
                 </div>
               </div>
             ))}
