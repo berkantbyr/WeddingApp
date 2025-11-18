@@ -10,7 +10,7 @@ const TermsPage = () => {
   const terms = [
     {
       title: 'Hesap Sorumlulukları',
-      description: 'Hesaplar doğru bilgiler içermeli ve güvenli şekilde korunmalıdır. Şifrelerinizi güvende tutmak ve hesap güvenliğinizden sorumlusunuz.',
+      description: 'Kayıt olurken doğru bilgi vermek, şifrenizi gizli tutmak ve hesabınız üzerinden yapılan tüm işlemlerden sorumlu olmak zorundasınız.',
       icon: 'bi-person-shield',
       color: primaryColor,
       bgColor: 'rgba(99, 102, 241, 0.1)',
@@ -18,7 +18,7 @@ const TermsPage = () => {
     },
     {
       title: 'Salon Sahipleri İçin',
-      description: 'Salon sahipleri, onaylanan rezervasyon taleplerini yerine getirmekle yükümlüdür. Rezervasyon bilgilerini doğru ve güncel tutmalıdırlar.',
+      description: 'Profildeki fiyat, kapasite ve hizmet bilgilerini güncel tutmak; onaylanan rezervasyonlarda sözleşmeye uygun hizmet sağlamakla yükümlüsünüz.',
       icon: 'bi-building-check',
       color: secondaryColor,
       bgColor: 'rgba(249, 115, 22, 0.1)',
@@ -26,7 +26,7 @@ const TermsPage = () => {
     },
     {
       title: 'Müşteri Sorumlulukları',
-      description: 'Müşteriler, misafir sayısı ve etkinlik detaylarını doğru iletmekten sorumludur. Rezervasyon iptal koşullarını dikkatlice okumalıdırlar.',
+      description: 'Talep formunda belirttiğiniz tarih, kişi sayısı ve özel ihtiyaçların doğru olması gerekir. Salonun iptal/değişiklik koşullarını kabul etmiş sayılırsınız.',
       icon: 'bi-people',
       color: accentColor,
       bgColor: 'rgba(20, 184, 166, 0.1)',
@@ -34,7 +34,7 @@ const TermsPage = () => {
     },
     {
       title: 'Ödeme İşlemleri',
-      description: 'Ödeme özelliği aktif edildiğinde işlemler güvenli üçüncü taraf sağlayıcılar üzerinden gerçekleştirilir. Tüm ödemeler şifrelenmiş kanallar üzerinden yapılır.',
+      description: 'Ödeme altyapısı devreye alındığında işlemler lisanslı ödeme kuruluşları tarafından yürütülür. SalonBulucu, tahsilat komisyonları ve güvenli aktarım protokollerini açıklar.',
       icon: 'bi-credit-card-2-front',
       color: '#8b5cf6',
       bgColor: 'rgba(139, 92, 246, 0.1)',
@@ -42,7 +42,7 @@ const TermsPage = () => {
     },
     {
       title: 'Kullanım İhlalleri',
-      description: 'Bu şartları ihlal eden hesaplar SalonBulucu tarafından askıya alınabilir. Ciddi ihlallerde kalıcı yasaklama uygulanabilir.',
+      description: 'Yanlış bilgi paylaşımı, spam talep gönderimi veya üçüncü taraf haklarını ihlal eden davranışlarda hesaplar askıya alınabilir; ciddi ihlallerde kalıcı erişim engellenir.',
       icon: 'bi-exclamation-triangle',
       color: '#f59e0b',
       bgColor: 'rgba(245, 158, 11, 0.1)',
@@ -50,7 +50,7 @@ const TermsPage = () => {
     },
     {
       title: 'Fikri Mülkiyet',
-      description: 'Platform içeriği, tasarım ve markalar SalonBulucu\'ya aittir. İzinsiz kullanım yasal işlemlerle sonuçlanabilir.',
+      description: 'SalonBulucu markası, yazılımı ve içerikleri telif hakkı kapsamındadır. İzinsiz kopyalama veya dağıtım tespit edildiğinde hukuki haklarımızı kullanırız.',
       icon: 'bi-copyright',
       color: '#ec4899',
       bgColor: 'rgba(236, 72, 153, 0.1)',
@@ -60,60 +60,6 @@ const TermsPage = () => {
 
   return (
     <div className="d-flex flex-column">
-      {/* Hero Bölümü */}
-      <section 
-        className="position-relative py-5"
-        style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(249, 115, 22, 0.05) 100%)',
-          marginTop: '-20px',
-          marginBottom: '40px',
-          paddingTop: '60px',
-          paddingBottom: '60px'
-        }}
-      >
-        <div className="container">
-          <div className="text-center mb-5">
-            <div
-              className="d-inline-block px-3 py-1 rounded-pill mb-3 fw-semibold"
-              style={{
-                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
-                color: primaryColor,
-                fontSize: '14px',
-                letterSpacing: '0.5px'
-              }}
-            >
-              <i className="bi bi-file-text-fill me-2"></i>Kullanım Şartları
-            </div>
-            <h1 
-              className="fw-bold mb-4"
-              style={{ 
-                fontSize: 'clamp(32px, 5vw, 48px)',
-                color: darkColor,
-                lineHeight: '1.2',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #f97316 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
-            >
-              Haklarınız ve Sorumluluklarınız
-            </h1>
-            <p 
-              style={{ 
-                fontSize: '17px',
-                lineHeight: '1.8',
-                color: '#475569',
-                maxWidth: '700px',
-                margin: '0 auto'
-              }}
-            >
-              SalonBulucu'yu kullanarak aşağıdaki şartları kabul etmiş olursunuz. Müşteri, salon sahibi veya yönetici olarak
-              haklarınızı ve sorumluluklarınızı anlamak için lütfen dikkatlice okuyun.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Ana İçerik */}
       <div className="container py-5 mb-5">
         <div className="row g-4">
@@ -217,9 +163,8 @@ const TermsPage = () => {
                   Önemli Notlar
                 </h4>
                 <p style={{ color: '#64748b', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
-                  Bu kullanım şartları, platformunuzu kullanırken uymanız gereken kuralları ve sorumluluklarınızı belirler. 
-                  Şartlar değişiklik gösterebilir ve değişikliklerden haberdar olmak için sayfayı düzenli olarak kontrol etmenizi öneririz. 
-                  Sorularınız için bizimle iletişime geçebilirsiniz.
+                  Şartlar zaman zaman güncellenebilir; değişiklikleri bu sayfadan yayınlar ve önemli durumlarda e-posta ile bildiririz.
+                  Platformu kullanmaya devam ederek güncel şartları kabul etmiş sayılırsınız. Sorularınız için destek kanalımızdan bize ulaşabilirsiniz.
                 </p>
               </div>
               <div className="col-md-4 text-center text-md-end">

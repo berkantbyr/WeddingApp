@@ -9,13 +9,6 @@ const roleLabels = {
   customer: 'Müşteri'
 };
 
-const navItems = [
-  { label: 'Ana Sayfa', to: '/' },
-  { label: 'Salonlar', to: '/venues' },
-  { label: 'Hakkımızda', to: '/about' },
-  { label: 'İletişim', to: '/contact' }
-];
-
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,12 +23,10 @@ const Navbar = () => {
     navigate('/');
   };
 
-  // Profesyonel renk paleti
+  // Üst bilgi bağlantıları
   const navLinks = [
     { to: '/about', label: 'Hakkımızda', icon: 'bi-info-circle', color: '#6366f1' },
     { to: '/contact', label: 'İletişim', icon: 'bi-envelope', color: '#f97316' },
-    { to: '/blog', label: 'Blog/İpuçları', icon: 'bi-book', color: '#8b5cf6' },
-    { to: '/faq', label: 'Sıkça Sorulan Sorular', icon: 'bi-question-circle', color: '#14b8a6' },
     { to: '/privacy', label: 'Gizlilik Politikası', icon: 'bi-shield-check', color: '#3b82f6' },
     { to: '/terms', label: 'Kullanım Şartları', icon: 'bi-file-text', color: '#f59e0b' }
   ];
@@ -90,13 +81,12 @@ const Navbar = () => {
           {/* Logo */}
           <div className="position-relative">
             <img
-              src="/images/eros.jpg"
+              src="/images/wedding-hall-logo.svg"
               alt="SalonBulucu Logo"
               style={{
-                width: '48px',
-                height: '48px',
-                objectFit: 'contain',
-                borderRadius: '8px'
+                width: '56px',
+                height: '56px',
+                objectFit: 'contain'
               }}
             />
           </div>
@@ -211,20 +201,6 @@ const Navbar = () => {
             </div>
           </div>
 
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {navItems.map((item) => (
-              <li className="nav-item" key={item.to}>
-                <NavLink 
-                  to={item.to}
-                  className={({ isActive }) =>
-                    `nav-link fw-medium ${isActive ? 'text-primary' : 'text-muted'}`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {/* Giriş/Kayıt butonları - her zaman görünür */}

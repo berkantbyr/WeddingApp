@@ -58,18 +58,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div className="col-md-3">
-            <h6 className="text-uppercase text-secondary small">Bülten</h6>
-            <p className="text-light-emphasis small">
-              İlham verici salon önerilerini, planlama listelerini ve sezonluk kampanyaları almak için abone olun.
-            </p>
-            <form className="d-flex gap-2">
-              <input type="email" className="form-control" placeholder="E-posta adresi" />
-              <button type="submit" className="btn btn-primary">
-                Katıl
-              </button>
-            </form>
-          </div>
         </div>
         <hr className="border-light-subtle my-4" />
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">

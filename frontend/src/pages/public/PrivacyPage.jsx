@@ -10,42 +10,42 @@ const PrivacyPage = () => {
   const privacySections = [
     {
       title: 'Topladığımız Veriler',
-      description: 'Hesap bilgileri, rezervasyon geçmişi ve iletişim tercihleri. Platform kullanımınızla ilgili teknik bilgiler ve çerezler.',
+      description: 'Hesap açarken paylaştığınız kimlik ve iletişim bilgileri, rezervasyon talepleriniz, salon sahiplerinin paket içerikleri ve platform üzerinde bıraktığınız mesajlar.',
       icon: 'bi-database',
       color: primaryColor,
       bgColor: 'rgba(99, 102, 241, 0.1)'
     },
     {
-      title: 'Verileri Nasıl Kullanıyoruz',
-      description: 'Rezervasyonları kolaylaştırmak, kişiselleştirilmiş öneriler sunmak ve güvenli erişim sağlamak için. Ayrıca platform geliştirme ve hizmet kalitesini artırmak için.',
+      title: 'Veri İşleme Amaçlarımız',
+      description: 'Rezervasyon sürecini tamamlamak, çiftlere uygun salonları önermek, dolandırıcılık girişimlerini engellemek ve hizmet kalitesini ölçmek için verileri işleriz.',
       icon: 'bi-shield-check',
       color: secondaryColor,
       bgColor: 'rgba(249, 115, 22, 0.1)'
     },
     {
-      title: 'Veri Güvenliği',
-      description: 'Verilerinizi korumak için endüstri standardı şifreleme ve güvenlik önlemleri kullanıyoruz. Düzenli güvenlik denetimleri yapıyoruz.',
+      title: 'Saklama Süresi ve Güvenlik',
+      description: 'Yasal zorunluluklar kapsamında verileri en fazla 5 yıl saklıyoruz. TLS şifreleme, erişim logları ve düzenli penetrasyon testleriyle altyapıyı koruyoruz.',
       icon: 'bi-lock',
       color: accentColor,
       bgColor: 'rgba(20, 184, 166, 0.1)'
     },
     {
-      title: 'Haklarınız',
-      description: 'Destek ekibimizle iletişime geçerek verilerinize erişebilir, güncelleyebilir veya silinmesini talep edebilirsiniz. KVKK kapsamındaki tüm haklarınız korunmaktadır.',
+      title: 'Haklarınız ve Tercihleriniz',
+      description: 'KVKK ve GDPR kapsamındaki erişim, düzeltme, silme, işlemeyi kısıtlama ve itiraz haklarınızı support@salonbulucu.com üzerinden kullanabilirsiniz.',
       icon: 'bi-person-check',
       color: '#8b5cf6',
       bgColor: 'rgba(139, 92, 246, 0.1)'
     },
     {
-      title: 'Çerezler',
-      description: 'Platform deneyiminizi iyileştirmek için çerezler kullanıyoruz. Çerez ayarlarınızı tarayıcı ayarlarınızdan yönetebilirsiniz.',
+      title: 'Çerez Tercihleri',
+      description: 'Zorunlu çerezler oturumunuzu korurken, analitik ve pazarlama çerezleri isteğe bağlıdır. Ayarlarınızı tarayıcınızdan veya çerez banner’ımızdan yönetebilirsiniz.',
       icon: 'bi-cookie',
       color: '#f59e0b',
       bgColor: 'rgba(245, 158, 11, 0.1)'
     },
     {
-      title: 'Üçüncü Taraf Hizmetler',
-      description: 'Bazı hizmetler için güvenilir üçüncü taraf sağlayıcılarla çalışıyoruz. Bu sağlayıcılar verilerinizi korumakla yükümlüdür.',
+      title: 'Üçüncü Taraf Paylaşımları',
+      description: 'Ödeme servisleri, bulut sağlayıcıları ve müşteri destek araçları ile çalışırız. Bu firmalarla veri işleme sözleşmeleri yapar ve verilerinizi yalnızca hizmet sunmak için paylaşırız.',
       icon: 'bi-share',
       color: '#ec4899',
       bgColor: 'rgba(236, 72, 153, 0.1)'
@@ -54,60 +54,6 @@ const PrivacyPage = () => {
 
   return (
     <div className="d-flex flex-column">
-      {/* Hero Bölümü */}
-      <section 
-        className="position-relative py-5"
-        style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(249, 115, 22, 0.05) 100%)',
-          marginTop: '-20px',
-          marginBottom: '40px',
-          paddingTop: '60px',
-          paddingBottom: '60px'
-        }}
-      >
-        <div className="container">
-          <div className="text-center mb-5">
-            <div
-              className="d-inline-block px-3 py-1 rounded-pill mb-3 fw-semibold"
-              style={{
-                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
-                color: primaryColor,
-                fontSize: '14px',
-                letterSpacing: '0.5px'
-              }}
-            >
-              <i className="bi bi-shield-lock-fill me-2"></i>Gizlilik Politikası
-            </div>
-            <h1 
-              className="fw-bold mb-4"
-              style={{ 
-                fontSize: 'clamp(32px, 5vw, 48px)',
-                color: darkColor,
-                lineHeight: '1.2',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #f97316 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
-            >
-              Verilerinizin Güvenliği Bizim Önceliğimiz
-            </h1>
-            <p 
-              style={{ 
-                fontSize: '17px',
-                lineHeight: '1.8',
-                color: '#475569',
-                maxWidth: '700px',
-                margin: '0 auto'
-              }}
-            >
-              Gizliliğinize saygı duyuyor ve kişisel verilerinizi korumaya özen gösteriyoruz. Bu politika, SalonBulucu
-              platformunda verilerinizi nasıl topladığımızı, kullandığımızı ve sakladığımızı açıklar.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Ana İçerik */}
       <div className="container py-5 mb-5">
         <div className="row g-4">
@@ -188,9 +134,9 @@ const PrivacyPage = () => {
                   Önemli Bilgiler
                 </h4>
                 <p style={{ color: '#64748b', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
-                  Bu gizlilik politikası, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında hazırlanmıştır. 
-                  Politika değişikliklerinden haberdar olmak için sayfayı düzenli olarak kontrol etmenizi öneririz. 
-                  Sorularınız için bizimle iletişime geçebilirsiniz.
+                  Bu metin 6698 sayılı KVKK ve Avrupa veri koruma standartları dikkate alınarak hazırlandı.
+                  Politika güncellemelerini bu sayfadan duyuruyor, kritik değişikliklerde e-posta bildirimi gönderiyoruz.
+                  Veri sorumlusu olarak taleplerinizi yazılı veya destek e-postamız üzerinden kabul ediyoruz.
                 </p>
               </div>
               <div className="col-md-4 text-center text-md-end">
