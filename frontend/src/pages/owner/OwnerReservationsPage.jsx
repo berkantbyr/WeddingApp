@@ -4,11 +4,22 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import Button from '../../components/common/Button.jsx';
 import LoadingSpinner from '../../components/common/LoadingSpinner.jsx';
 
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(Number(value) || 0);
+
+const extractPaymentLine = (notes) => {
+  if (!notes) return null;
+  const lines = notes.split('\n');
+  return lines.find((line) => line.trim().startsWith('[ÖDEME]'))?.replace('[ÖDEME]', '').trim() ?? null;
+};
+
 const OwnerReservationsPage = () => {
   const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [decisionLoading, setDecisionLoading] = useState(null);
+  const [paymentFeedback, setPaymentFeedback] = useState(null);
 
   const loadReservations = useCallback(async () => {
     setLoading(true);
@@ -23,17 +34,44 @@ const OwnerReservationsPage = () => {
     }
   }, [user?.id]);
 
+  const simulatePaymentCapture = useCallback(async (reservation) => {
+    const total = reservation?.totalPrice ?? reservation?.package?.price ?? 0;
+    setPaymentFeedback({
+      type: 'info',
+      message: `${reservation?.customer?.name || 'Müşteri'} kartından ${formatCurrency(total)} tahsil ediliyor...`
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setPaymentFeedback({
+      type: 'success',
+      message: 'Ödeme başarıyla tahsil edildi (senaryo).'
+    });
+    setTimeout(() => setPaymentFeedback(null), 4500);
+  }, []);
+
   useEffect(() => {
     if (!user?.id) return;
     loadReservations();
   }, [user?.id, loadReservations]);
 
   const handleStatus = useCallback(
-    async (reservationId, status) => {
-      await updateReservationStatus(reservationId, status);
-      await loadReservations();
+    async (reservation, status) => {
+      setDecisionLoading(reservation.id);
+      try {
+        if (status === 'confirmed') {
+          await simulatePaymentCapture(reservation);
+        }
+        await updateReservationStatus(reservation.id, status);
+        await loadReservations();
+      } catch (err) {
+        setPaymentFeedback({
+          type: 'danger',
+          message: err?.message || 'İşlem tamamlanamadı'
+        });
+      } finally {
+        setDecisionLoading(null);
+      }
     },
-    [loadReservations]
+    [loadReservations, simulatePaymentCapture]
   );
 
   if (loading) {
@@ -44,13 +82,32 @@ const OwnerReservationsPage = () => {
     return <div className="alert alert-danger">{error}</div>;
   }
 
-  if (!reservations.length) {
-    return <div className="alert alert-info">Şu anda rezervasyon talebi bulunmuyor.</div>;
-  }
-
   return (
     <div className="d-flex flex-column gap-3">
-      {reservations.map((reservation) => (
+      {paymentFeedback ? (
+        <div
+          className={`alert alert-${
+            paymentFeedback.type === 'success'
+              ? 'success'
+              : paymentFeedback.type === 'danger'
+              ? 'danger'
+              : 'info'
+          }`}
+        >
+          {paymentFeedback.message}
+        </div>
+      ) : null}
+      {!reservations.length ? (
+        <div className="alert alert-info">Şu anda rezervasyon talebi bulunmuyor.</div>
+      ) : (
+        reservations.map((reservation) => {
+          const paymentLine = extractPaymentLine(reservation.notes);
+          const generalNotes = (reservation.notes || '')
+            .split('\n')
+            .filter((line) => !line.trim().startsWith('[ÖDEME]'))
+            .filter((line) => line.trim().length)
+            .join('\n');
+          return (
         <div key={reservation.id} className="card border-0 shadow-sm">
           <div className="card-body d-flex flex-column flex-lg-row gap-4">
             <div className="flex-grow-1">
@@ -77,10 +134,22 @@ const OwnerReservationsPage = () => {
                   Paket: {reservation.package.name}
                 </p>
               )}
-              {reservation.notes && (
+              {reservation.totalPrice ? (
+                <p className="text-muted small mb-0">
+                  <i className="bi bi-cash-coin me-1"></i>
+                  Tahsilat: {formatCurrency(reservation.totalPrice)}
+                </p>
+              ) : null}
+              {generalNotes && (
                 <p className="text-muted small mt-2 mb-0">
                   <i className="bi bi-chat-left-text me-1"></i>
-                  Notlar: {reservation.notes}
+                  Notlar: {generalNotes}
+                </p>
+              )}
+              {paymentLine && (
+                <p className="text-muted small mt-1 mb-0">
+                  <i className="bi bi-credit-card me-1"></i>
+                  {paymentLine}
                 </p>
               )}
             </div>
@@ -94,10 +163,19 @@ const OwnerReservationsPage = () => {
               </span>
               {reservation.status === 'pending' ? (
                 <div className="d-flex gap-2">
-                  <Button variant="outline" onClick={() => handleStatus(reservation.id, 'confirmed')}>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleStatus(reservation, 'confirmed')}
+                    disabled={decisionLoading === reservation.id}
+                  >
                     Onayla
                   </Button>
-                  <Button variant="link" className="text-danger" onClick={() => handleStatus(reservation.id, 'declined')}>
+                  <Button
+                    variant="link"
+                    className="text-danger"
+                    onClick={() => handleStatus(reservation, 'declined')}
+                    disabled={decisionLoading === reservation.id}
+                  >
                     Reddet
                   </Button>
                 </div>
@@ -105,7 +183,9 @@ const OwnerReservationsPage = () => {
             </div>
           </div>
         </div>
-      ))}
+        );
+        })
+      )}
     </div>
   );
 };

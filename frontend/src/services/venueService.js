@@ -18,6 +18,8 @@ const buildAssetUrl = (path) => {
 };
 
 const fallbackCoverImage = '/images/ankara-salon.jpg';
+const PAYMENT_NOTE_PREFIX = '[ÖDEME]';
+
 const formatNumber = (value) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
@@ -65,6 +67,29 @@ const normalizeOptionalPackages = (options = []) => {
 };
 
 const shouldUseMock = USE_MOCK_API;
+
+const normalizePaymentIntentPayload = (paymentIntent) => {
+  if (!paymentIntent) return null;
+  return {
+    cardholderName: paymentIntent.cardholderName,
+    brand: paymentIntent.brand,
+    last4: paymentIntent.last4,
+    token: paymentIntent.token,
+    status: paymentIntent.status || 'awaiting-owner-approval',
+    total: paymentIntent.total
+  };
+};
+
+const buildPaymentSummaryNote = (paymentIntent) => {
+  if (!paymentIntent) return '';
+  const brandLabel = paymentIntent.brand || 'Kart';
+  const lastDigits = paymentIntent.last4 ? `•••• ${paymentIntent.last4}` : '';
+  const statusLabel =
+    paymentIntent.status === 'authorized'
+      ? 'Provizyon alındı - salon onayı sonrası tahsil edilecek'
+      : paymentIntent.status;
+  return `${PAYMENT_NOTE_PREFIX} ${brandLabel} ${lastDigits} · ${statusLabel}`;
+};
 
 const getVenues = () => readCollection(storageKeys.venues);
 const persistVenues = (venues) => writeCollection(storageKeys.venues, venues);
@@ -354,14 +379,19 @@ const eventDateTaken = (reservations, venueId, eventDate, excludeReservationId) 
   );
 
 export const createReservation = async (customerId, payload) => {
+  const paymentIntent = normalizePaymentIntentPayload(payload.paymentIntent);
+  const paymentNote = buildPaymentSummaryNote(paymentIntent);
+  const combinedNotes = [payload.notes, paymentNote].filter(Boolean).join('\n').trim();
+
   if (!shouldUseMock) {
     // Backend API'ye uygun format
     const backendPayload = {
       salon_id: payload.venueId,
       paket_id: payload.packageId || 1, // Geçici olarak 1, paket sistemi daha sonra eklenebilir
       etkinlik_tarihi: payload.eventDate,
-      notlar: payload.notes || '',
-      opsiyonelPaketler: payload.opsiyonelPaketler || [] // Seçilen opsiyonel paket ID'leri
+      notlar: combinedNotes || undefined,
+      opsiyonelPaketler: payload.opsiyonelPaketler || [], // Seçilen opsiyonel paket ID'leri
+      odeme_token: paymentIntent?.token
     };
     
     const { data } = await apiClient.post('/rezervasyonlar', backendPayload);
@@ -380,7 +410,16 @@ export const createReservation = async (customerId, payload) => {
     customerId,
     status: 'pending',
     createdAt: new Date().toISOString(),
-    ...payload
+    ...payload,
+    totalPrice: payload.totalPrice ?? 0,
+    notes: combinedNotes || undefined,
+    paymentIntent: paymentIntent
+      ? {
+          ...paymentIntent,
+          status: 'awaiting-owner-approval'
+        }
+      : null,
+    paymentStatus: paymentIntent ? 'awaiting-owner-approval' : 'none'
   };
 
   persistReservations([...reservations, reservation]);
@@ -440,6 +479,7 @@ export const fetchOwnerReservations = async (ownerId) => {
           username: res.musteri_kullanici_adi
         },
         notes: res.notlar,
+        totalPrice: res.toplam_fiyat,
         createdAt: res.olusturulma_zamani
       }));
     } catch (error) {

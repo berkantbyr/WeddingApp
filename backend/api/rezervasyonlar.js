@@ -162,7 +162,8 @@ router.get('/rezervasyonlar/salon-sahibi', kimlikDogrula('SALON_SAHIBI'), async 
                     k.kullanici_adi AS musteri_kullanici_adi,
                     p.paket_turu,
                     p.fiyat_hafta_ici,
-                    p.fiyat_hafta_sonu
+                    p.fiyat_hafta_sonu,
+                    r.toplam_fiyat
              FROM rezervasyonlar r
              JOIN salonlar s ON s.id = r.salon_id
              JOIN kullanicilar k ON k.id = r.musteri_id
