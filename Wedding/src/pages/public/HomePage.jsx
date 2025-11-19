@@ -65,8 +65,6 @@ const HomePage = () => {
   
   // Arama formu state'leri
   const [sehir, setSehir] = useState('');
-  const [tarih, setTarih] = useState('');
-  const [kapasite, setKapasite] = useState('');
   
   // Yaklaşan fırsatlar (salonlar)
   const [yaklasanFirsatlar, setYaklasanFirsatlar] = useState([]);
@@ -111,8 +109,6 @@ const HomePage = () => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (sehir) params.append('sehir', sehir);
-    if (tarih) params.append('tarih', tarih);
-    if (kapasite) params.append('kapasite', kapasite);
     
     navigate(`/venues?${params.toString()}`);
   };
@@ -127,25 +123,20 @@ const HomePage = () => {
     }).format(fiyat);
   };
   
-  // Tarihi formatla
-  const formatTarih = (tarih) => {
-    if (!tarih) return '';
-    const date = new Date(tarih);
-    return date.toLocaleDateString('tr-TR', { 
-      day: 'numeric', 
-      month: 'short' 
-    });
-  };
-
   return (
     <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       {/* Üst Banner - Trivago benzeri */}
       <div 
         style={{
-          backgroundColor: '#1e40af',
-          padding: '40px 0',
+          backgroundImage: `linear-gradient(rgba(15,23,42,0.6), rgba(15,23,42,0.6)), url('/images/divarkaplan.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '60px 0',
           marginTop: '-20px',
-          marginBottom: '30px'
+          marginBottom: '30px',
+          borderRadius: '0',
+          boxShadow: '0 12px 40px rgba(15, 23, 42, 0.35)'
         }}
       >
         <div className="container">
@@ -176,7 +167,7 @@ const HomePage = () => {
           <form onSubmit={handleAra}>
             <div className="row g-3 align-items-end">
               {/* Şehir Seçimi */}
-              <div className="col-md-3">
+              <div className="col-lg-9 col-md-8 col-12">
                 <label className="form-label fw-semibold text-muted mb-2">
                   <i className="bi bi-geo-alt me-2"></i>Nereye?
                 </label>
@@ -190,37 +181,8 @@ const HomePage = () => {
                 />
               </div>
               
-              {/* Tarih Seçimi */}
-              <div className="col-md-3">
-                <label className="form-label fw-semibold text-muted mb-2">
-                  <i className="bi bi-calendar3 me-2"></i>Düğün Tarihi
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-lg"
-                  value={tarih}
-                  onChange={(e) => setTarih(e.target.value)}
-                  style={{ borderRadius: '8px' }}
-                />
-              </div>
-              
-              {/* Kapasite */}
-              <div className="col-md-3">
-                <label className="form-label fw-semibold text-muted mb-2">
-                  <i className="bi bi-people me-2"></i>Misafir Sayısı
-                </label>
-                <input
-                  type="number"
-                  className="form-control form-control-lg"
-                  placeholder="200"
-                  value={kapasite}
-                  onChange={(e) => setKapasite(e.target.value)}
-                  style={{ borderRadius: '8px' }}
-                />
-              </div>
-              
               {/* Arama Butonu */}
-              <div className="col-md-3">
+              <div className="col-lg-3 col-md-4 col-12">
                 <button
                   type="submit"
                   className="btn btn-primary btn-lg w-100 fw-bold"

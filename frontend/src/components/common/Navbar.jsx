@@ -97,10 +97,7 @@ const Navbar = () => {
               style={{ 
                 fontSize: '20px', 
                 letterSpacing: '-0.5px',
-                background: 'linear-gradient(135deg, #c75b7a 0%, #f7b7c3 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                color: '#c75b7a',
                 fontWeight: '700',
                 lineHeight: '1.2'
               }}
@@ -116,7 +113,7 @@ const Navbar = () => {
                 marginTop: '2px'
               }}
             >
-              ✨ Hayalinizdeki günü planlayın
+              Hayalinizdeki günü planlayın
             </small>
           </div>
         </Link>
@@ -149,7 +146,6 @@ const Navbar = () => {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <i className={`bi ${link.icon} me-1`} style={{ fontSize: '13px' }}></i>
               {link.label}
             </NavLink>
           ))}
@@ -194,7 +190,6 @@ const Navbar = () => {
                     e.currentTarget.style.color = isActive ? link.color : '#6c757d';
                   }}
                 >
-                  <i className={`bi ${link.icon} me-2`} style={{ color: link.color, fontSize: '16px' }}></i>
                   {link.label}
                 </NavLink>
               ))}

@@ -43,6 +43,7 @@ const VenueSearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState(null);
+  const [skipFilterForm, setSkipFilterForm] = useState(false);
 
   useEffect(() => {
     const initialLoad = async () => {
@@ -57,6 +58,7 @@ const VenueSearchPage = () => {
         if (sehirParam) {
           currentFilters.city = sehirParam;
           setFilters(prev => ({ ...prev, city: sehirParam }));
+          setSkipFilterForm(true);
         }
         if (kapasiteParam) {
           currentFilters.capacity = kapasiteParam;
@@ -125,39 +127,16 @@ const VenueSearchPage = () => {
           minHeight: '450px',
           marginTop: '-20px',
           marginBottom: '40px',
-          borderRadius: '0 0 30px 30px',
-          overflow: 'hidden'
+          borderRadius: '0',
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('/images/divarkaplan.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          boxShadow: '0 12px 40px rgba(199, 91, 122, 0.25)'
         }}
       >
-        {/* Arka plan görseli */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundImage: 'url(/images/99d6f7a3526a21f42765c9fab7782396.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.6)'
-          }}
-        ></div>
-        
-        {/* Gradient overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.78) 0%, rgba(247, 183, 195, 0.68) 100%)'
-          }}
-        ></div>
-        
         {/* İçerik */}
-        <div className="container position-relative" style={{ zIndex: 2, paddingTop: '120px', paddingBottom: '80px' }}>
+        <div className="container position-relative" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
           <div className="text-white" style={{ maxWidth: '650px' }}>
             <h1 
               className="display-4 fw-bold mb-4"
@@ -184,74 +163,76 @@ const VenueSearchPage = () => {
       </div>
 
       {/* Arama Formu */}
-      <div className="container py-3">
-        <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '20px' }}>
-          <div className="card-body p-4 p-md-5">
-            <h2 className="fw-bold mb-3" style={{ fontSize: '28px', color: '#2f1b25' }}>
-              <i className="bi bi-search me-2" style={{ color: '#c75b7a' }}></i>
-              Düğün salonu ara
-            </h2>
-            <p className="text-muted mb-4">Şehre, kapasiteye, paket türüne veya uygun tarihe göre filtreleyin.</p>
-            <form onSubmit={handleSubmit} className="row g-3">
-            <div className="col-md-3">
-              <Input
-                id="city"
-                name="city"
-                label="Şehir"
-                placeholder="İstanbul, Ankara..."
-                value={filters.city}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-3">
-              <Input
-                id="capacity"
-                name="capacity"
-                type="number"
-                label="Minimum kapasite"
-                placeholder="200"
-                value={filters.capacity}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-3">
-              <Input
-                id="eventDate"
-                name="eventDate"
-                type="date"
-                label="Etkinlik tarihi"
-                value={filters.eventDate}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-3">
-              <div className="mb-3">
-                <label className="form-label fw-semibold text-muted" htmlFor="packageTier">
-                  Paket türü
-                </label>
-                <select
-                  id="packageTier"
-                  name="packageTier"
-                  className="form-select"
-                  value={filters.packageTier}
+      {!skipFilterForm && (
+        <div className="container py-3">
+          <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '20px' }}>
+            <div className="card-body p-4 p-md-5">
+              <h2 className="fw-bold mb-3" style={{ fontSize: '28px', color: '#2f1b25' }}>
+                <i className="bi bi-search me-2" style={{ color: '#c75b7a' }}></i>
+                Düğün salonu ara
+              </h2>
+              <p className="text-muted mb-4">Şehre, kapasiteye, paket türüne veya uygun tarihe göre filtreleyin.</p>
+              <form onSubmit={handleSubmit} className="row g-3">
+              <div className="col-md-3">
+                <Input
+                  id="city"
+                  name="city"
+                  label="Şehir"
+                  placeholder="İstanbul, Ankara..."
+                  value={filters.city}
                   onChange={handleChange}
-                >
-                  <option value="">Tüm paketler</option>
-                  <option value="economic">Ekonomik</option>
-                  <option value="standard">Standart</option>
-                  <option value="premium">Premium</option>
-                </select>
+                />
               </div>
+              <div className="col-md-3">
+                <Input
+                  id="capacity"
+                  name="capacity"
+                  type="number"
+                  label="Minimum kapasite"
+                  placeholder="200"
+                  value={filters.capacity}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="col-md-3">
+                <Input
+                  id="eventDate"
+                  name="eventDate"
+                  type="date"
+                  label="Etkinlik tarihi"
+                  value={filters.eventDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold text-muted" htmlFor="packageTier">
+                    Paket türü
+                  </label>
+                  <select
+                    id="packageTier"
+                    name="packageTier"
+                    className="form-select"
+                    value={filters.packageTier}
+                    onChange={handleChange}
+                  >
+                    <option value="">Tüm paketler</option>
+                    <option value="economic">Ekonomik</option>
+                    <option value="standard">Standart</option>
+                    <option value="premium">Premium</option>
+                  </select>
+                </div>
+              </div>
+              <div className="col-12 d-flex justify-content-end">
+                <Button type="submit" isLoading={loading}>
+                  Salonları ara
+                </Button>
+              </div>
+              </form>
             </div>
-            <div className="col-12 d-flex justify-content-end">
-              <Button type="submit" isLoading={loading}>
-                Salonları ara
-              </Button>
-            </div>
-            </form>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Sonuçlar Bölümü */}
       <div className="container pb-5">
@@ -268,7 +249,6 @@ const VenueSearchPage = () => {
             {results.length > 0 && (
               <div className="mb-4">
                 <h3 className="fw-bold" style={{ color: '#2f1b25', fontSize: '24px' }}>
-                  <i className="bi bi-building me-2" style={{ color: '#c75b7a' }}></i>
                   {results.length} Salon Bulundu
                 </h3>
               </div>
