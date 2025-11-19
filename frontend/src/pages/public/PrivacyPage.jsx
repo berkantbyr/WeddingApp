@@ -1,10 +1,10 @@
 import React from 'react';
 
 // Profesyonel renk paleti
-const primaryColor = '#6366f1';
-const secondaryColor = '#f97316';
-const accentColor = '#14b8a6';
-const darkColor = '#1e293b';
+const primaryColor = '#c75b7a';
+const secondaryColor = '#e08997';
+const accentColor = '#f7b7c3';
+const darkColor = '#2f1b25';
 
 const PrivacyPage = () => {
   const privacySections = [
@@ -13,42 +13,42 @@ const PrivacyPage = () => {
       description: 'Hesap açarken paylaştığınız kimlik ve iletişim bilgileri, rezervasyon talepleriniz, salon sahiplerinin paket içerikleri ve platform üzerinde bıraktığınız mesajlar.',
       icon: 'bi-database',
       color: primaryColor,
-      bgColor: 'rgba(99, 102, 241, 0.1)'
+      bgColor: 'rgba(199, 91, 122, 0.12)'
     },
     {
       title: 'Veri İşleme Amaçlarımız',
       description: 'Rezervasyon sürecini tamamlamak, çiftlere uygun salonları önermek, dolandırıcılık girişimlerini engellemek ve hizmet kalitesini ölçmek için verileri işleriz.',
       icon: 'bi-shield-check',
       color: secondaryColor,
-      bgColor: 'rgba(249, 115, 22, 0.1)'
+      bgColor: 'rgba(224, 137, 151, 0.15)'
     },
     {
       title: 'Saklama Süresi ve Güvenlik',
       description: 'Yasal zorunluluklar kapsamında verileri en fazla 5 yıl saklıyoruz. TLS şifreleme, erişim logları ve düzenli penetrasyon testleriyle altyapıyı koruyoruz.',
       icon: 'bi-lock',
       color: accentColor,
-      bgColor: 'rgba(20, 184, 166, 0.1)'
+      bgColor: 'rgba(247, 183, 195, 0.2)'
     },
     {
       title: 'Haklarınız ve Tercihleriniz',
       description: 'KVKK ve GDPR kapsamındaki erişim, düzeltme, silme, işlemeyi kısıtlama ve itiraz haklarınızı support@salonbulucu.com üzerinden kullanabilirsiniz.',
       icon: 'bi-person-check',
-      color: '#8b5cf6',
-      bgColor: 'rgba(139, 92, 246, 0.1)'
+      color: '#b15b85',
+      bgColor: 'rgba(177, 91, 133, 0.12)'
     },
     {
       title: 'Çerez Tercihleri',
       description: 'Zorunlu çerezler oturumunuzu korurken, analitik ve pazarlama çerezleri isteğe bağlıdır. Ayarlarınızı tarayıcınızdan veya çerez banner’ımızdan yönetebilirsiniz.',
       icon: 'bi-cookie',
-      color: '#f59e0b',
-      bgColor: 'rgba(245, 158, 11, 0.1)'
+      color: '#f2b6c5',
+      bgColor: 'rgba(242, 182, 197, 0.2)'
     },
     {
       title: 'Üçüncü Taraf Paylaşımları',
       description: 'Ödeme servisleri, bulut sağlayıcıları ve müşteri destek araçları ile çalışırız. Bu firmalarla veri işleme sözleşmeleri yapar ve verilerinizi yalnızca hizmet sunmak için paylaşırız.',
       icon: 'bi-share',
-      color: '#ec4899',
-      bgColor: 'rgba(236, 72, 153, 0.1)'
+      color: '#e38daa',
+      bgColor: 'rgba(227, 141, 170, 0.16)'
     }
   ];
 
@@ -102,7 +102,7 @@ const PrivacyPage = () => {
                 </h5>
                 <p 
                   style={{ 
-                    color: '#64748b',
+                    color: '#7a5360',
                     fontSize: '14px',
                     lineHeight: '1.6',
                     margin: 0
@@ -120,8 +120,8 @@ const PrivacyPage = () => {
           <div
             className="rounded-4 p-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%)',
-              border: '2px solid rgba(99, 102, 241, 0.1)'
+              background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.08) 0%, rgba(247, 183, 195, 0.05) 100%)',
+              border: '2px solid rgba(199, 91, 122, 0.15)'
             }}
           >
             <div className="row g-4 align-items-center">
@@ -133,7 +133,7 @@ const PrivacyPage = () => {
                   <i className="bi bi-info-circle-fill me-2" style={{ color: primaryColor }}></i>
                   Önemli Bilgiler
                 </h4>
-                <p style={{ color: '#64748b', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
+                <p style={{ color: '#7a5360', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
                   Bu metin 6698 sayılı KVKK ve Avrupa veri koruma standartları dikkate alınarak hazırlandı.
                   Politika güncellemelerini bu sayfadan duyuruyor, kritik değişikliklerde e-posta bildirimi gönderiyoruz.
                   Veri sorumlusu olarak taleplerinizi yazılı veya destek e-postamız üzerinden kabul ediyoruz.
@@ -145,10 +145,10 @@ const PrivacyPage = () => {
                   style={{
                     width: '80px',
                     height: '80px',
-                    background: `linear-gradient(135deg, ${primaryColor} 0%, #8b5cf6 100%)`,
+                    background: `linear-gradient(135deg, ${primaryColor} 0%, #f7b7c3 100%)`,
                     color: 'white',
                     fontSize: '36px',
-                    boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
+                    boxShadow: '0 4px 16px rgba(199, 91, 122, 0.25)'
                   }}
                 >
                   <i className="bi bi-shield-check"></i>

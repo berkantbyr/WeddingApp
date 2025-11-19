@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 // Profesyonel renk paleti
-const primaryColor = '#6366f1';
-const secondaryColor = '#f97316';
-const accentColor = '#14b8a6';
-const darkColor = '#1e293b';
+const primaryColor = '#c75b7a';
+const secondaryColor = '#e08997';
+const accentColor = '#f7b7c3';
+const darkColor = '#2f1b25';
 
 const BlogPage = () => {
   const blogPosts = [
@@ -17,7 +17,7 @@ const BlogPage = () => {
       category: 'Planlama',
       icon: 'bi-calendar-check',
       color: primaryColor,
-      bgColor: 'rgba(99, 102, 241, 0.1)'
+      bgColor: 'rgba(199, 91, 122, 0.12)'
     },
     {
       id: 2,
@@ -27,7 +27,7 @@ const BlogPage = () => {
       category: 'Bütçe',
       icon: 'bi-wallet2',
       color: secondaryColor,
-      bgColor: 'rgba(249, 115, 22, 0.1)'
+      bgColor: 'rgba(224, 137, 151, 0.15)'
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const BlogPage = () => {
       category: 'İletişim',
       icon: 'bi-chat-dots',
       color: accentColor,
-      bgColor: 'rgba(20, 184, 166, 0.1)'
+      bgColor: 'rgba(247, 183, 195, 0.25)'
     },
     {
       id: 4,
@@ -46,8 +46,8 @@ const BlogPage = () => {
       date: '1 Mart 2024',
       category: 'Menü',
       icon: 'bi-egg-fried',
-      color: '#8b5cf6',
-      bgColor: 'rgba(139, 92, 246, 0.1)'
+      color: '#b15b85',
+      bgColor: 'rgba(177, 91, 133, 0.12)'
     },
     {
       id: 5,
@@ -56,8 +56,8 @@ const BlogPage = () => {
       date: '25 Şubat 2024',
       category: 'Fotoğraf',
       icon: 'bi-camera',
-      color: '#f59e0b',
-      bgColor: 'rgba(245, 158, 11, 0.1)'
+      color: '#f2b6c5',
+      bgColor: 'rgba(242, 182, 197, 0.18)'
     },
     {
       id: 6,
@@ -66,8 +66,8 @@ const BlogPage = () => {
       date: '20 Şubat 2024',
       category: 'Tasarım',
       icon: 'bi-palette',
-      color: '#ec4899',
-      bgColor: 'rgba(236, 72, 153, 0.1)'
+      color: '#e38daa',
+      bgColor: 'rgba(227, 141, 170, 0.16)'
     }
   ];
 
@@ -98,7 +98,7 @@ const BlogPage = () => {
       <section 
         className="position-relative py-5"
         style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(249, 115, 22, 0.05) 100%)',
+          background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.08) 0%, rgba(247, 183, 195, 0.05) 50%, rgba(255, 239, 244, 0.6) 100%)',
           marginTop: '-20px',
           marginBottom: '40px',
           paddingTop: '60px',
@@ -110,7 +110,7 @@ const BlogPage = () => {
             <div
               className="d-inline-block px-3 py-1 rounded-pill mb-3 fw-semibold"
               style={{
-                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
+                background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.2) 0%, rgba(247, 183, 195, 0.1) 100%)',
                 color: primaryColor,
                 fontSize: '14px',
                 letterSpacing: '0.5px'
@@ -120,15 +120,15 @@ const BlogPage = () => {
             </div>
             <h1 
               className="fw-bold mb-4"
-              style={{ 
-                fontSize: 'clamp(32px, 5vw, 48px)',
-                color: darkColor,
-                lineHeight: '1.2',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #f97316 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}
+                style={{ 
+                  fontSize: 'clamp(32px, 5vw, 48px)',
+                  color: darkColor,
+                  lineHeight: '1.2',
+                  background: 'linear-gradient(135deg, #c75b7a 0%, #f7b7c3 50%, #ffe3ec 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
             >
               Düğün Planlamanız İçin Rehberler
             </h1>
@@ -136,7 +136,7 @@ const BlogPage = () => {
               style={{ 
                 fontSize: '17px',
                 lineHeight: '1.8',
-                color: '#475569',
+                color: '#7a5360',
                 maxWidth: '700px',
                 margin: '0 auto'
               }}
@@ -155,7 +155,7 @@ const BlogPage = () => {
               <article
                 className="h-100 rounded-4 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 246, 248, 0.9) 100%)',
                   border: `2px solid ${post.bgColor}`,
                   boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                   transition: 'all 0.3s ease',
@@ -222,7 +222,7 @@ const BlogPage = () => {
                   <p 
                     className="mb-4"
                     style={{ 
-                      color: '#64748b',
+                      color: '#7a5360',
                       fontSize: '14px',
                       lineHeight: '1.6'
                     }}
@@ -264,8 +264,8 @@ const BlogPage = () => {
           <div
             className="rounded-4 p-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%)',
-              border: '2px solid rgba(99, 102, 241, 0.1)'
+              background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.08) 0%, rgba(247, 183, 195, 0.05) 100%)',
+              border: '2px solid rgba(199, 91, 122, 0.15)'
             }}
           >
             <div className="text-center mb-4">
@@ -279,7 +279,7 @@ const BlogPage = () => {
                 <i className="bi bi-lightbulb-fill me-2" style={{ color: primaryColor }}></i>
                 Yararlı Kaynaklar
               </h3>
-              <p style={{ color: '#64748b', fontSize: '15px' }}>
+              <p style={{ color: '#7a5360', fontSize: '15px' }}>
                 Daha fazla bilgi için bu kaynaklara göz atın
               </p>
             </div>

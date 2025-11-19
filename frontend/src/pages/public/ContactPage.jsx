@@ -1,31 +1,31 @@
 import React from 'react';
 
-const primaryColor = '#6366f1';
-const secondaryColor = '#f97316';
-const accentColor = '#14b8a6';
-const darkColor = '#1e293b';
+const primaryColor = '#c75b7a';
+const secondaryColor = '#e08997';
+const accentColor = '#f7b7c3';
+const darkColor = '#2f1b25';
 
 const contactCards = [
   {
     icon: 'bi-envelope-fill',
     label: 'E-posta',
     value: 'support@salonbulucu.com',
-    color: '#8b5cf6',
-    border: 'rgba(139, 92, 246, 0.15)'
+    color: '#c75b7a',
+    border: 'rgba(199, 91, 122, 0.2)'
   },
   {
     icon: 'bi-telephone-fill',
     label: 'Telefon',
     value: '+90 (212) 555 00 00',
-    color: '#f97316',
-    border: 'rgba(249, 115, 22, 0.18)'
+    color: '#e08997',
+    border: 'rgba(224, 137, 151, 0.25)'
   },
   {
     icon: 'bi-geo-alt-fill',
     label: 'Ofis',
     value: 'Levent Mahallesi, İstanbul',
-    color: '#14b8a6',
-    border: 'rgba(20, 184, 166, 0.18)'
+    color: '#b15b85',
+    border: 'rgba(177, 91, 133, 0.2)'
   }
 ];
 
@@ -41,7 +41,7 @@ const ContactPage = () => {
       className="d-flex flex-column"
       style={{
         minHeight: '100%',
-        background: 'linear-gradient(180deg, #f8f9ff 0%, #fdf8ff 100%)'
+        background: 'linear-gradient(180deg, #fff6f8 0%, #ffeef3 100%)'
       }}
     >
       <section className="py-5">
@@ -50,7 +50,7 @@ const ContactPage = () => {
             <div
               className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill fw-semibold mb-3"
               style={{
-                background: 'rgba(99, 102, 241, 0.08)',
+                background: 'rgba(199, 91, 122, 0.12)',
                 color: primaryColor,
                 fontSize: '13px',
                 letterSpacing: '0.4px'
@@ -62,7 +62,7 @@ const ContactPage = () => {
             <p
               className="mb-0"
               style={{
-                color: '#64748b',
+                color: '#7a5360',
                 maxWidth: '560px',
                 margin: '0 auto',
                 fontSize: '16px'
@@ -78,7 +78,7 @@ const ContactPage = () => {
                 <div
                   className="h-100 rounded-4 p-4"
                   style={{
-                    background: 'white',
+                    background: '#fffdfd',
                     border: `1px solid ${card.border}`,
                     boxShadow: `0 12px 30px ${card.border}`,
                     transition: 'all 0.2s ease'
@@ -98,10 +98,10 @@ const ContactPage = () => {
                       <i className={`bi ${card.icon}`}></i>
                     </div>
                     <div>
-                      <div className="fw-semibold" style={{ color: '#1f2937', fontSize: '15px' }}>
+                      <div className="fw-semibold" style={{ color: darkColor, fontSize: '15px' }}>
                         {card.label}
                       </div>
-                      <div style={{ color: '#64748b' }}>{card.value}</div>
+                      <div style={{ color: '#7a5360' }}>{card.value}</div>
                     </div>
                   </div>
                 </div>
@@ -113,9 +113,9 @@ const ContactPage = () => {
             <div
               className="rounded-4 p-4 p-md-5"
               style={{
-                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(59, 130, 246, 0.08))',
-                border: '1px solid rgba(99, 102, 241, 0.25)',
-                boxShadow: '0 15px 40px rgba(99, 102, 241, 0.15)'
+                background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.12), rgba(247, 183, 195, 0.12))',
+                border: '1px solid rgba(199, 91, 122, 0.25)',
+                boxShadow: '0 15px 40px rgba(199, 91, 122, 0.15)'
               }}
             >
               <div className="d-flex align-items-center gap-3 mb-4">
@@ -133,10 +133,10 @@ const ContactPage = () => {
                   <i className="bi bi-clock-history"></i>
                 </div>
                 <div>
-                  <div className="fw-bold" style={{ color: '#1f2937', fontSize: '17px' }}>
+                  <div className="fw-bold" style={{ color: darkColor, fontSize: '17px' }}>
                     Çalışma Saatleri
                   </div>
-                  <small style={{ color: '#475569' }}>Mesajlarınıza aynı gün içinde dönüş yapıyoruz.</small>
+                  <small style={{ color: '#7a5360' }}>Mesajlarınıza aynı gün içinde dönüş yapıyoruz.</small>
                 </div>
               </div>
               <div className="d-flex flex-column gap-3">
@@ -146,10 +146,10 @@ const ContactPage = () => {
                     className="d-flex justify-content-between align-items-center rounded-3 px-3 py-2"
                     style={{ background: 'rgba(255,255,255,0.75)' }}
                   >
-                    <span className="fw-semibold" style={{ color: '#334155' }}>
+                    <span className="fw-semibold" style={{ color: darkColor }}>
                       {item.day}
                     </span>
-                    <span style={{ color: '#475569' }}>{item.time}</span>
+                    <span style={{ color: '#7a5360' }}>{item.time}</span>
                   </div>
                 ))}
               </div>

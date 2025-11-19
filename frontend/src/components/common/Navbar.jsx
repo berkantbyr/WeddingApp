@@ -25,10 +25,10 @@ const Navbar = () => {
 
   // Üst bilgi çubuğu bağlantıları
   const navLinks = [
-    { to: '/about', label: 'Hakkımızda', icon: 'bi-info-circle', color: '#6366f1' },
-    { to: '/contact', label: 'İletişim', icon: 'bi-envelope', color: '#f97316' },
-    { to: '/privacy', label: 'Gizlilik Politikası', icon: 'bi-shield-check', color: '#3b82f6' },
-    { to: '/terms', label: 'Kullanım Şartları', icon: 'bi-file-text', color: '#f59e0b' }
+    { to: '/about', label: 'Hakkımızda', icon: 'bi-info-circle', color: '#c75b7a' },
+    { to: '/contact', label: 'İletişim', icon: 'bi-envelope', color: '#e08997' },
+    { to: '/privacy', label: 'Gizlilik Politikası', icon: 'bi-shield-check', color: '#b15b85' },
+    { to: '/terms', label: 'Kullanım Şartları', icon: 'bi-file-text', color: '#f3b4c6' }
   ];
 
   const renderDashboardLink = () => {
@@ -58,7 +58,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white shadow-sm py-3 sticky-top" style={{ borderBottom: '2px solid #f8f9fa' }}>
+    <nav className="navbar navbar-expand-lg bg-white shadow-sm py-3 sticky-top" style={{ borderBottom: '2px solid #ffeef3' }}>
       <div className="container">
         <Link 
           to="/" 
@@ -70,7 +70,7 @@ const Navbar = () => {
             borderRadius: '12px'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(99, 102, 241, 0.05)';
+            e.currentTarget.style.background = 'rgba(199, 91, 122, 0.08)';
             e.currentTarget.style.transform = 'scale(1.02)';
           }}
           onMouseLeave={(e) => {
@@ -97,7 +97,7 @@ const Navbar = () => {
               style={{ 
                 fontSize: '20px', 
                 letterSpacing: '-0.5px',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                background: 'linear-gradient(135deg, #c75b7a 0%, #f7b7c3 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -111,7 +111,7 @@ const Navbar = () => {
               className="fw-normal" 
               style={{ 
                 fontSize: '11px',
-                color: '#64748b',
+                color: '#7a5360',
                 letterSpacing: '0.3px',
                 marginTop: '2px'
               }}
@@ -139,7 +139,7 @@ const Navbar = () => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = link.color;
-                e.currentTarget.style.backgroundColor = link.color + '15';
+                e.currentTarget.style.backgroundColor = link.color + '20';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
@@ -185,7 +185,7 @@ const Navbar = () => {
                     transition: 'all 0.2s ease'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = link.color + '20';
+                    e.currentTarget.style.backgroundColor = link.color + '26';
                     e.currentTarget.style.color = link.color;
                   }}
                   onMouseLeave={(e) => {
@@ -210,7 +210,7 @@ const Navbar = () => {
                 type="button"
                 className="btn btn-link text-decoration-none fw-semibold"
                 onClick={() => navigate('/login')}
-                style={{ color: '#6366f1', whiteSpace: 'nowrap' }}
+                style={{ color: '#c75b7a', whiteSpace: 'nowrap' }}
               >
                 Giriş Yap
               </button>
@@ -219,7 +219,7 @@ const Navbar = () => {
                 className="btn btn-primary fw-semibold px-4"
                 onClick={() => navigate('/register')}
                 style={{
-                  backgroundColor: '#6366f1',
+                  backgroundColor: '#c75b7a',
                   border: 'none',
                   borderRadius: '8px',
                   whiteSpace: 'nowrap'

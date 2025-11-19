@@ -7,22 +7,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#8F3E97',
-        secondary: '#F2A65A',
-        accent: '#FFD7E5',
-        dark: '#1F2933',
-        muted: '#4A5568',
-        light: '#F9FAFB'
+        primary: '#C75B7A',
+        secondary: '#E08997',
+        accent: '#FCE8EF',
+        dark: '#2F1B25',
+        muted: '#7A5360',
+        light: '#FFF6F8'
       },
       fontFamily: {
         display: ['"Playfair Display"', 'serif'],
         body: ['"Poppins"', 'sans-serif']
       },
       boxShadow: {
-        soft: '0 20px 45px -20px rgba(143, 62, 151, 0.25)'
+        soft: '0 20px 45px -20px rgba(199, 91, 122, 0.35)'
       },
       backgroundImage: {
-        'hero-overlay': 'linear-gradient(135deg, rgba(143, 62, 151, 0.8), rgba(242, 166, 90, 0.75))'
+        'hero-overlay': 'linear-gradient(135deg, rgba(199, 91, 122, 0.9), rgba(247, 183, 195, 0.85))'
       }
     }
   },

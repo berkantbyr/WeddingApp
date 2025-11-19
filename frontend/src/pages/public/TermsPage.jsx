@@ -1,10 +1,10 @@
 import React from 'react';
 
 // Profesyonel renk paleti
-const primaryColor = '#6366f1';
-const secondaryColor = '#f97316';
-const accentColor = '#14b8a6';
-const darkColor = '#1e293b';
+const primaryColor = '#c75b7a';
+const secondaryColor = '#e08997';
+const accentColor = '#f7b7c3';
+const darkColor = '#2f1b25';
 
 const TermsPage = () => {
   const terms = [
@@ -13,7 +13,7 @@ const TermsPage = () => {
       description: 'Kayıt olurken doğru bilgi vermek, şifrenizi gizli tutmak ve hesabınız üzerinden yapılan tüm işlemlerden sorumlu olmak zorundasınız.',
       icon: 'bi-person-shield',
       color: primaryColor,
-      bgColor: 'rgba(99, 102, 241, 0.1)',
+      bgColor: 'rgba(199, 91, 122, 0.12)',
       number: '1'
     },
     {
@@ -21,7 +21,7 @@ const TermsPage = () => {
       description: 'Profildeki fiyat, kapasite ve hizmet bilgilerini güncel tutmak; onaylanan rezervasyonlarda sözleşmeye uygun hizmet sağlamakla yükümlüsünüz.',
       icon: 'bi-building-check',
       color: secondaryColor,
-      bgColor: 'rgba(249, 115, 22, 0.1)',
+      bgColor: 'rgba(224, 137, 151, 0.15)',
       number: '2'
     },
     {
@@ -29,31 +29,31 @@ const TermsPage = () => {
       description: 'Talep formunda belirttiğiniz tarih, kişi sayısı ve özel ihtiyaçların doğru olması gerekir. Salonun iptal/değişiklik koşullarını kabul etmiş sayılırsınız.',
       icon: 'bi-people',
       color: accentColor,
-      bgColor: 'rgba(20, 184, 166, 0.1)',
+      bgColor: 'rgba(247, 183, 195, 0.25)',
       number: '3'
     },
     {
       title: 'Ödeme İşlemleri',
       description: 'Ödeme altyapısı devreye alındığında işlemler lisanslı ödeme kuruluşları tarafından yürütülür. SalonBulucu, tahsilat komisyonları ve güvenli aktarım protokollerini açıklar.',
       icon: 'bi-credit-card-2-front',
-      color: '#8b5cf6',
-      bgColor: 'rgba(139, 92, 246, 0.1)',
+      color: '#b15b85',
+      bgColor: 'rgba(177, 91, 133, 0.12)',
       number: '4'
     },
     {
       title: 'Kullanım İhlalleri',
       description: 'Yanlış bilgi paylaşımı, spam talep gönderimi veya üçüncü taraf haklarını ihlal eden davranışlarda hesaplar askıya alınabilir; ciddi ihlallerde kalıcı erişim engellenir.',
       icon: 'bi-exclamation-triangle',
-      color: '#f59e0b',
-      bgColor: 'rgba(245, 158, 11, 0.1)',
+      color: '#f2b6c5',
+      bgColor: 'rgba(242, 182, 197, 0.18)',
       number: '5'
     },
     {
       title: 'Fikri Mülkiyet',
       description: 'SalonBulucu markası, yazılımı ve içerikleri telif hakkı kapsamındadır. İzinsiz kopyalama veya dağıtım tespit edildiğinde hukuki haklarımızı kullanırız.',
       icon: 'bi-copyright',
-      color: '#ec4899',
-      bgColor: 'rgba(236, 72, 153, 0.1)',
+      color: '#e38daa',
+      bgColor: 'rgba(227, 141, 170, 0.16)',
       number: '6'
     }
   ];
@@ -131,7 +131,7 @@ const TermsPage = () => {
                 {/* Açıklama */}
                 <p 
                   style={{ 
-                    color: '#64748b',
+                    color: '#7a5360',
                     fontSize: '14px',
                     lineHeight: '1.6',
                     margin: 0
@@ -149,8 +149,8 @@ const TermsPage = () => {
           <div
             className="rounded-4 p-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.03) 100%)',
-              border: '2px solid rgba(99, 102, 241, 0.1)'
+              background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.08) 0%, rgba(247, 183, 195, 0.05) 100%)',
+              border: '2px solid rgba(199, 91, 122, 0.15)'
             }}
           >
             <div className="row g-4 align-items-center">
@@ -162,7 +162,7 @@ const TermsPage = () => {
                   <i className="bi bi-info-circle-fill me-2" style={{ color: primaryColor }}></i>
                   Önemli Notlar
                 </h4>
-                <p style={{ color: '#64748b', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
+                <p style={{ color: '#7a5360', fontSize: '15px', lineHeight: '1.7', margin: 0 }}>
                   Şartlar zaman zaman güncellenebilir; değişiklikleri bu sayfadan yayınlar ve önemli durumlarda e-posta ile bildiririz.
                   Platformu kullanmaya devam ederek güncel şartları kabul etmiş sayılırsınız. Sorularınız için destek kanalımızdan bize ulaşabilirsiniz.
                 </p>
@@ -173,10 +173,10 @@ const TermsPage = () => {
                   style={{
                     width: '80px',
                     height: '80px',
-                    background: `linear-gradient(135deg, ${primaryColor} 0%, #8b5cf6 100%)`,
+                    background: `linear-gradient(135deg, ${primaryColor} 0%, #f7b7c3 100%)`,
                     color: 'white',
                     fontSize: '36px',
-                    boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)'
+                    boxShadow: '0 4px 16px rgba(199, 91, 122, 0.25)'
                   }}
                 >
                   <i className="bi bi-file-earmark-text"></i>
@@ -191,8 +191,8 @@ const TermsPage = () => {
           <div
             className="rounded-4 p-4 text-center"
             style={{
-              background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(45, 212, 191, 0.05) 100%)',
-              border: '2px solid rgba(20, 184, 166, 0.2)'
+              background: 'linear-gradient(135deg, rgba(247, 183, 195, 0.2) 0%, rgba(255, 239, 244, 0.6) 100%)',
+              border: '2px solid rgba(247, 183, 195, 0.35)'
             }}
           >
             <div className="d-flex align-items-center justify-content-center gap-3 mb-2">
@@ -201,7 +201,7 @@ const TermsPage = () => {
                 Platformumuzu kullanarak bu şartları kabul etmiş sayılırsınız.
               </p>
             </div>
-            <p className="mb-0 small" style={{ color: '#64748b', fontSize: '13px' }}>
+            <p className="mb-0 small" style={{ color: '#7a5360', fontSize: '13px' }}>
               Şartları okuduğunuzu ve kabul ettiğinizi onaylıyorsunuz.
             </p>
           </div>

@@ -133,17 +133,17 @@ const dugunTuruAciklamalari = {
   'EN_LUX': {
     ad: 'En Lüks',
     aciklama: 'Yemekli, kuruyemiş, içecekli',
-    renk: '#dc2626'
+    renk: '#b74263'
   },
   'ORTA': {
     ad: 'Orta',
     aciklama: 'Kuruyemiş ve içecek',
-    renk: '#f97316'
+    renk: '#e78ea9'
   },
   'NORMAL': {
     ad: 'Normal',
     aciklama: 'Sadece kuruyemiş',
-    renk: '#14b8a6'
+    renk: '#d6889f'
   }
 };
 
@@ -233,11 +233,11 @@ const HomePage = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#fff6f8', minHeight: '100vh' }}>
       {/* Üst Banner - Trivago benzeri */}
       <div 
         style={{
-          backgroundColor: '#1e40af',
+          background: 'linear-gradient(120deg, #fbe4ec, #f7c0cf)',
           padding: '40px 0',
           marginTop: '-20px',
           marginBottom: '30px'
@@ -265,7 +265,7 @@ const HomePage = () => {
           style={{ 
             borderRadius: '16px',
             padding: '30px',
-            backgroundColor: 'white'
+            backgroundColor: '#fffdfd'
           }}
         >
           <form onSubmit={handleAra}>
@@ -324,13 +324,13 @@ const HomePage = () => {
                 <button
                   type="submit"
                   className="btn btn-primary btn-lg w-100 fw-bold"
-                  style={{
-                    borderRadius: '8px',
-                    backgroundColor: '#1e40af',
-                    border: 'none',
-                    padding: '12px',
-                    fontSize: '16px'
-                  }}
+                    style={{
+                      borderRadius: '8px',
+                      backgroundColor: '#c75b7a',
+                      border: 'none',
+                      padding: '12px',
+                      fontSize: '16px'
+                    }}
                 >
                   <i className="bi bi-search me-2"></i>Ara
                 </button>
@@ -342,7 +342,7 @@ const HomePage = () => {
 
       {/* Popüler Aramalar - Şehir Butonları */}
       <div className="container mb-5">
-        <h2 className="fw-bold mb-4" style={{ color: '#1e293b', fontSize: '28px' }}>
+        <h2 className="fw-bold mb-4" style={{ color: '#2f1b25', fontSize: '28px' }}>
           Popüler Aramalar
         </h2>
         <div className="row g-4">
@@ -366,7 +366,7 @@ const HomePage = () => {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div className="position-relative" style={{ height: '200px', backgroundColor: '#e5e7eb' }}>
+                <div className="position-relative" style={{ height: '200px', backgroundColor: '#ffe6ee' }}>
                   <img
                     src={sehir.resim}
                     alt={sehir.ad}
@@ -390,7 +390,7 @@ const HomePage = () => {
                   <div 
                     className="placeholder-text position-absolute top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center text-white fw-bold"
                     style={{
-                      background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                      background: 'linear-gradient(135deg, #c75b7a 0%, #f7b7c3 100%)',
                       fontSize: '18px'
                     }}
                   >
@@ -415,13 +415,13 @@ const HomePage = () => {
       {/* Yaklaşan Düğün Salonu Fırsatları - Trivago benzeri */}
       <div className="container mb-5">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold mb-0" style={{ color: '#1e293b', fontSize: '28px' }}>
+          <h2 className="fw-bold mb-0" style={{ color: '#2f1b25', fontSize: '28px' }}>
             Tarihleri yaklaşan düğün salonu fırsatları
           </h2>
           <Link 
             to="/venues"
             className="text-decoration-none fw-semibold"
-            style={{ color: '#1e40af' }}
+            style={{ color: '#c75b7a' }}
           >
             Daha fazla fırsat görüntüle <i className="bi bi-arrow-right"></i>
           </Link>
@@ -482,7 +482,7 @@ const HomePage = () => {
                   }}
                 >
                   {/* Salon Fotoğrafı */}
-                  <div className="position-relative" style={{ height: '200px', backgroundColor: '#e5e7eb' }}>
+                  <div className="position-relative" style={{ height: '200px', backgroundColor: '#ffe6ee' }}>
                     <img
                       src={anaFoto}
                       alt={salon.ad}
@@ -509,7 +509,7 @@ const HomePage = () => {
                     <div
                       className="position-absolute top-0 start-0 m-2 px-2 py-1 rounded"
                       style={{
-                        backgroundColor: '#dc2626',
+                        backgroundColor: '#c75b7a',
                         color: 'white',
                         fontSize: '12px',
                         fontWeight: 'bold'
@@ -521,7 +521,7 @@ const HomePage = () => {
                   
                   {/* Salon Bilgileri */}
                   <div className="card-body p-3">
-                    <h5 className="fw-bold mb-2" style={{ fontSize: '16px', color: '#1e293b' }}>
+                    <h5 className="fw-bold mb-2" style={{ fontSize: '16px', color: '#2f1b25' }}>
                       {salon.ad}
                     </h5>
                     
@@ -561,7 +561,7 @@ const HomePage = () => {
                     
                     <div className="d-flex justify-content-between align-items-center mt-3">
                       <div>
-                        <div className="fw-bold" style={{ color: '#1e40af', fontSize: '18px' }}>
+                        <div className="fw-bold" style={{ color: '#c75b7a', fontSize: '18px' }}>
                           {formatFiyat(salon.fiyat)}
                         </div>
                         <small className="text-muted">/gece</small>
@@ -571,7 +571,7 @@ const HomePage = () => {
                         to={`/venues/${salon.id}`}
                         className="btn btn-sm fw-semibold"
                         style={{
-                          backgroundColor: '#1e40af',
+                          backgroundColor: '#c75b7a',
                           color: 'white',
                           border: 'none',
                           borderRadius: '6px',

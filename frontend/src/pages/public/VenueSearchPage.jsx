@@ -13,17 +13,17 @@ const dugunTuruAciklamalari = {
   'EN_LUX': {
     ad: 'En Lüks',
     aciklama: 'Yemekli, kuruyemiş, içecekli',
-    renk: '#dc2626'
+    renk: '#b74263'
   },
   'ORTA': {
     ad: 'Orta',
     aciklama: 'Kuruyemiş ve içecek',
-    renk: '#f97316'
+    renk: '#d96f8a'
   },
   'NORMAL': {
     ad: 'Normal',
     aciklama: 'Sadece kuruyemiş',
-    renk: '#14b8a6'
+    renk: '#c97f9d'
   }
 };
 
@@ -152,7 +152,7 @@ const VenueSearchPage = () => {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.75) 0%, rgba(139, 92, 246, 0.65) 50%, rgba(249, 115, 22, 0.55) 100%)'
+            background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.78) 0%, rgba(247, 183, 195, 0.68) 100%)'
           }}
         ></div>
         
@@ -187,8 +187,8 @@ const VenueSearchPage = () => {
       <div className="container py-3">
         <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '20px' }}>
           <div className="card-body p-4 p-md-5">
-            <h2 className="fw-bold mb-3" style={{ fontSize: '28px', color: '#1e293b' }}>
-              <i className="bi bi-search me-2" style={{ color: '#6366f1' }}></i>
+            <h2 className="fw-bold mb-3" style={{ fontSize: '28px', color: '#2f1b25' }}>
+              <i className="bi bi-search me-2" style={{ color: '#c75b7a' }}></i>
               Düğün salonu ara
             </h2>
             <p className="text-muted mb-4">Şehre, kapasiteye, paket türüne veya uygun tarihe göre filtreleyin.</p>
@@ -267,8 +267,8 @@ const VenueSearchPage = () => {
           <>
             {results.length > 0 && (
               <div className="mb-4">
-                <h3 className="fw-bold" style={{ color: '#1e293b', fontSize: '24px' }}>
-                  <i className="bi bi-building me-2" style={{ color: '#6366f1' }}></i>
+                <h3 className="fw-bold" style={{ color: '#2f1b25', fontSize: '24px' }}>
+                  <i className="bi bi-building me-2" style={{ color: '#c75b7a' }}></i>
                   {results.length} Salon Bulundu
                 </h3>
               </div>
@@ -280,10 +280,10 @@ const VenueSearchPage = () => {
                   style={{ 
                     borderRadius: '16px',
                     border: 'none',
-                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)'
+                    background: 'linear-gradient(135deg, rgba(199, 91, 122, 0.08) 0%, rgba(247, 183, 195, 0.16) 100%)'
                   }}
                 >
-                  <i className="bi bi-info-circle" style={{ fontSize: '24px', color: '#6366f1' }}></i>
+                  <i className="bi bi-info-circle" style={{ fontSize: '24px', color: '#c75b7a' }}></i>
                   <div>
                     <strong>{searched ? 'Filtrelerinize uygun salon bulunamadı.' : 'Henüz gösterilecek salon yok.'}</strong>
                     <p className="mb-0 mt-1">{searched ? 'Lütfen farklı kriterler deneyin.' : 'Lütfen filtreleri güncelleyin.'}</p>
@@ -334,7 +334,7 @@ const VenueSearchPage = () => {
                         }}
                       >
                         {/* Salon Fotoğrafı */}
-                        <div className="position-relative" style={{ height: '200px', backgroundColor: '#e5e7eb' }}>
+                        <div className="position-relative" style={{ height: '200px', backgroundColor: '#ffe6ee' }}>
                           <img
                             src={anaFoto}
                             alt={venue.name}
@@ -360,7 +360,7 @@ const VenueSearchPage = () => {
                           <div
                             className="position-absolute top-0 start-0 m-2 px-2 py-1 rounded"
                             style={{
-                              backgroundColor: '#dc2626',
+                              backgroundColor: '#c75b7a',
                               color: 'white',
                               fontSize: '12px',
                               fontWeight: 'bold'
@@ -372,7 +372,7 @@ const VenueSearchPage = () => {
                         
                         {/* Salon Bilgileri */}
                         <div className="card-body p-3">
-                          <h5 className="fw-bold mb-2" style={{ fontSize: '16px', color: '#1e293b' }}>
+                          <h5 className="fw-bold mb-2" style={{ fontSize: '16px', color: '#2f1b25' }}>
                             {venue.name}
                           </h5>
                           
@@ -412,7 +412,7 @@ const VenueSearchPage = () => {
                           
                           <div className="d-flex justify-content-between align-items-center mt-3">
                             <div>
-                              <div className="fw-bold" style={{ color: '#1e40af', fontSize: '18px' }}>
+                              <div className="fw-bold" style={{ color: '#c75b7a', fontSize: '18px' }}>
                                 {formatFiyat(venue.fiyat || venue.price)}
                               </div>
                               <small className="text-muted">/gece</small>
@@ -422,7 +422,7 @@ const VenueSearchPage = () => {
                               to={`/venues/${venue.id}`}
                               className="btn btn-sm fw-semibold"
                               style={{
-                                backgroundColor: '#1e40af',
+                                backgroundColor: '#c75b7a',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '6px',

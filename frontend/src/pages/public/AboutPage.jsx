@@ -1,7 +1,7 @@
 import React from 'react';
 
-const dark = '#1e293b';
-const muted = '#475569';
+const dark = '#2f1b25';
+const muted = '#7a5360';
 
 const storyParagraphs = [
   'SalonBulucu, düğününü planlayan çiftlerle salon yöneticilerini aynı masa etrafında buluşturmak için tasarlanmış bağımsız bir platformdur. 2021’de, sektördeki bilgi kirliliğini azaltmak ve salon arayışını dakikalara indirmek amacıyla yola çıktık.',
@@ -22,10 +22,10 @@ const visionText =
 
 const AboutPage = () => {
   return (
-    <div className="d-flex flex-column" style={{ backgroundColor: '#f8fafc' }}>
+    <div className="d-flex flex-column" style={{ backgroundColor: '#fff6f8' }}>
       <section className="py-5">
         <div className="container">
-          <div className="rounded-4 p-4 p-md-5 mb-4" style={{ backgroundColor: '#ffffff', boxShadow: '0 6px 24px rgba(15, 23, 42, 0.05)' }}>
+          <div className="rounded-4 p-4 p-md-5 mb-4" style={{ backgroundColor: '#fffdfd', boxShadow: '0 6px 24px rgba(199, 91, 122, 0.12)' }}>
             <h2 className="fw-bold mb-3" style={{ color: dark, fontSize: '24px' }}>
               Hikayemiz
             </h2>
@@ -38,7 +38,7 @@ const AboutPage = () => {
             </div>
           </div>
 
-          <div className="rounded-4 p-4 p-md-5 mb-4" style={{ backgroundColor: '#ffffff', boxShadow: '0 6px 24px rgba(15, 23, 42, 0.05)' }}>
+          <div className="rounded-4 p-4 p-md-5 mb-4" style={{ backgroundColor: '#fffdfd', boxShadow: '0 6px 24px rgba(199, 91, 122, 0.12)' }}>
             <h2 className="fw-bold mb-3" style={{ color: dark, fontSize: '24px' }}>
               Çalışma Prensiplerimiz
             </h2>
@@ -53,7 +53,7 @@ const AboutPage = () => {
 
           <div className="row g-4">
             <div className="col-md-6">
-              <div className="h-100 rounded-4 p-4 p-md-5" style={{ backgroundColor: '#ffffff', boxShadow: '0 6px 24px rgba(15, 23, 42, 0.05)' }}>
+              <div className="h-100 rounded-4 p-4 p-md-5" style={{ backgroundColor: '#fffdfd', boxShadow: '0 6px 24px rgba(199, 91, 122, 0.12)' }}>
                 <h3 className="fw-bold mb-3" style={{ color: dark }}>
                   Misyonumuz
                 </h3>
@@ -63,7 +63,7 @@ const AboutPage = () => {
               </div>
             </div>
             <div className="col-md-6">
-              <div className="h-100 rounded-4 p-4 p-md-5" style={{ backgroundColor: '#ffffff', boxShadow: '0 6px 24px rgba(15, 23, 42, 0.05)' }}>
+              <div className="h-100 rounded-4 p-4 p-md-5" style={{ backgroundColor: '#fffdfd', boxShadow: '0 6px 24px rgba(199, 91, 122, 0.12)' }}>
                 <h3 className="fw-bold mb-3" style={{ color: dark }}>
                   Vizyonumuz
                 </h3>
