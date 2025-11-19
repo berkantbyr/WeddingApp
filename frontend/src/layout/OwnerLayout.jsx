@@ -4,10 +4,10 @@ import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../components/common/Button.jsx';
 
 const ownerLinks = [
-  { to: '/owner', label: 'Kontrol Paneli', icon: 'bi-speedometer' },
-  { to: '/owner/venues', label: 'Salonlarım', icon: 'bi-building' },
-  { to: '/owner/reservations', label: 'Rezervasyonlar', icon: 'bi-calendar2-check' },
-  { to: '/owner/add', label: 'Yeni Salon Ekle', icon: 'bi-plus-circle' }
+  { to: '/owner', label: 'Kontrol Paneli' },
+  { to: '/owner/venues', label: 'Salonlarım' },
+  { to: '/owner/reservations', label: 'Rezervasyonlar' },
+  { to: '/owner/add', label: 'Yeni Salon Ekle' }
 ];
 
 const OwnerLayout = () => {
@@ -52,7 +52,6 @@ const OwnerLayout = () => {
                         }`
                       }
                     >
-                      <i className={`bi ${item.icon}`} />
                       {item.label}
                     </NavLink>
                   ))}
