@@ -10,6 +10,23 @@ const roleRedirect = {
   customer: '/account'
 };
 
+const ROLE_DETAILS = {
+  customer: {
+    title: 'Müşteri',
+    description: 'Düğün salonu rezervasyonu yapmak için'
+  },
+  owner: {
+    title: 'Salon Sahibi',
+    description: 'Salon ilanı oluşturmak ve rezervasyon almak için'
+  },
+  admin: {
+    title: 'Yönetici',
+    description: 'Kullanıcı ve salon kayıtlarını görüntülemek ve denetlemek için'
+  }
+};
+
+const DEFAULT_ROLE_ORDER = ['customer', 'owner', 'admin'];
+
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -26,8 +43,9 @@ const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
 
   const roleOptions = useMemo(() => {
-    if (!roles || !Array.isArray(roles)) return ['customer', 'owner'];
-    return roles.filter((role) => role !== 'admin');
+    if (!roles || !Array.isArray(roles)) return DEFAULT_ROLE_ORDER;
+    const normalizedRoles = roles.filter((role) => DEFAULT_ROLE_ORDER.includes(role));
+    return normalizedRoles.length ? normalizedRoles : DEFAULT_ROLE_ORDER;
   }, [roles]);
 
   const handleChange = (event) => {
@@ -91,41 +109,34 @@ const RegisterForm = () => {
         <label className="form-label fw-semibold text-muted" htmlFor="role">
           Hesap Türü *
         </label>
-        <div className="d-flex gap-3">
-          <div className="form-check flex-fill">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="role"
-              id="role-customer"
-              value="customer"
-              checked={formData.role === 'customer'}
-              onChange={handleChange}
-              required
-            />
-            <label className="form-check-label w-100" htmlFor="role-customer">
-              <strong>Müşteri</strong>
-              <br />
-              <small className="text-muted">Düğün salonu rezervasyonu yapmak için</small>
-            </label>
-          </div>
-          <div className="form-check flex-fill">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="role"
-              id="role-owner"
-              value="owner"
-              checked={formData.role === 'owner'}
-              onChange={handleChange}
-              required
-            />
-            <label className="form-check-label w-100" htmlFor="role-owner">
-              <strong>Salon Sahibi</strong>
-              <br />
-              <small className="text-muted">Salon ilanı oluşturmak için</small>
-            </label>
-          </div>
+        <div className="d-flex flex-column flex-lg-row gap-3">
+          {roleOptions.map((role) => {
+            const roleInfo = ROLE_DETAILS[role] ?? {
+              title: role,
+              description: ''
+            };
+            return (
+              <div className="form-check flex-fill" key={role}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="role"
+                  id={`role-${role}`}
+                  value={role}
+                  checked={formData.role === role}
+                  onChange={handleChange}
+                  required
+                />
+                <label className="form-check-label w-100" htmlFor={`role-${role}`}>
+                  <strong>{roleInfo.title}</strong>
+                  <br />
+                  {roleInfo.description ? (
+                    <small className="text-muted">{roleInfo.description}</small>
+                  ) : null}
+                </label>
+              </div>
+            );
+          })}
         </div>
       </div>
 

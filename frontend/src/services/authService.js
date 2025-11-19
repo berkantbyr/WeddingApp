@@ -56,7 +56,14 @@ export const login = async ({ username, password }) => {
 export const register = async ({ fullName, username, password, role = ROLES.CUSTOMER, company, phone }) => {
   if (!shouldUseMock) {
     try {
-      const backendRole = role === 'customer' ? 'MUSTERI' : role === 'owner' ? 'SALON_SAHIBI' : 'MUSTERI';
+      const backendRole =
+        role === 'customer'
+          ? 'MUSTERI'
+          : role === 'owner'
+            ? 'SALON_SAHIBI'
+            : role === 'admin'
+              ? 'ADMIN'
+              : 'MUSTERI';
       const { data } = await apiClient.post('/kayit', { 
         ad_soyad: fullName,
         kullanici_adi: username,
