@@ -1,3 +1,7 @@
+// Projenin genel akışı: Bu dosya Express sunucusunu kurup `./api` altındaki auth/salon/paket/rezervasyon
+// rotalarını MySQL'e bağlıyor; `middleware` klasörü yükleme ve yetki süreçlerini yönetiyor; `frontend/src`'deki
+// React ekranları bu API'yi kullanarak kullanıcı, salon sahibi ve admin panellerini sunuyor. Tüm kod bu iş
+// akışını destekleyecek şekilde organize edildi.
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
