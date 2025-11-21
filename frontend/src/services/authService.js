@@ -11,6 +11,17 @@ import { apiClient, USE_MOCK_API } from './apiClient';
 
 const shouldUseMock = USE_MOCK_API;
 
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = '123';
+const ADMIN_FULL_NAME = 'Sistem Yöneticisi';
+
+const buildStaticAdminUser = () => ({
+  id: 'ADMIN',
+  fullName: ADMIN_FULL_NAME,
+  username: ADMIN_USERNAME,
+  role: 'admin'
+});
+
 const sanitizeUser = (user) => {
   if (!user) return null;
   const { password: _PASSWORD, ...safeUser } = user;
@@ -42,6 +53,17 @@ export const login = async ({ username, password }) => {
         username: data.kullanici.kullanici_adi,
         role: normalizedRole
       }
+    };
+  }
+
+  if (username === ADMIN_USERNAME) {
+    if (password !== ADMIN_PASSWORD) {
+      throw new Error('Kullanıcı adı veya şifre hatalı');
+    }
+    await delay(150);
+    return {
+      token: 'mock-admin',
+      user: buildStaticAdminUser()
     };
   }
 
@@ -91,6 +113,10 @@ export const register = async ({ fullName, username, password, role = ROLES.CUST
       const errorMessage = error.response?.data?.hata || error.response?.data?.detay || error.message || 'Kayıt işlemi başarısız oldu';
       throw new Error(errorMessage);
     }
+  }
+
+  if (username === ADMIN_USERNAME) {
+    throw new Error('Bu kullanıcı adı rezerve edilmiştir');
   }
 
   await delay();
