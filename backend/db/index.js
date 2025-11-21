@@ -21,11 +21,6 @@ console.log('  MYSQLPORT:', process.env.MYSQLPORT || '(yok)');
 console.log('  MYSQLUSER:', process.env.MYSQLUSER || '(yok)');
 console.log('  MYSQLPASSWORD:', process.env.MYSQLPASSWORD ? '***' : '(yok)');
 console.log('  MYSQLDATABASE:', process.env.MYSQLDATABASE || '(yok)');
-console.log('  DB_HOST:', process.env.DB_HOST || '(yok)');
-console.log('  DB_PORT:', process.env.DB_PORT || '(yok)');
-console.log('  DB_USER:', process.env.DB_USER || '(yok)');
-console.log('  DB_PASSWORD:', process.env.DB_PASSWORD ? '***' : '(yok)');
-console.log('  DB_NAME:', process.env.DB_NAME || '(yok)');
 console.log('📊 Kullanılan Bağlantı Ayarları:', {
   host: dbConfig.host,
   port: dbConfig.port,
