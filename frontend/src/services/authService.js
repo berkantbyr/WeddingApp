@@ -26,13 +26,21 @@ export const login = async ({ username, password }) => {
       kullanici_adi: username, 
       sifre: password 
     });
+    const normalizedRole =
+      data.kullanici.rol === 'MUSTERI'
+        ? 'customer'
+        : data.kullanici.rol === 'SALON_SAHIBI'
+          ? 'owner'
+          : data.kullanici.rol === 'ADMIN'
+            ? 'admin'
+            : data.kullanici.rol;
     return {
       token: data.token,
       user: {
         id: data.kullanici.id,
         fullName: data.kullanici.ad_soyad,
         username: data.kullanici.kullanici_adi,
-        role: data.kullanici.rol === 'MUSTERI' ? 'customer' : data.kullanici.rol === 'SALON_SAHIBI' ? 'owner' : data.kullanici.rol
+        role: normalizedRole
       }
     };
   }
@@ -206,5 +214,5 @@ export const deleteUser = async (userId) => {
   return true;
 };
 
-export const getRoles = () => Object.values(ROLES);
+export const getRoles = () => [ROLES.CUSTOMER, ROLES.OWNER];
 

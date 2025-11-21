@@ -18,20 +18,17 @@ const ROLE_DETAILS = {
   owner: {
     title: 'Salon Sahibi',
     description: 'Salon ilanı oluşturmak ve rezervasyon almak için'
-  },
-  admin: {
-    title: 'Yönetici',
-    description: 'Kullanıcı ve salon kayıtlarını görüntülemek ve denetlemek için'
   }
 };
 
-const DEFAULT_ROLE_ORDER = ['customer', 'owner', 'admin'];
+const DEFAULT_ROLE_ORDER = ['customer', 'owner'];
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { register, roles } = useAuth();
-  const initialRole = searchParams.get('role') ?? 'customer';
+  const requestedRole = searchParams.get('role');
+  const initialRole = DEFAULT_ROLE_ORDER.includes(requestedRole) ? requestedRole : 'customer';
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
