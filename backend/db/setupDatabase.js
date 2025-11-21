@@ -6,11 +6,26 @@ async function kurulum() {
     const dosyaYolu = path.join(__dirname, 'sql', 'schema.sql');
     const sql = fs.readFileSync(dosyaYolu, 'utf8');
 
-    const host = process.env.DB_HOST || 'localhost';
-    const port = Number(process.env.DB_PORT || 3306);
-    const user = process.env.DB_USER || 'root';
-    const password = process.env.DB_PASSWORD || '';
-    const dbName = process.env.DB_NAME || 'salonbulucu';
+    // Yeni Hâl (Tek URL):
+    const connectionString = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+        console.error("HATA: DATABASE_URL Ortam Değişkeni Tanımlı Değil!");
+        process.exit(1);
+    }
+
+    // URL'den bilgileri parse et (log için)
+    let host, port, user, dbName;
+    try {
+        const url = new URL(connectionString);
+        host = url.hostname;
+        port = url.port || 3306;
+        user = url.username;
+        dbName = url.pathname.slice(1); // Başındaki / karakterini kaldır
+    } catch (e) {
+        console.error('DATABASE_URL formatı geçersiz!');
+        throw e;
+    }
 
     console.log('Veritabanı bağlantı ayarları:');
     console.log(`  Host: ${host}`);
@@ -22,7 +37,9 @@ async function kurulum() {
     try {
         // 1) DB yoksa oluştur
         console.log('Veritabanına bağlanılıyor...');
-        const baglantiIlk = await mysql.createConnection({ host, port, user, password, multipleStatements: true });
+        // Database olmadan bağlantı kur (veritabanı henüz yok)
+        const connectionStringWithoutDb = connectionString.replace(/\/[^\/]*$/, '') + '?multipleStatements=true';
+        const baglantiIlk = await mysql.createConnection(connectionStringWithoutDb);
         console.log('Bağlantı başarılı!');
         
         console.log(`Veritabanı oluşturuluyor: ${dbName}...`);
@@ -32,7 +49,7 @@ async function kurulum() {
 
         // 2) Şemayı uygula
         console.log('Şema uygulanıyor...');
-        const baglanti = await mysql.createConnection({ host, port, user, password, database: dbName, multipleStatements: true });
+        const baglanti = await mysql.createConnection(connectionString + '?multipleStatements=true');
         await baglanti.query(sql);
         await baglanti.end();
 
@@ -42,14 +59,14 @@ async function kurulum() {
             console.error('\n❌ HATA: MySQL sunucusuna bağlanılamıyor!');
             console.error('Lütfen şunları kontrol edin:');
             console.error('  1. MySQL sunucusu çalışıyor mu?');
-            console.error('  2. .env dosyasındaki DB_HOST ve DB_PORT ayarları doğru mu?');
+            console.error('  2. .env dosyasındaki DATABASE_URL ayarı doğru mu?');
             console.error('  3. MySQL servisini başlatmak için:');
             console.error('     - Windows: net start MySQL (veya servis adınız)');
             console.error('     - Veya XAMPP/WAMP kontrol panelinden MySQL\'i başlatın');
         } else if (error.code === 'ER_ACCESS_DENIED_ERROR') {
             console.error('\n❌ HATA: Veritabanı erişim hatası!');
             console.error('Kullanıcı adı veya şifre yanlış olabilir.');
-            console.error('Lütfen .env dosyasındaki DB_USER ve DB_PASSWORD ayarlarını kontrol edin.');
+            console.error('Lütfen .env dosyasındaki DATABASE_URL ayarını kontrol edin.');
         } else {
             console.error('\n❌ HATA:', error.message);
             console.error('Detay:', error);

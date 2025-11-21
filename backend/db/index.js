@@ -1,19 +1,24 @@
 const mysql = require('mysql2/promise');
 
-// Veritabanı bağlantı ayarlarını kontrol et
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT || 3306),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'salonbulucu',
+// Yeni Hâl (Tek URL):
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error("HATA: DATABASE_URL Ortam Değişkeni Tanımlı Değil!");
+  process.exit(1);
+}
+
+// Pool için ekstra ayarlar
+const poolConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 };
 
+// Bağlantı havuzunu oluştur
+const havuz = mysql.createPool(connectionString, poolConfig);
+
 // Bağlantıyı test et
-const havuz = mysql.createPool(dbConfig);
 
 // Bağlantı hatası kontrolü
 havuz.getConnection()
