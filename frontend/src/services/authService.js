@@ -15,11 +15,33 @@ const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = '123';
 const ADMIN_FULL_NAME = 'Sistem Yöneticisi';
 
+const OWNER_USERNAME = 'salonsahibi';
+const OWNER_PASSWORD = '123ss';
+const OWNER_FULL_NAME = 'Salon Sahibi';
+
+const CUSTOMER_USERNAME = 'müşteri';
+const CUSTOMER_PASSWORD = '123m';
+const CUSTOMER_FULL_NAME = 'Müşteri';
+
 const buildStaticAdminUser = () => ({
   id: 'ADMIN',
   fullName: ADMIN_FULL_NAME,
   username: ADMIN_USERNAME,
   role: 'admin'
+});
+
+const buildStaticOwnerUser = () => ({
+  id: 'OWNER',
+  fullName: OWNER_FULL_NAME,
+  username: OWNER_USERNAME,
+  role: 'owner'
+});
+
+const buildStaticCustomerUser = () => ({
+  id: 'CUSTOMER',
+  fullName: CUSTOMER_FULL_NAME,
+  username: CUSTOMER_USERNAME,
+  role: 'customer'
 });
 
 const sanitizeUser = (user) => {
@@ -64,6 +86,28 @@ export const login = async ({ username, password }) => {
     return {
       token: 'mock-admin',
       user: buildStaticAdminUser()
+    };
+  }
+
+  if (username === OWNER_USERNAME) {
+    if (password !== OWNER_PASSWORD) {
+      throw new Error('Kullanıcı adı veya şifre hatalı');
+    }
+    await delay(150);
+    return {
+      token: 'mock-owner',
+      user: buildStaticOwnerUser()
+    };
+  }
+
+  if (username === CUSTOMER_USERNAME) {
+    if (password !== CUSTOMER_PASSWORD) {
+      throw new Error('Kullanıcı adı veya şifre hatalı');
+    }
+    await delay(150);
+    return {
+      token: 'mock-customer',
+      user: buildStaticCustomerUser()
     };
   }
 
@@ -115,7 +159,7 @@ export const register = async ({ fullName, username, password, role = ROLES.CUST
     }
   }
 
-  if (username === ADMIN_USERNAME) {
+  if (username === ADMIN_USERNAME || username === OWNER_USERNAME || username === CUSTOMER_USERNAME) {
     throw new Error('Bu kullanıcı adı rezerve edilmiştir');
   }
 
