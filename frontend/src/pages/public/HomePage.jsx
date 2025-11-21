@@ -264,7 +264,7 @@ const HomePage = () => {
               {/* Şehir Seçimi */}
               <div className="col-lg-9 col-md-8 col-12">
                 <label className="form-label fw-semibold text-muted mb-2">
-                  <i className="bi bi-geo-alt me-2"></i>Nereye?
+                  <i className="bi bi-geo-alt me-2"></i>Şehir Seçiniz
                 </label>
                 <select
                   className="form-select form-select-lg"
