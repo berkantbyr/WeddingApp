@@ -2,34 +2,25 @@ import axios from 'axios';
 
 const SESSION_KEY = 'sb_active_session';
 
-// Mock modu: Production'da varsayılan olarak kapalı, sadece açıkça 'true' olarak ayarlandığında açık
-// Development için .env dosyasında VITE_USE_MOCK=true yapabilirsiniz
-export const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK === 'true';
+// Mock modu: Eğer .env dosyasında VITE_USE_MOCK tanımlı değilse, varsayılan olarak true yap
+// MySQL kurulumu yapıldıktan sonra bu satırı değiştirip false yapabilirsiniz
+export const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK !== 'false';
 
 const inferApiUrl = () => {
-  // Öncelikle environment variable'dan al
   if (import.meta.env?.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
 
-  // Development ortamı kontrolü
   if (typeof window !== 'undefined' && window.location?.origin) {
     const url = new URL(window.location.origin);
 
-    // Local development
-    if (url.port === '5173' || url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    if (url.port === '5173' || url.hostname === 'localhost') {
       return 'http://localhost:3000/api';
     }
 
-    // Production'da VITE_API_URL ayarlanmamışsa uyarı ver
-    // NOT: Production'da mutlaka VITE_API_URL environment variable'ı Railway backend URL'si olarak ayarlanmalıdır
-    console.warn('VITE_API_URL environment variable ayarlanmamış! Railway backend URL\'sini VITE_API_URL olarak ayarlayın.');
-    
-    // Geçici fallback (production'da çalışmayabilir)
     return `${window.location.origin.replace(/\/$/, '')}/api`;
   }
 
-  // Son fallback
   return 'http://localhost:3000/api';
 };
 
