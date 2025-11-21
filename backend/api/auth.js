@@ -5,6 +5,10 @@ const havuz = require('../db');
 
 const router = express.Router();
 
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '123';
+const ADMIN_FULLNAME = process.env.ADMIN_FULLNAME || 'Sistem Yöneticisi';
+
 router.post('/kayit', async (req, res) => {
     try {
         const { ad_soyad, kullanici_adi, sifre, rol, telefon, sirket_adi } = req.body;
@@ -13,6 +17,9 @@ router.post('/kayit', async (req, res) => {
         }
         if (!['MUSTERI', 'SALON_SAHIBI'].includes(rol)) {
             return res.status(400).json({ hata: 'Rol geçersiz' });
+        }
+        if (kullanici_adi === ADMIN_USERNAME) {
+            return res.status(409).json({ hata: 'Bu kullanıcı adı rezerve edilmiştir' });
         }
         if (rol === 'SALON_SAHIBI' && !sirket_adi) {
             return res.status(400).json({ hata: 'Salon sahibi için şirket adı zorunludur' });
@@ -41,6 +48,28 @@ router.post('/giris', async (req, res) => {
         const { kullanici_adi, sifre } = req.body;
         if (!kullanici_adi || !sifre) {
             return res.status(400).json({ hata: 'Kullanıcı adı ve şifre zorunludur' });
+        }
+
+        if (kullanici_adi === ADMIN_USERNAME) {
+            if (sifre !== ADMIN_PASSWORD) {
+                return res.status(401).json({ hata: 'Kullanıcı adı veya şifre hatalı' });
+            }
+
+            const token = jwt.sign(
+                { id: 'ADMIN', rol: 'ADMIN', ad_soyad: ADMIN_FULLNAME, kullanici_adi: ADMIN_USERNAME },
+                process.env.JWT_SECRET || 'dev-secret',
+                { expiresIn: '7d' }
+            );
+
+            return res.json({
+                token,
+                kullanici: {
+                    id: 'ADMIN',
+                    ad_soyad: ADMIN_FULLNAME,
+                    kullanici_adi: ADMIN_USERNAME,
+                    rol: 'ADMIN'
+                }
+            });
         }
 
         const [[k]] = await havuz.query(
