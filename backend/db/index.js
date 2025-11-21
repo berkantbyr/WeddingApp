@@ -4,10 +4,10 @@ const mysql = require('mysql2/promise');
 // Öncelikle MYSQL_URL connection string'ini kontrol et (Railway'de en güvenilir yöntem)
 let dbConfig;
 
-if (process.env.MYSQL_URL || process.env.MYSQLURL || process.env.MYSQL_PUBLIC_URL || process.env.DATABASE_URL) {
+if (process.env.MYSQL_URL || process.env.MYSQLURL || process.env.DATABASE_URL) {
   // Connection string kullan
-  const connectionString = process.env.MYSQL_URL || process.env.MYSQLURL || process.env.MYSQL_PUBLIC_URL || process.env.DATABASE_URL;
-  console.log('🔗 MySQL connection string kullanılıyor');
+  const connectionString = process.env.MYSQL_URL || process.env.MYSQLURL || process.env.DATABASE_URL;
+  console.log('🔗 MYSQL_URL connection string kullanılıyor');
   
   // MySQL connection string formatı: mysql://user:password@host:port/database
   const url = new URL(connectionString);
@@ -38,7 +38,6 @@ if (process.env.MYSQL_URL || process.env.MYSQLURL || process.env.MYSQL_PUBLIC_UR
 // Debug: Hangi değişkenlerin kullanıldığını göster (her zaman göster)
 console.log('🔍 Environment Variable Kontrolü:');
 console.log('  MYSQL_URL:', process.env.MYSQL_URL ? '***' : '(yok)');
-console.log('  MYSQL_PUBLIC_URL:', process.env.MYSQL_PUBLIC_URL ? '***' : '(yok)');
 console.log('  MYSQLHOST:', process.env.MYSQLHOST || '(yok)');
 console.log('  MYSQLPORT:', process.env.MYSQLPORT || '(yok)');
 console.log('  MYSQLUSER:', process.env.MYSQLUSER || '(yok)');
