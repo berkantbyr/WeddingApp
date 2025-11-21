@@ -1,21 +1,43 @@
 const mysql = require('mysql2/promise');
 
 // Railway ve diğer platformlar için environment variable desteği
-// Railway otomatik olarak MYSQLHOST, MYSQLPORT, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE ekler
-// Ayrıca manuel DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME de desteklenir
-const dbConfig = {
-  host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.DB_HOST || 'localhost',
-  port: Number(process.env.MYSQLPORT || process.env.MYSQL_PORT || process.env.DB_PORT || 3306),
-  user: process.env.MYSQLUSER || process.env.MYSQL_USER || process.env.DB_USER || 'root',
-  password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || '',
-  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || process.env.DB_NAME || 'salonbulucu',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-};
+// Öncelikle MYSQL_URL connection string'ini kontrol et (Railway'de en güvenilir yöntem)
+let dbConfig;
+
+if (process.env.MYSQL_URL || process.env.MYSQLURL || process.env.DATABASE_URL) {
+  // Connection string kullan
+  const connectionString = process.env.MYSQL_URL || process.env.MYSQLURL || process.env.DATABASE_URL;
+  console.log('🔗 MYSQL_URL connection string kullanılıyor');
+  
+  // MySQL connection string formatı: mysql://user:password@host:port/database
+  const url = new URL(connectionString);
+  dbConfig = {
+    host: url.hostname,
+    port: Number(url.port || 3306),
+    user: url.username,
+    password: url.password,
+    database: url.pathname.replace('/', ''),
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  };
+} else {
+  // Ayrı ayrı değişkenler kullan
+  dbConfig = {
+    host: process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.DB_HOST || 'localhost',
+    port: Number(process.env.MYSQLPORT || process.env.MYSQL_PORT || process.env.DB_PORT || 3306),
+    user: process.env.MYSQLUSER || process.env.MYSQL_USER || process.env.DB_USER || 'root',
+    password: process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || '',
+    database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || process.env.DB_NAME || 'salonbulucu',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  };
+}
 
 // Debug: Hangi değişkenlerin kullanıldığını göster (her zaman göster)
 console.log('🔍 Environment Variable Kontrolü:');
+console.log('  MYSQL_URL:', process.env.MYSQL_URL ? '***' : '(yok)');
 console.log('  MYSQLHOST:', process.env.MYSQLHOST || '(yok)');
 console.log('  MYSQLPORT:', process.env.MYSQLPORT || '(yok)');
 console.log('  MYSQLUSER:', process.env.MYSQLUSER || '(yok)');
