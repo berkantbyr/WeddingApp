@@ -32,14 +32,41 @@ router.post('/kayit', async (req, res) => {
         res.status(201).json({ mesaj: 'Kayıt başarılı' });
     } catch (e) {
         console.error('Kayıt hatası:', e);
+        console.error('Hata detayları:', {
+            code: e.code,
+            message: e.message,
+            sqlMessage: e.sqlMessage,
+            errno: e.errno
+        });
+        
         if (e && e.code === 'ER_DUP_ENTRY') {
             return res.status(409).json({ hata: 'Bu kullanıcı adı zaten kayıtlı' });
         }
-        // Daha detaylı hata mesajı (geliştirme ortamında)
+        
+        // Veritabanı bağlantı hatası
+        if (e.code === 'ECONNREFUSED' || e.code === 'ENOTFOUND' || e.code === 'ETIMEDOUT') {
+            return res.status(500).json({ 
+                hata: 'Veritabanı bağlantı hatası',
+                detay: 'Veritabanı sunucusuna ulaşılamıyor. Lütfen sistem yöneticisine başvurun.'
+            });
+        }
+        
+        // SQL hatası
+        if (e.code && e.code.startsWith('ER_')) {
+            return res.status(500).json({ 
+                hata: 'Veritabanı hatası',
+                detay: process.env.NODE_ENV !== 'production' ? e.sqlMessage : undefined
+            });
+        }
+        
+        // Genel hata
         const hataMesaji = process.env.NODE_ENV === 'production' 
             ? 'Sunucu hatası' 
             : e.message || 'Sunucu hatası';
-        res.status(500).json({ hata: hataMesaji, detay: process.env.NODE_ENV !== 'production' ? e.message : undefined });
+        res.status(500).json({ 
+            hata: hataMesaji, 
+            detay: process.env.NODE_ENV !== 'production' ? e.message : undefined 
+        });
     }
 });
 
@@ -89,7 +116,24 @@ router.post('/giris', async (req, res) => {
         res.json({ token, kullanici: { id: k.id, ad_soyad: k.ad_soyad, kullanici_adi: k.kullanici_adi, rol: k.rol } });
     } catch (err) {
         console.error('Giriş hatası:', err);
-        res.status(500).json({ hata: 'Sunucu hatası' });
+        console.error('Hata detayları:', {
+            code: err.code,
+            message: err.message,
+            sqlMessage: err.sqlMessage
+        });
+        
+        // Veritabanı bağlantı hatası
+        if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND' || err.code === 'ETIMEDOUT') {
+            return res.status(500).json({ 
+                hata: 'Veritabanı bağlantı hatası',
+                detay: 'Veritabanı sunucusuna ulaşılamıyor. Lütfen sistem yöneticisine başvurun.'
+            });
+        }
+        
+        res.status(500).json({ 
+            hata: 'Sunucu hatası',
+            detay: process.env.NODE_ENV !== 'production' ? err.message : undefined
+        });
     }
 });
 

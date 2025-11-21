@@ -6,11 +6,12 @@ async function kurulum() {
     const dosyaYolu = path.join(__dirname, 'sql', 'schema.sql');
     const sql = fs.readFileSync(dosyaYolu, 'utf8');
 
-    const host = process.env.DB_HOST || 'localhost';
-    const port = Number(process.env.DB_PORT || 3306);
-    const user = process.env.DB_USER || 'root';
-    const password = process.env.DB_PASSWORD || '';
-    const dbName = process.env.DB_NAME || 'salonbulucu';
+    // Railway ve diğer platformlar için environment variable desteği
+    const host = process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.DB_HOST || 'localhost';
+    const port = Number(process.env.MYSQLPORT || process.env.MYSQL_PORT || process.env.DB_PORT || 3306);
+    const user = process.env.MYSQLUSER || process.env.MYSQL_USER || process.env.DB_USER || 'root';
+    const password = process.env.MYSQLPASSWORD || process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || '';
+    const dbName = process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || process.env.DB_NAME || 'salonbulucu';
 
     console.log('Veritabanı bağlantı ayarları:');
     console.log(`  Host: ${host}`);
