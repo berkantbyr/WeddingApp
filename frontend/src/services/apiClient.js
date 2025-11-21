@@ -73,30 +73,3 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - hataları daha iyi logla
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Detaylı hata loglama (development için)
-    if (import.meta.env.DEV) {
-      console.error('API Hatası:', {
-        url: error.config?.url,
-        method: error.config?.method,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        message: error.message,
-        baseURL: error.config?.baseURL
-      });
-    }
-    
-    // Network hatası (backend'e ulaşılamıyor)
-    if (!error.response) {
-      console.error('Backend\'e ulaşılamıyor. URL:', error.config?.baseURL + error.config?.url);
-      error.message = 'Backend sunucusuna ulaşılamıyor. Lütfen bağlantınızı kontrol edin.';
-    }
-    
-    return Promise.reject(error);
-  }
-);
-
