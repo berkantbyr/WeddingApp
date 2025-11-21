@@ -14,16 +14,20 @@ const dbConfig = {
   queueLimit: 0
 };
 
-// Debug: Hangi değişkenlerin kullanıldığını göster (production'da gizle)
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Veritabanı bağlantı ayarları:', {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    user: dbConfig.user,
-    database: dbConfig.database,
-    passwordSet: !!dbConfig.password
-  });
-}
+// Debug: Hangi değişkenlerin kullanıldığını göster (her zaman göster)
+console.log('🔍 Environment Variable Kontrolü:');
+console.log('  MYSQLHOST:', process.env.MYSQLHOST || '(yok)');
+console.log('  MYSQLPORT:', process.env.MYSQLPORT || '(yok)');
+console.log('  MYSQLUSER:', process.env.MYSQLUSER || '(yok)');
+console.log('  MYSQLPASSWORD:', process.env.MYSQLPASSWORD ? '***' : '(yok)');
+console.log('  MYSQLDATABASE:', process.env.MYSQLDATABASE || '(yok)');
+console.log('📊 Kullanılan Bağlantı Ayarları:', {
+  host: dbConfig.host,
+  port: dbConfig.port,
+  user: dbConfig.user,
+  database: dbConfig.database,
+  passwordSet: !!dbConfig.password
+});
 
 // Bağlantıyı test et
 const havuz = mysql.createPool(dbConfig);
