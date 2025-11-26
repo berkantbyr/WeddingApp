@@ -33,7 +33,6 @@ app.use(
   })
 );
 
-app.options('*', cors());
 app.use(express.json());
 // Statik dosyaları servis et (yüklenen resimler için)
 app.use('/uploads', express.static('uploads'));
