@@ -7,21 +7,29 @@ const SESSION_KEY = 'sb_active_session';
 export const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK !== 'false';
 
 const inferApiUrl = () => {
-  if (import.meta.env?.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
+  const envUrl = (import.meta.env?.VITE_API_URL || '').trim();
 
   if (typeof window !== 'undefined' && window.location?.origin) {
-    const url = new URL(window.location.origin);
+    const current = new URL(window.location.href);
+    const isLocal =
+      current.hostname === 'localhost' ||
+      current.hostname === '127.0.0.1' ||
+      current.port === '5173' ||
+      current.port === '4173';
 
-    if (url.port === '5173' || url.hostname === 'localhost') {
-      return 'http://localhost:3000/api';
+    if (!isLocal) {
+      // Üretimde her zaman aynı origin'i kullan ki Vercel proxy'si devreye girsin
+      return `${current.origin.replace(/\/$/, '')}/api`;
     }
 
-    return `${window.location.origin.replace(/\/$/, '')}/api`;
+    if (envUrl) {
+      return envUrl;
+    }
+
+    return 'http://localhost:3000/api';
   }
 
-    export const API_URL = import.meta.env.VITE_API_URL;
+  return envUrl || 'http://localhost:3000/api';
 };
 
 export const API_URL = inferApiUrl().replace(/\/+$/, '');
