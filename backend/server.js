@@ -4,34 +4,40 @@
 // akışını destekleyecek şekilde organize edildi.
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors');
-
 dotenv.config();
 const app = express();
 
-const allowedOrigins = new Set([
+const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
   'http://127.0.0.1:5173',
-  'https://wedding-app-sigma-five.vercel.app',
-  process.env.FRONTEND_URL
-].filter(Boolean));
+  'https://wedding-app-sigma-five.vercel.app'
+];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        return callback(null, true);
-      }
-      console.warn('CORS engellendi:', origin);
-      return callback(new Error('CORS engellendi'));
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: false,
-    maxAge: 86400
-  })
-);
+const extraOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+const allowedOrigins = new Set([...defaultOrigins, ...extraOrigins]);
+const allowAllOrigins = allowedOrigins.size === 0;
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowAllOrigins || allowedOrigins.has(origin))) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Vary', 'Origin');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Max-Age', '86400');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 
 app.use(express.json());
 // Statik dosyaları servis et (yüklenen resimler için)
