@@ -29,7 +29,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+console.log('Allowed origins:', allowedOrigins);
 app.use(express.json());
 // Statik dosyaları servis et (yüklenen resimler için)
 app.use('/uploads', express.static('uploads'));
