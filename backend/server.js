@@ -9,6 +9,7 @@ const cors = require('cors');
 dotenv.config();
 const app = express();
 
+<<<<<<< HEAD
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ||
   'https://wedding-app-sigma-five.vercel.app,http://localhost:5173')
   .split(',')
@@ -52,6 +53,9 @@ app.use((req, res, next) => {
 });
 
 console.log('Allowed origins:', allowedOrigins);
+=======
+app.use(cors());
+>>>>>>> parent of 5dbecbb (update)
 app.use(express.json());
 // Statik dosyaları servis et (yüklenen resimler için)
 app.use('/uploads', express.static('uploads'));
